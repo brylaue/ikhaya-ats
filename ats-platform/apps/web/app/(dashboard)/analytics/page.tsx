@@ -183,7 +183,7 @@ export default function AnalyticsPage() {
         ? Math.round(
             clientPlacements.reduce((s, p) => {
               if (!p.placedAt) return s;
-              const job = clientJobs.find((j) => j.id === (p as unknown as Record<string, string>)["jobId"]);
+              const job = clientJobs.find((j) => j.id === p.jobId);
               if (!job) return s;
               return s + Math.floor((new Date(p.placedAt).getTime() - new Date(job.createdAt).getTime()) / 86_400_000);
             }, 0) / clientPlacements.length
