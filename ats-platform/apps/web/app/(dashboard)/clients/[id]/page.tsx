@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
-import { ChevronLeft, Building2, MapPin, Globe, Mail, Phone, Briefcase, Users, Star, TrendingUp, Clock, ExternalLink, Plus, CircleCheck as CheckCircle2, CircleAlert as AlertCircle, CreditCard as Edit3, ClipboardList, Check, X, Loader as Loader2 } from "lucide-react";
+import { ChevronLeft, Building2, MapPin, Globe, Mail, Phone, Briefcase, Users, Star, TrendingUp, Clock, ExternalLink, Plus, CircleCheck as CheckCircle2, CircleAlert as AlertCircle, Pencil as Edit3, ClipboardList, Check, X, Loader as Loader2 } from "lucide-react";
 import { useCompany, useJobsByClient, useContacts, useTasks, usePlacementsByClient } from "@/lib/supabase/hooks";
 import type { DbContact, TaskRecord } from "@/lib/supabase/hooks";
 import { MsaPanel } from "@/components/clients/msa-panel";
