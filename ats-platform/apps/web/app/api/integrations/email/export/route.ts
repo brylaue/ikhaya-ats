@@ -143,11 +143,12 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    // Fetch all messages for this user
+    // Fetch all messages for this user. Bodies are stored in S3 (referenced
+    // via *_s3_key columns); we include the keys so the export is complete.
     const { data: messages } = await supabase
       .from("email_messages")
       .select(
-        "id, provider, provider_message_id, direction, from_address, to_addresses, cc_addresses, subject, snippet, body_text, body_html, sent_at, has_attachments"
+        "id, provider, provider_message_id, direction, from_addr, to_addrs, cc_addrs, subject, snippet, body_text_s3_key, body_html_s3_key, sent_at"
       )
       .eq("user_id", user.id)
       .order("sent_at", { ascending: false });
