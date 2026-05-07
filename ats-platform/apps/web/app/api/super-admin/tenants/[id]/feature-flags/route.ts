@@ -31,7 +31,7 @@ async function guard(req: NextRequest) {
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const { error } = await guard(req);
   if (error) return error;
@@ -57,7 +57,7 @@ export async function GET(
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const csrfError = checkCsrf(req);
   if (csrfError) return csrfError;

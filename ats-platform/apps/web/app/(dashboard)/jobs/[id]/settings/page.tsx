@@ -1,13 +1,9 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { useParams } from "next/navigation";
 import Link from "next/link";
-import {
-  ChevronLeft, Check, Loader2, Trash2, Archive,
-  MapPin, DollarSign, TrendingUp, Globe,
-  AlertTriangle, Plus, GripVertical, ChevronUp, ChevronDown,
-  RotateCcw, Pencil, X, ListChecks, Clock, Users,
-} from "lucide-react";
+import { ChevronLeft, Check, Loader as Loader2, Trash2, Archive, MapPin, DollarSign, TrendingUp, Globe, TriangleAlert as AlertTriangle, Plus, GripVertical, ChevronUp, ChevronDown, RotateCcw, Pencil, X, ListChecks, Clock, Users } from "lucide-react";
 import { useJob, useInterviewPlan } from "@/lib/supabase/hooks";
 import { RecruiterAssignmentPanel } from "@/components/jobs/recruiter-assignment-panel";
 import { MilestoneBillingPanel } from "@/components/jobs/milestone-billing-panel";
@@ -300,7 +296,8 @@ function Select({ value, onChange, children }: {
 
 // ─── Page ──────────────────────────────────────────────────────────────────────
 
-export default function JobSettingsPage({ params }: { params: { id: string } }) {
+export default function JobSettingsPage() {
+  const params = useParams<{ id: string }>();
   const {
     job, stages, entries, loading, notFound,
     updateStage, deleteStage, reorderStages, addStage, resetToDefaultStages,

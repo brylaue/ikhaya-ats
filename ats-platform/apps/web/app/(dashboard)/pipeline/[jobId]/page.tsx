@@ -1,12 +1,9 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { useParams } from "next/navigation";
 import Link from "next/link";
-import {
-  ChevronLeft, Settings, ExternalLink, Users, MapPin,
-  DollarSign, Calendar, TrendingUp, Plus, Loader2,
-  Kanban,
-} from "lucide-react";
+import { ChevronLeft, Settings, ExternalLink, Users, MapPin, DollarSign, Calendar, TrendingUp, Plus, Loader as Loader2, Kanban } from "lucide-react";
 import { useJob, useCandidates } from "@/lib/supabase/hooks";
 import { KanbanBoard } from "@/components/pipeline/kanban-board";
 import { ScheduleInterviewModal } from "@/components/pipeline/schedule-interview-modal";
@@ -107,7 +104,8 @@ function AddToPipelineModal({
 
 // ─── Page ──────────────────────────────────────────────────────────────────────
 
-export default function PipelineJobPage({ params }: { params: { jobId: string } }) {
+export default function PipelineJobPage() {
+  const params = useParams<{ jobId: string }>();
   const { job, stages: rawStages, entries, loading, notFound, moveEntry, addEntry } = useJob(params.jobId);
 
   const [scheduleApp, setScheduleApp]       = useState<Application | null>(null);

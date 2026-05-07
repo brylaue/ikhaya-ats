@@ -25,7 +25,7 @@ const serviceDb = () =>
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const csrfError = checkCsrf(req);
   if (csrfError) return csrfError;

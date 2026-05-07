@@ -28,7 +28,7 @@ const PLAN_COLORS: Record<string, { badge: string; cta: string }> = {
 
 interface FeatureGateProps {
   feature:   FeatureKey;
-  children:  React.ReactNode;
+  children?: React.ReactNode;
   /**
    * Custom fallback. If omitted, renders a default locked-feature card.
    */
@@ -58,10 +58,10 @@ export function FeatureGate({
   const { enabled, loading } = useFeatureFlag(feature);
 
   if (loading) {
-    return hideWhileLoading ? null : <>{children}</>;
+    return hideWhileLoading ? null : <>{children ?? null}</>;
   }
 
-  if (enabled) return <>{children}</>;
+  if (enabled) return <>{children ?? null}</>;
 
   if (fallback !== undefined) return <>{fallback}</>;
 

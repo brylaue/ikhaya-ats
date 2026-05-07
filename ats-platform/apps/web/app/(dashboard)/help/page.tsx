@@ -1572,4 +1572,375 @@ const WORKFLOWS: WorkflowGuide[] = [
       },
       {
         title: "Share the shortcuts reference",
-   
+        detail: "Print or bookmark /help → Keyboard Shortcuts. It lists every shortcut available. Most new recruiters find ⌘K (global search), G+C (go to candidates), and G+J (go to jobs) enough to start.",
+      },
+    ],
+  },
+];
+
+// ─── FAQs ─────────────────────────────────────────────────────────────────────
+
+const FAQS: FAQ[] = [
+  {
+    q: "Can I import candidates from LinkedIn?",
+    a: "Yes. Use the Chrome Extension to save candidates from LinkedIn directly to Ikhaya. You can also import a CSV from LinkedIn Recruiter via Candidates → Import.",
+    category: "Candidates & Jobs",
+  },
+  {
+    q: "Why aren't my emails showing up on candidate profiles?",
+    a: "Check that your email integration is active in Settings → Integrations. If connected, the email must share an address with the candidate's profile. Visit the Fuzzy Review inbox if you have unmatched emails.",
+    category: "Email Integration",
+  },
+  {
+    q: "How do I give a client access to review candidates?",
+    a: "Go to the job, open the Shortlist, and click 'Share with Client'. This generates a secure portal link. You can also invite clients via Settings → Team & Access.",
+    category: "Portal",
+  },
+  {
+    q: "What does the AI Copilot have access to?",
+    a: "The Copilot only sees data already in your Ikhaya workspace — candidate profiles, job details, and activity logs. No data leaves your agency's account.",
+    category: "Reports & AI",
+  },
+  {
+    q: "How do I track placement guarantees?",
+    a: "On a placement record, open the Guarantee tab. Set the guarantee period length and start date. Ikhaya will alert you when a guarantee is about to expire.",
+    category: "Interviews & Placements",
+  },
+];
+
+// ─── Shortcuts ────────────────────────────────────────────────────────────────
+
+const SHORTCUTS: { section: string; items: Shortcut[] }[] = [
+  {
+    section: "Navigation",
+    items: [
+      { keys: ["⌘", "K"],       label: "Global search" },
+      { keys: ["G", "D"],        label: "Go to Dashboard" },
+      { keys: ["G", "C"],        label: "Go to Candidates" },
+      { keys: ["G", "J"],        label: "Go to Jobs" },
+      { keys: ["G", "P"],        label: "Go to Pipeline" },
+      { keys: ["G", "O"],        label: "Go to Outreach" },
+      { keys: ["G", "R"],        label: "Go to Reports" },
+      { keys: ["G", "S"],        label: "Go to Settings" },
+    ],
+  },
+  {
+    section: "Candidates",
+    items: [
+      { keys: ["N", "C"],        label: "New candidate" },
+      { keys: ["⌘", "Enter"],   label: "Save changes" },
+      { keys: ["Esc"],           label: "Close modal / cancel" },
+    ],
+  },
+  {
+    section: "Pipeline",
+    items: [
+      { keys: ["←", "→"],       label: "Navigate columns" },
+      { keys: ["↑", "↓"],       label: "Navigate cards" },
+      { keys: ["Space"],         label: "Open card detail" },
+    ],
+  },
+];
+
+// ─── Page ─────────────────────────────────────────────────────────────────────
+
+export default function HelpPage() {
+  const [activeTab, setActiveTab]           = useState<"articles" | "workflows" | "shortcuts" | "faq" | "contact">("articles");
+  const [searchQuery, setSearchQuery]       = useState("");
+  const [activeCategory, setActiveCategory] = useState("all");
+  const [expandedFaq, setExpandedFaq]       = useState<string | null>(null);
+  const [expandedArticle, setExpandedArticle] = useState<string | null>(null);
+
+  const filteredArticles = ARTICLES.filter((a) => {
+    const matchesSearch = !searchQuery ||
+      a.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      a.summary.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory = activeCategory === "all" || a.category === activeCategory;
+    return matchesSearch && matchesCategory;
+  });
+
+  return (
+    <div className="flex flex-col min-h-screen bg-background">
+      {/* Header */}
+      <div className="shrink-0 border-b border-border bg-card px-6 py-5">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <HelpCircle className="h-5 w-5 text-brand-600" />
+            <h1 className="text-xl font-bold text-foreground">Help Center</h1>
+          </div>
+          <div className="relative w-72">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <input
+              type="text"
+              placeholder="Search articles..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-9 pr-4 py-2 text-sm rounded-md border border-input bg-background focus:outline-none focus:ring-1 focus:ring-ring"
+            />
+          </div>
+        </div>
+        {/* Tabs */}
+        <div className="flex gap-1 mt-4">
+          {([
+            { id: "articles",  label: "Articles",   icon: BookOpen },
+            { id: "workflows", label: "Workflows",  icon: Workflow },
+            { id: "shortcuts", label: "Shortcuts",  icon: Keyboard },
+            { id: "faq",       label: "FAQ",        icon: HelpCircle },
+            { id: "contact",   label: "Contact",    icon: MessageCircle },
+          ] as const).map(({ id, label, icon: Icon }) => (
+            <button
+              key={id}
+              onClick={() => setActiveTab(id)}
+              className={cn(
+                "flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors",
+                activeTab === id
+                  ? "bg-brand-600 text-white"
+                  : "text-muted-foreground hover:text-foreground hover:bg-accent"
+              )}
+            >
+              <Icon className="h-3.5 w-3.5" />
+              {label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="flex-1 p-6 max-w-[1200px] w-full mx-auto">
+        {/* Articles tab */}
+        {activeTab === "articles" && (
+          <div className="flex gap-6">
+            {/* Category sidebar */}
+            <div className="w-48 shrink-0">
+              <div className="space-y-1">
+                {CATEGORIES.map(({ id, label, icon: Icon }) => (
+                  <button
+                    key={id}
+                    onClick={() => setActiveCategory(id)}
+                    className={cn(
+                      "w-full flex items-center gap-2 px-3 py-2 rounded-md text-xs font-medium transition-colors text-left",
+                      activeCategory === id
+                        ? "bg-brand-50 text-brand-700"
+                        : "text-muted-foreground hover:text-foreground hover:bg-accent"
+                    )}
+                  >
+                    <Icon className="h-3.5 w-3.5 shrink-0" />
+                    {label}
+                  </button>
+                ))}
+              </div>
+            </div>
+            {/* Article list */}
+            <div className="flex-1 space-y-3">
+              {filteredArticles.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-16 text-center">
+                  <Search className="h-8 w-8 text-muted-foreground/30 mb-3" />
+                  <p className="text-sm text-muted-foreground">No articles match your search</p>
+                </div>
+              ) : filteredArticles.map((article) => (
+                <div key={article.id} className="rounded-xl border border-border bg-card overflow-hidden">
+                  <button
+                    onClick={() => setExpandedArticle(expandedArticle === article.id ? null : article.id)}
+                    className="w-full flex items-start justify-between gap-3 p-4 text-left hover:bg-accent/40 transition-colors"
+                  >
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-xs font-semibold text-foreground">{article.title}</span>
+                        {article.videoUrl && <Video className="h-3 w-3 text-brand-600 shrink-0" />}
+                      </div>
+                      <p className="text-[11px] text-muted-foreground">{article.summary}</p>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <span className="text-[10px] text-muted-foreground flex items-center gap-1">
+                        <Clock className="h-3 w-3" />{article.readMins}m
+                      </span>
+                      {expandedArticle === article.id
+                        ? <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                        : <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                      }
+                    </div>
+                  </button>
+                  {expandedArticle === article.id && (
+                    <div className="px-4 pb-4 border-t border-border">
+                      <div className="pt-3 space-y-2">
+                        {article.content.map((para, i) => (
+                          <p key={i} className="text-xs text-foreground leading-relaxed">{para}</p>
+                        ))}
+                        {article.tips && article.tips.length > 0 && (
+                          <div className="mt-3 rounded-lg bg-brand-50 border border-brand-100 p-3">
+                            <p className="text-[11px] font-semibold text-brand-700 mb-1.5 flex items-center gap-1">
+                              <Star className="h-3 w-3" /> Tips
+                            </p>
+                            <ul className="space-y-1">
+                              {article.tips.map((tip, i) => (
+                                <li key={i} className="text-[11px] text-brand-700 flex gap-1.5">
+                                  <span className="shrink-0 mt-0.5">·</span>{tip}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Workflows tab */}
+        {activeTab === "workflows" && (
+          <div className="space-y-4">
+            {WORKFLOWS.map((wf) => {
+              const Icon = wf.icon;
+              const isOpen = expandedArticle === wf.id;
+              return (
+                <div key={wf.id} className="rounded-xl border border-border bg-card overflow-hidden">
+                  <button
+                    onClick={() => setExpandedArticle(isOpen ? null : wf.id)}
+                    className="w-full flex items-center gap-4 p-5 text-left hover:bg-accent/40 transition-colors"
+                  >
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-brand-50">
+                      <Icon className="h-5 w-5 text-brand-600" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-foreground">{wf.title}</p>
+                      <p className="text-xs text-muted-foreground mt-0.5">{wf.summary}</p>
+                    </div>
+                    <div className="flex items-center gap-3 shrink-0">
+                      <span className="text-[11px] text-muted-foreground flex items-center gap-1">
+                        <Clock className="h-3 w-3" />{wf.duration}
+                      </span>
+                      {isOpen
+                        ? <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                        : <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                      }
+                    </div>
+                  </button>
+                  {isOpen && (
+                    <div className="px-5 pb-5 border-t border-border">
+                      <ol className="mt-4 space-y-4">
+                        {wf.steps.map((step, i) => (
+                          <li key={i} className="flex gap-3">
+                            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand-100 text-xs font-bold text-brand-700 mt-0.5">
+                              {i + 1}
+                            </span>
+                            <div>
+                              <p className="text-xs font-semibold text-foreground">{step.title}</p>
+                              <p className="text-xs text-muted-foreground mt-0.5">{step.detail}</p>
+                              {step.link && (
+                                <a href={step.link.href} className="mt-1 inline-flex items-center gap-1 text-[11px] font-medium text-brand-600 hover:underline">
+                                  {step.link.label} <ExternalLink className="h-3 w-3" />
+                                </a>
+                              )}
+                            </div>
+                          </li>
+                        ))}
+                      </ol>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {/* Shortcuts tab */}
+        {activeTab === "shortcuts" && (
+          <div className="space-y-6">
+            {SHORTCUTS.map((section) => (
+              <div key={section.section}>
+                <h2 className="text-sm font-semibold text-foreground mb-3">{section.section}</h2>
+                <div className="grid grid-cols-2 gap-2">
+                  {section.items.map((shortcut, i) => (
+                    <div key={i} className="flex items-center justify-between rounded-lg border border-border bg-card px-4 py-2.5">
+                      <span className="text-xs text-foreground">{shortcut.label}</span>
+                      <div className="flex items-center gap-1">
+                        {shortcut.keys.map((key, ki) => (
+                          <kbd key={ki} className="inline-flex items-center justify-center rounded border border-border bg-muted px-1.5 py-0.5 text-[10px] font-medium text-foreground">
+                            {key}
+                          </kbd>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* FAQ tab */}
+        {activeTab === "faq" && (
+          <div className="space-y-2 max-w-3xl">
+            {FAQS.map((faq, i) => {
+              const isOpen = expandedFaq === String(i);
+              return (
+                <div key={i} className="rounded-xl border border-border bg-card overflow-hidden">
+                  <button
+                    onClick={() => setExpandedFaq(isOpen ? null : String(i))}
+                    className="w-full flex items-center justify-between gap-3 px-4 py-3 text-left hover:bg-accent/40 transition-colors"
+                  >
+                    <p className="text-sm font-medium text-foreground">{faq.q}</p>
+                    {isOpen
+                      ? <ChevronDown className="h-4 w-4 text-muted-foreground shrink-0" />
+                      : <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
+                    }
+                  </button>
+                  {isOpen && (
+                    <div className="px-4 pb-4 border-t border-border">
+                      <p className="text-xs text-muted-foreground pt-3 leading-relaxed">{faq.a}</p>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {/* Contact tab */}
+        {activeTab === "contact" && (
+          <div className="max-w-lg space-y-4">
+            <div className="rounded-xl border border-border bg-card p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <MessageCircle className="h-5 w-5 text-brand-600" />
+                <h2 className="text-sm font-semibold text-foreground">Contact Support</h2>
+              </div>
+              <div className="space-y-4">
+                <div>
+                  <label className="text-xs font-medium text-foreground block mb-1.5">Subject</label>
+                  <input
+                    type="text"
+                    placeholder="Briefly describe your issue"
+                    className="w-full px-3 py-2 text-sm rounded-md border border-input bg-background focus:outline-none focus:ring-1 focus:ring-ring"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-medium text-foreground block mb-1.5">Message</label>
+                  <textarea
+                    rows={5}
+                    placeholder="Describe the problem in detail..."
+                    className="w-full px-3 py-2 text-sm rounded-md border border-input bg-background focus:outline-none focus:ring-1 focus:ring-ring resize-none"
+                  />
+                </div>
+                <button
+                  onClick={() => toast.success("Message sent! We'll respond within 24 hours.")}
+                  className="flex items-center gap-2 rounded-md bg-brand-600 px-4 py-2 text-xs font-semibold text-white hover:bg-brand-700 transition-colors"
+                >
+                  <Send className="h-3.5 w-3.5" />
+                  Send Message
+                </button>
+              </div>
+            </div>
+            <div className="rounded-xl border border-border bg-card p-4">
+              <p className="text-xs text-muted-foreground">
+                <Info className="h-3.5 w-3.5 inline mr-1 text-brand-600" />
+                Support hours: Monday–Friday, 9am–6pm GMT. Average response time: under 4 hours.
+              </p>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

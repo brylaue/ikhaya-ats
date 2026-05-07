@@ -1,14 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
-import {
-  ChevronLeft, Building2, MapPin, Globe, Mail, Phone,
-  Briefcase, Users, Star, TrendingUp, Clock, ExternalLink,
-  Plus, CheckCircle2, AlertCircle, Edit3, ClipboardList, Check,
-  X, Loader2,
-} from "lucide-react";
+import { ChevronLeft, Building2, MapPin, Globe, Mail, Phone, Briefcase, Users, Star, TrendingUp, Clock, ExternalLink, Plus, CircleCheck as CheckCircle2, CircleAlert as AlertCircle, CreditCard as Edit3, ClipboardList, Check, X, Loader as Loader2 } from "lucide-react";
 import { useCompany, useJobsByClient, useContacts, useTasks, usePlacementsByClient } from "@/lib/supabase/hooks";
 import type { DbContact, TaskRecord } from "@/lib/supabase/hooks";
 import { MsaPanel } from "@/components/clients/msa-panel";
@@ -220,7 +215,8 @@ function HealthScoreBadge({ score }: { score: number }) {
 const TABS = ["overview", "jobs", "contacts", "agreements", "tasks", "intelligence", "portal_audit"] as const;
 type Tab = typeof TABS[number];
 
-export default function ClientDetailPage({ params }: { params: { id: string } }) {
+export default function ClientDetailPage() {
+  const params = useParams<{ id: string }>();
   const router = useRouter();
   // US-316: scoped lookups instead of "load all then find"
   const { company, loading: companiesLoading } = useCompany(params.id);

@@ -12,7 +12,7 @@ import { checkCsrf }                 from "@/lib/csrf";
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const csrfError = checkCsrf(req);
   if (csrfError) return csrfError;

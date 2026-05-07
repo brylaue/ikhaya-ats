@@ -23,7 +23,7 @@ const serviceDb = () =>
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const csrfError = checkCsrf(req);
   if (csrfError) return csrfError;

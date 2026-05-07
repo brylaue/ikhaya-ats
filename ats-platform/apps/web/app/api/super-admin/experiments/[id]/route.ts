@@ -20,7 +20,7 @@ async function checkAdmin() {
   return user;
 }
 
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const u = await checkAdmin();
   if (!u) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
@@ -41,7 +41,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   return NextResponse.json({ experiment: data });
 }
 
-export async function DELETE(_req: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const u = await checkAdmin();
   if (!u) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 

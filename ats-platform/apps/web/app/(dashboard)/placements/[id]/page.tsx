@@ -1,12 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { useParams } from "next/navigation";
 import Link from "next/link";
-import {
-  ChevronLeft, BadgeCheck, DollarSign, Calendar, Building2,
-  Briefcase, User, FileText, CheckCircle2, Clock, AlertCircle,
-  CreditCard, Edit3, ExternalLink, TrendingUp,
-} from "lucide-react";
+import { ChevronLeft, BadgeCheck, DollarSign, Calendar, Building2, Briefcase, User, FileText, CircleCheck as CheckCircle2, Clock, CircleAlert as AlertCircle, CreditCard, CreditCard as Edit3, ExternalLink, TrendingUp } from "lucide-react";
 import { usePlacements, type PlacementRecord, type AgencyUser } from "@/lib/supabase/hooks";
 import { CommissionSplitsPanel } from "@/components/placements/commission-splits-panel";
 import { GuaranteePanel } from "@/components/placements/guarantee-panel";
@@ -114,7 +111,8 @@ function MarkPaidModal({
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
-export default function PlacementDetailPage({ params }: { params: { id: string } }) {
+export default function PlacementDetailPage() {
+  const params = useParams<{ id: string }>();
   const { placements, loading, markInvoiced, logPayment } = usePlacements();
   const placement = placements.find((p) => p.id === params.id);
   const [showPayModal, setShowPayModal] = useState(false);

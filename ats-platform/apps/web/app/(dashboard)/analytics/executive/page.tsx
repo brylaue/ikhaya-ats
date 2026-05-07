@@ -18,10 +18,7 @@
 
 import { useMemo } from "react";
 import Link from "next/link";
-import {
-  DollarSign, Users, Briefcase, TrendingUp, AlertTriangle,
-  CheckCircle2, ArrowUpRight, Star, Target, Activity,
-} from "lucide-react";
+import { DollarSign, Users, Briefcase, TrendingUp, TriangleAlert as AlertTriangle, CircleCheck as CheckCircle2, ArrowUpRight, Star, Target, Activity } from "lucide-react";
 import { cn, formatSalary } from "@/lib/utils";
 import { usePlacements, useJobs, useCompanies, useClientHealthScores, useRecruiterStats, useFeatureFlag } from "@/lib/supabase/hooks";
 import { FeatureGate } from "@/components/ui/feature-gate";
@@ -95,17 +92,17 @@ export default function ExecutiveDashboardPage() {
   const _90dStart = new Date(now.getTime() - 90 * 86400000);
 
   const kpis = useMemo(() => {
-    const ytd = placements.filter((p) => new Date(p.startDate || p.createdAt) >= ytdStart);
+    const ytd = placements.filter((p) => new Date(p.startDate || p.createdAt || p.placedAt) >= ytdStart);
     const prior90 = placements.filter((p) => {
-      const d = new Date(p.startDate || p.createdAt);
+      const d = new Date(p.startDate || p.createdAt || p.placedAt);
       const _180d = new Date(now.getTime() - 180 * 86400000);
       return d >= _180d && d < _90dStart;
     });
-    const cur90 = placements.filter((p) => new Date(p.startDate || p.createdAt) >= _90dStart);
+    const cur90 = placements.filter((p) => new Date(p.startDate || p.createdAt || p.placedAt) >= _90dStart);
 
-    const ytdRevenue = ytd.reduce((s, p) => s + (p.fee || 0), 0);
-    const cur90Rev   = cur90.reduce((s, p) => s + (p.fee || 0), 0);
-    const prior90Rev = prior90.reduce((s, p) => s + (p.fee || 0), 0);
+    const ytdRevenue = ytd.reduce((s, p) => s + (p.feeAmount || 0), 0);
+    const cur90Rev   = cur90.reduce((s, p) => s + (p.feeAmount || 0), 0);
+    const prior90Rev = prior90.reduce((s, p) => s + (p.feeAmount || 0), 0);
     const revDelta   = prior90Rev > 0 ? Math.round(((cur90Rev - prior90Rev) / prior90Rev) * 100) : 0;
 
     const activeJobs    = jobs.filter((j) => j.status === "active").length;
@@ -274,7 +271,7 @@ export default function ExecutiveDashboardPage() {
                       {i === 0 ? <Star className="h-3 w-3" /> : i + 1}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-foreground truncate">{r.name ?? "Recruiter"}</p>
+                      <p className="text-sm font-medium text-foreground truncate">{r.fullName ?? "Recruiter"}</p>
                     </div>
                     <div className="text-right shrink-0">
                       <p className="text-sm font-semibold text-foreground">{r.placements ?? 0}</p>

@@ -1,23 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useParams } from "next/navigation";
 import Link from "next/link";
-import {
-  FileText,
-  CheckCircle2,
-  PauseCircle,
-  XCircle,
-  ChevronDown,
-  ChevronUp,
-  Briefcase,
-  MapPin,
-  Clock,
-  Star,
-  ExternalLink,
-  DollarSign,
-  BarChart2,
-  ArrowRight,
-} from "lucide-react";
+import { FileText, CircleCheck as CheckCircle2, CirclePause as PauseCircle, Circle as XCircle, ChevronDown, ChevronUp, Briefcase, MapPin, Clock, Star, ExternalLink, DollarSign, ChartBar as BarChart2, ArrowRight } from "lucide-react";
 import { usePortalData } from "@/lib/supabase/hooks";
 import type { PortalSubmission } from "@/lib/supabase/hooks";
 import { PortalNotifications } from "@/components/portal/portal-notifications";
@@ -536,7 +522,8 @@ function ReqSummaryBanner({ submissions, decisions, jobTitle }: ReqSummaryBanner
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
-export default function ClientPortalPage({ params }: { params: { portalSlug: string } }) {
+export default function ClientPortalPage() {
+  const params = useParams<{ portalSlug: string }>();
   const { data, loading, notFound, saveDecision } = usePortalData(params.portalSlug);
   const [decisions, setDecisions] = useState<DecisionState>({});
   const [activeJobId, setActiveJobId] = useState<string | null>(null);

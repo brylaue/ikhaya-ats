@@ -22,7 +22,7 @@ import { checkCsrf } from "@/lib/csrf";
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   // US-326: erasure is irreversible — never accept cross-origin calls
   const csrfError = checkCsrf(req);

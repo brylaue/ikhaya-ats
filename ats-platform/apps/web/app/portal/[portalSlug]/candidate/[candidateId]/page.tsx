@@ -1,13 +1,9 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { useParams } from "next/navigation";
 import Link from "next/link";
-import {
-  ArrowLeft, Check, MapPin, Briefcase, Star,
-  Download, ExternalLink,
-  Building2, GraduationCap, Linkedin, Zap,
-  ThumbsUp, ThumbsDown, HelpCircle, Send, Loader2, ClipboardList,
-} from "lucide-react";
+import { ArrowLeft, Check, MapPin, Briefcase, Star, Download, ExternalLink, Building2, GraduationCap, Link as Linkedin, Zap, ThumbsUp, ThumbsDown, Circle as HelpCircle, Send, Loader as Loader2, ClipboardList } from "lucide-react";
 import { usePortalData } from "@/lib/supabase/hooks";
 import { cn, getInitials, generateAvatarColor } from "@/lib/utils";
 import { toast } from "sonner";
@@ -463,13 +459,10 @@ function DecisionPanel({
 
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
-interface PageProps {
-  params: { portalSlug: string; candidateId: string };
-}
-
 const DRAFT_KEY = (candidateId: string) => `portal-feedback-draft-${candidateId}`;
 
-export default function PortalCandidatePage({ params }: PageProps) {
+export default function PortalCandidatePage() {
+  const params = useParams<{ portalSlug: string; candidateId: string }>();
   const { data, loading, notFound } = usePortalData(params.portalSlug);
 
   const [decision, setDecision]   = useState<ClientDecision | null>(null);

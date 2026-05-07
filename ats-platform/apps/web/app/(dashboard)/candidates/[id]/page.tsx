@@ -1,13 +1,9 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { useParams } from "next/navigation";
 import Link from "next/link";
-import {
-  Mail, Phone, Linkedin, MapPin, ChevronLeft, FileText,
-  Briefcase, Star, Send, CheckCircle2, Clock, Download,
-  Building2, Calendar, ExternalLink, GraduationCap, Award,
-  Sparkles, FileSignature, Kanban, Loader2, TrendingUp, Plus,
-} from "lucide-react";
+import { Mail, Phone, Link as Linkedin, MapPin, ChevronLeft, FileText, Briefcase, Star, Send, CircleCheck as CheckCircle2, Clock, Download, Building2, Calendar, ExternalLink, GraduationCap, Award, Sparkles, Signature as FileSignature, Kanban, Loader as Loader2, TrendingUp, Plus } from "lucide-react";
 import { useCandidate, useActivities, useTasks, useWorkHistory, useEducation, useEmailTimeline, useEmailConflicts } from "@/lib/supabase/hooks";
 import type { ActivityRecord, TaskRecord } from "@/lib/supabase/hooks";
 import { cn, getInitials, generateAvatarColor, formatSalary, STATUS_LABELS, STATUS_COLORS } from "@/lib/utils";
@@ -165,7 +161,8 @@ function MatchingJobsPanel({ candidateId }: { candidateId: string }) {
 const MAIN_TABS = ["activity", "pipeline", "resume", "tasks", "scorecards", "offers"] as const;
 type MainTab = typeof MAIN_TABS[number];
 
-export default function CandidatePage({ params }: { params: { id: string } }) {
+export default function CandidatePage() {
+  const params = useParams<{ id: string }>();
   const { candidate, loading, notFound }           = useCandidate(params.id);
   const { activities: rawActivities, addActivity } = useActivities(params.id, "candidate");
   const { tasks: rawTasks, addTask, toggleTask, deleteTask } = useTasks(params.id, "candidate");
@@ -605,7 +602,7 @@ export default function CandidatePage({ params }: { params: { id: string } }) {
             currentCompany:  candidate.currentCompany ?? undefined,
             linkedinUrl:     candidate.linkedinUrl ?? undefined,
             summary:         candidate.summary ?? undefined,
-            skills:          Array.isArray(candidate.skills) ? candidate.skills.map((s: string | { skill: string }) => typeof s === "string" ? s : s.skill) : undefined,
+            skills:          Array.isArray(candidate.skills) ? (candidate.skills as unknown as Array<{skill:{name:string}}|string>).map((s) => typeof s === "string" ? s : s.skill.name) : undefined,
           } satisfies ResumeCandidate}
           onClose={() => setBrandedPackOpen(false)}
         />

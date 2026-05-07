@@ -7,7 +7,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { AlertTriangle, CheckCircle2, Users } from "lucide-react";
+import { TriangleAlert as AlertTriangle, CircleCheck as CheckCircle2, Users } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { useFeatureFlag } from "@/lib/supabase/hooks";
 import { FeatureGate } from "@/components/ui/feature-gate";
@@ -53,11 +53,10 @@ export default function DeiAnalyticsPage() {
 
         const maxRate = Math.max(...rates.map(r => r.rate), 0.001);
 
-        return rates.map(r => ({
-          ...r,
-          ratio: r.rate / maxRate,
-          flagged: r.ratio < 0.8 && r.apps >= 5, // four-fifths rule; min 5 applicants
-        }));
+        return rates.map(r => {
+          const ratio = r.rate / maxRate;
+          return { ...r, ratio, flagged: ratio < 0.8 && r.apps >= 5 };
+        });
       }
 
       setGenderData(calcRates(eeo ?? [], "gender"));

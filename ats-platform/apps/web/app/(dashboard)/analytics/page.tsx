@@ -1,17 +1,12 @@
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
-import {
-  TrendingUp, TrendingDown, Users, CheckCircle, DollarSign,
-  Send, Star, Clock, ArrowUpRight, ArrowDownRight, Minus,
-  Calendar, ChevronDown, Briefcase, BarChart3, Mail, LayoutDashboard,
-} from "lucide-react";
+import { TrendingUp, TrendingDown, Users, CircleCheck as CheckCircle, DollarSign, Send, Star, Clock, ArrowUpRight, ArrowDownRight, Minus, Calendar, ChevronDown, Briefcase, ChartBar as BarChart3, Mail, LayoutDashboard } from "lucide-react";
 import Link from "next/link";
 import {
   BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid,
   Tooltip, ResponsiveContainer, Legend,
 } from "recharts";
-import Link from "next/link";
 import { cn, formatSalary, generateAvatarColor, getInitials } from "@/lib/utils";
 import { useJobs, useCompanies, useCandidates, usePlacements, useFunnelCounts, useRecruiterStats, usePermissions, useFeatureFlag } from "@/lib/supabase/hooks";
 import { FeatureGate } from "@/components/ui/feature-gate";
@@ -188,7 +183,7 @@ export default function AnalyticsPage() {
         ? Math.round(
             clientPlacements.reduce((s, p) => {
               if (!p.placedAt) return s;
-              const job = clientJobs.find((j) => j.id === (p as Record<string, string>)["jobId"]);
+              const job = clientJobs.find((j) => j.id === (p as unknown as Record<string, string>)["jobId"]);
               if (!job) return s;
               return s + Math.floor((new Date(p.placedAt).getTime() - new Date(job.createdAt).getTime()) / 86_400_000);
             }, 0) / clientPlacements.length

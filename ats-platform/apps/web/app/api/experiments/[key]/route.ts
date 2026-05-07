@@ -15,7 +15,7 @@ import { resolveExperiment } from "@/lib/experiments/assign";
 
 export async function GET(
   _req: NextRequest,
-  { params }: { params: { key: string } },
+  { params }: { params: Promise<{ key: string }> },
 ) {
   const supabase = await createClient();
   const ctx = await getAgencyContext(supabase);

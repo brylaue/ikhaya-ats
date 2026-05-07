@@ -18,7 +18,7 @@ export type ApplicationStatus =
   | "placed"
   | "not_progressing";
 
-export type JobStatus = "draft" | "active" | "on_hold" | "filled" | "cancelled";
+export type JobStatus = "draft" | "active" | "on_hold" | "filled" | "cancelled" | "closed";
 export type JobType = "permanent" | "contract" | "temp" | "interim";
 
 export type ClientDecision = "advance" | "hold" | "pass";
@@ -60,6 +60,7 @@ export interface Candidate {
   desiredSalary?: number;
   salaryCurrency?: string;
   openToRemote?: boolean;
+  yearsExperience?: number;
   lastActivityAt?: string;
   createdAt: string;
   updatedAt: string;

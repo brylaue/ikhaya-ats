@@ -7,7 +7,8 @@
 "use client";
 
 import { useState } from "react";
-import { Shield, Mail, CheckCircle2, ChevronDown } from "lucide-react";
+import { useParams } from "next/navigation";
+import { Shield, Mail, CircleCheck as CheckCircle2, ChevronDown } from "lucide-react";
 
 const REQUEST_TYPES = [
   { value: "access",        label: "Access — see what data we hold about you" },
@@ -18,7 +19,8 @@ const REQUEST_TYPES = [
   { value: "objection",     label: "Objection — object to processing" },
 ];
 
-export default function PrivacyPortalPage({ params }: { params: { agencySlug: string } }) {
+export default function PrivacyPortalPage() {
+  const params = useParams<{ agencySlug: string }>();
   const [step, setStep] = useState<"form" | "submitted" | "check">("form");
   const [form, setForm] = useState({ email: "", requestType: "access", additionalInfo: "" });
   const [statusToken, setStatusToken] = useState("");

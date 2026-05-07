@@ -3,11 +3,7 @@
 import { useState, useCallback, useRef } from "react";
 import type { CandidateSearchResult } from "@/app/api/candidates/search/route";
 import { useRouter } from "next/navigation";
-import {
-  Plus, Search, Users, SlidersHorizontal, Bell, BellOff,
-  BookmarkPlus, Bookmark, X, ChevronDown, Check, Upload, Mail, Download, GitMerge,
-  Sparkles, Loader2, Code2, Copy, ChevronRight,
-} from "lucide-react";
+import { Plus, Search, Users, SlidersHorizontal, Bell, BellOff, BookmarkPlus, Bookmark, X, ChevronDown, Check, Upload, Mail, Download, GitMerge, Sparkles, Loader as Loader2, Code as Code2, Copy, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { CandidateTable } from "@/components/candidates/candidate-table";
 import { useCandidates, usePendingEmailMatches, useSavedSearches, useTags, useDuplicates, type NewCandidateInput, type SavedSearch } from "@/lib/supabase/hooks";
@@ -747,16 +743,19 @@ export default function CandidatesPage() {
                 data={aiResults.map((r) => ({
                   id:             r.id,
                   fullName:       r.fullName,
+                  firstName:      r.fullName?.split(" ")[0] ?? "",
+                  lastName:       r.fullName?.split(" ").slice(1).join(" ") ?? "",
                   currentTitle:   r.currentTitle ?? undefined,
                   currentCompany: r.currentCompany ?? undefined,
-                  location:       r.location ?? undefined,
+                  location:       r.location ? { city: r.location } : undefined,
                   status:         (r.status ?? "active") as "active" | "passive" | "placed" | "do_not_contact",
-                  skills:         r.skills.map((s) => ({ id: s, name: s, color: "#6366f1" })),
+                  skills:         r.skills.map((s) => ({ skillId: s, skill: { id: s, name: s, normalizedName: s }, source: "parsed" as const })),
                   tags:           [],
                   source:         undefined,
-                  email:          undefined,
+                  email:          "",
                   phone:          undefined,
-                  createdAt:      undefined,
+                  createdAt:      new Date().toISOString(),
+                  updatedAt:      new Date().toISOString(),
                   matchScore:     r.similarity,
                 }))}
                 onCompare={(ids) => router.push(`/candidates/compare?ids=${ids.join(",")}`)}

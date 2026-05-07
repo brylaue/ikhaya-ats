@@ -342,6 +342,7 @@ export interface DbCompany {
   arr?: number;
   portal_slug?: string;
   logo_url?: string;
+  isArchived?: boolean;
 }
 
 export interface NewCompanyInput {
@@ -561,6 +562,7 @@ export interface PlacementRecord {
   clientId: string;
   startDate?: string;
   placedAt: string;
+  createdAt?: string;
   feeAmount: number;
   currency: string;
   feeType: "percentage" | "flat";
@@ -912,84 +914,7 @@ export function useRecentActivities(limit = 20) {
   return { activities, loading, refresh };
 }
 
-// ─── useSavedSearches ─────────────────────────────────────────────────────────
-
-export interface SavedSearchRecord {
-  id: string;
-  name: string;
-  query: string;
-  filters: Record<string, unknown>;
-  resultCount: number;
-  createdAt: string;
-}
-
-export function useSavedSearches() {
-  const [savedSearches, setSavedSearches] = useState<SavedSearchRecord[]>([]);
-  const [loading, setLoading]             = useState(true);
-
-  useEffect(() => {
-    const supabase = createClient();
-    supabase
-      .from("saved_searches")
-      .select("id, name, query, filters, result_count, created_at")
-      .order("created_at", { ascending: false })
-      .then(({ data }) => {
-        setSavedSearches((data ?? []).map((r) => ({
-          id:          r.id,
-          name:        r.name,
-          query:       r.query,
-          filters:     (r.filters as Record<string, unknown>) ?? {},
-          resultCount: r.result_count ?? 0,
-          createdAt:   r.created_at,
-        })));
-        setLoading(false);
-      });
-  }, []);
-
-  async function saveSearch(
-    name: string,
-    query: string,
-    filters: Record<string, unknown>,
-    resultCount: number
-  ): Promise<SavedSearchRecord | null> {
-    const supabase = createClient();
-    const ctx = await getAgencyContext(supabase);
-    if (!ctx) return null;
-
-    const { data, error } = await supabase
-      .from("saved_searches")
-      .insert({
-        agency_id:    ctx.agencyId,
-        user_id:      ctx.userId,
-        name,
-        query,
-        filters,
-        result_count: resultCount,
-      })
-      .select("id, name, query, filters, result_count, created_at")
-      .single();
-
-    if (error || !data) { console.error(error); return null; }
-    const record: SavedSearchRecord = {
-      id:          data.id,
-      name:        data.name,
-      query:       data.query,
-      filters:     (data.filters as Record<string, unknown>) ?? {},
-      resultCount: data.result_count ?? 0,
-      createdAt:   data.created_at,
-    };
-    setSavedSearches((prev) => [record, ...prev]);
-    return record;
-  }
-
-  async function deleteSearch(id: string): Promise<void> {
-    const supabase = createClient();
-    await supabase.from("saved_searches").delete().eq("id", id);
-    setSavedSearches((prev) => prev.filter((s) => s.id !== id));
-  }
-
-  return { savedSearches, loading, saveSearch, deleteSearch };
-}
+// ─── useSavedSearches — placeholder until second definition below ─────────────
 
 // ─── useWorkHistory ───────────────────────────────────────────────────────────
 
@@ -3024,7 +2949,16 @@ export function useSavedSearches() {
     await supabase.from("saved_searches").delete().eq("id", id);
   }
 
-  return { searches, loading, createSearch, toggleAlert, deleteSearch };
+  async function saveSearch(
+    name: string,
+    query: string,
+    _filters: Record<string, unknown>,
+    resultCount: number
+  ): Promise<SavedSearch | null> {
+    return createSearch({ name, query, statusFilter: "", sourceFilter: "", alertsEnabled: false, alertFrequency: "daily", resultCount });
+  }
+
+  return { searches, savedSearches: searches, loading, createSearch, saveSearch, toggleAlert, deleteSearch };
 }
 
 // ── useAuditLog ───────────────────────────────────────────────────────────────
@@ -3738,78 +3672,6 @@ export function useScorecardTemplates(jobId?: string | null) {
   return { templates, loading, createTemplate, updateTemplate, deleteTemplate };
 }
 
-/** Hook: load/manage scorecard submissions for a candidate (across all jobs, or scoped to one) */
-export function useScorecardSubmissions(candidateId: string | null | undefined, jobId?: string | null) {
-  const supabase = createClient();
-  const [submissions, setSubmissions] = useState<ScorecardSubmission[]>([]);
-  const [loading,     setLoading]     = useState(true);
-
-  useEffect(() => {
-    if (!candidateId) { setLoading(false); return; }
-    let q = supabase
-      .from("scorecard_submissions")
-      .select("*, users(full_name)")
-      .eq("candidate_id", candidateId)
-      .order("created_at", { ascending: false });
-    if (jobId) q = q.eq("job_id", jobId);
-    q.then(({ data }) => {
-      setSubmissions((data ?? []).map(mapSubmission));
-      setLoading(false);
-    });
-  }, [candidateId, jobId]);
-
-  async function upsertSubmission(input: {
-    templateId?:    string | null;
-    jobId?:         string | null;
-    stage?:         string | null;
-    overallRating?: number | null;
-    recommendation?: ScorecardRecommendation | null;
-    ratings?:       Record<string, ScorecardRating>;
-    notes?:         string | null;
-    submit?:        boolean;
-  }) {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user || !candidateId) return { error: "Not authenticated" };
-    const { data: agencyRow } = await supabase.from("users").select("agency_id").eq("id", user.id).single();
-    const payload = {
-      agency_id:      agencyRow?.agency_id,
-      template_id:    input.templateId ?? null,
-      candidate_id:   candidateId,
-      job_id:         input.jobId ?? null,
-      interviewer_id: user.id,
-      stage:          input.stage ?? null,
-      overall_rating: input.overallRating ?? null,
-      recommendation: input.recommendation ?? null,
-      ratings:        input.ratings ?? {},
-      notes:          input.notes ?? null,
-      submitted_at:   input.submit ? new Date().toISOString() : null,
-    };
-    const { data, error } = await supabase
-      .from("scorecard_submissions")
-      .upsert(payload, { onConflict: "candidate_id,job_id,interviewer_id,stage" })
-      .select("*, users(full_name)")
-      .single();
-    if (error) return { error: error.message };
-    const mapped = mapSubmission(data);
-    setSubmissions((prev) => {
-      const idx = prev.findIndex((s) => s.id === mapped.id);
-      return idx >= 0 ? prev.map((s, i) => i === idx ? mapped : s) : [mapped, ...prev];
-    });
-    return { submission: mapped };
-  }
-
-  async function deleteSubmission(id: string) {
-    await supabase.from("scorecard_submissions").delete().eq("id", id);
-    setSubmissions((prev) => prev.filter((s) => s.id !== id));
-  }
-
-  // Aggregated average rating across all submissions
-  const avgRating = submissions.length
-    ? submissions.reduce((s, x) => s + (x.overallRating ?? 0), 0) / submissions.filter((x) => x.overallRating != null).length
-    : null;
-
-  return { submissions, loading, upsertSubmission, deleteSubmission, avgRating };
-}
 
 // ─── Offer Letters ────────────────────────────────────────────────────────────
 
@@ -4847,53 +4709,6 @@ export interface ScorecardRating {
   note?: string;
 }
 
-export interface ScorecardCriterion {
-  id:          string;
-  label:       string;
-  description?: string;
-  weight?:     number;
-  scale?:      number;
-}
-
-export interface ScorecardTemplate {
-  id:          string;
-  agencyId:    string;
-  jobId:       string | null;
-  name:        string;
-  description: string | null;
-  criteria:    ScorecardCriterion[];
-  createdAt:   string;
-}
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function mapTemplate(row: any): ScorecardTemplate {
-  return {
-    id:          row.id,
-    agencyId:    row.agency_id,
-    jobId:       row.job_id ?? null,
-    name:        row.name,
-    description: row.description ?? null,
-    criteria:    (row.criteria ?? []) as ScorecardCriterion[],
-    createdAt:   row.created_at,
-  };
-}
-
-export function useScorecardTemplates(jobId?: string | null) {
-  const [templates, setTemplates] = useState<ScorecardTemplate[]>([]);
-  const [loading, setLoading]     = useState(true);
-
-  useEffect(() => {
-    const supabase = createClient();
-    let q = supabase.from("scorecard_templates").select("*").order("name");
-    if (jobId) q = (q as ReturnType<typeof q.or>).or(`job_id.eq.${jobId},job_id.is.null`) as typeof q;
-    q.then(({ data }) => {
-      setTemplates((data ?? []).map(mapTemplate));
-      setLoading(false);
-    });
-  }, [jobId]);
-
-  return { templates, loading };
-}
 
 interface UpsertScorecardInput {
   templateId:     string | null;
@@ -5325,6 +5140,32 @@ export interface AgencyUser {
   email?:     string;
   avatarUrl?: string;
   role?:      string;
+}
+
+export function useAgencyUsers() {
+  const [users, setUsers]   = useState<AgencyUser[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getUser().then(async ({ data: { user } }) => {
+      if (!user) { setLoading(false); return; }
+      const { data: row } = await supabase.from("users").select("agency_id").eq("id", user.id).maybeSingle();
+      if (!row?.agency_id) { setLoading(false); return; }
+      const { data } = await supabase
+        .from("users")
+        .select("id, full_name, email, avatar_url, role")
+        .eq("agency_id", row.agency_id)
+        .order("full_name");
+      setUsers((data ?? []).map((u) => ({
+        id: u.id, fullName: u.full_name ?? u.email ?? "Unknown",
+        email: u.email ?? undefined, avatarUrl: u.avatar_url ?? undefined, role: u.role ?? undefined,
+      })));
+      setLoading(false);
+    });
+  }, []);
+
+  return { users, loading };
 }
 
 /**

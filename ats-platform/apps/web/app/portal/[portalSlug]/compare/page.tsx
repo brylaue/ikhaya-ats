@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useParams } from "next/navigation";
 import { MapPin, Star, Zap } from "lucide-react";
 import { usePortalData } from "@/lib/supabase/hooks";
 import { cn, getInitials, generateAvatarColor } from "@/lib/utils";
@@ -8,11 +9,8 @@ import { toast } from "sonner";
 import type { ClientDecision } from "@/types";
 import Link from "next/link";
 
-interface PageProps {
-  params: { portalSlug: string };
-}
-
-export default function ComparePage({ params }: PageProps) {
+export default function ComparePage() {
+  const params = useParams<{ portalSlug: string }>();
   const { data, loading, notFound } = usePortalData(params.portalSlug);
   const [decisions, setDecisions] = useState<Record<string, ClientDecision>>({});
 

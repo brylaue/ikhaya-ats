@@ -31,7 +31,7 @@ function sign(payload: string): string {
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const csrfError = checkCsrf(req);
   if (csrfError) return csrfError;
@@ -90,7 +90,7 @@ export async function POST(
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const csrfError = checkCsrf(req);
   if (csrfError) return csrfError;

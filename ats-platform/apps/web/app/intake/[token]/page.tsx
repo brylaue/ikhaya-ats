@@ -10,7 +10,8 @@
  */
 
 import { useState, useEffect } from "react";
-import { Loader2, CheckCircle2, AlertCircle, Send, Building2 } from "lucide-react";
+import { useParams } from "next/navigation";
+import { Loader as Loader2, CircleCheck as CheckCircle2, CircleAlert as AlertCircle, Send, Building2 } from "lucide-react";
 
 interface IntakeMeta {
   id:        string;
@@ -39,7 +40,8 @@ const INPUT = "w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:
 const SELECT = `${INPUT} bg-white`;
 const TEXTAREA = `${INPUT} resize-none`;
 
-export default function IntakePage({ params }: { params: { token: string } }) {
+export default function IntakePage() {
+  const params = useParams<{ token: string }>();
   const [meta,       setMeta]       = useState<IntakeMeta | null>(null);
   const [loading,    setLoading]    = useState(true);
   const [error,      setError]      = useState<string | null>(null);

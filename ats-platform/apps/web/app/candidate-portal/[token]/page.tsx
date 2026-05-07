@@ -11,18 +11,8 @@
  */
 
 import { useState, useEffect } from "react";
-import {
-  CheckCircle2,
-  Clock,
-  BookOpen,
-  ExternalLink,
-  ChevronRight,
-  Loader2,
-  AlertCircle,
-  Briefcase,
-  Building2,
-  FileText,
-} from "lucide-react";
+import { useParams } from "next/navigation";
+import { CircleCheck as CheckCircle2, Clock, BookOpen, ExternalLink, ChevronRight, Loader as Loader2, CircleAlert as AlertCircle, Briefcase, Building2, FileText } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -162,7 +152,8 @@ function PrepCard({ item }: { item: PrepItem }) {
 
 // ─── Main page ────────────────────────────────────────────────────────────────
 
-export default function CandidatePortalPage({ params }: { params: { token: string } }) {
+export default function CandidatePortalPage() {
+  const params = useParams<{ token: string }>();
   const [data,    setData]    = useState<PortalData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error,   setError]   = useState<string | null>(null);

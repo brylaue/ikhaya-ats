@@ -1,13 +1,9 @@
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
+import { useParams } from "next/navigation";
 import Link from "next/link";
-import {
-  Settings, Plus, MapPin, DollarSign, Calendar, Users,
-  TrendingUp, ChevronLeft, ExternalLink, BarChart2, CheckSquare,
-  ListChecks, Loader2, Sparkles, Zap, Star, Mail, Linkedin,
-  ChevronDown, ChevronUp, SlidersHorizontal, CheckCircle2, Shield,
-} from "lucide-react";
+import { Settings, Plus, MapPin, DollarSign, Calendar, Users, TrendingUp, ChevronLeft, ExternalLink, ChartBar as BarChart2, SquareCheck as CheckSquare, ListChecks, Loader as Loader2, Sparkles, Zap, Star, Mail, Link as Linkedin, ChevronDown, ChevronUp, SlidersHorizontal, CircleCheck as CheckCircle2, Shield } from "lucide-react";
 import { useJob, useCandidates, useTasks, useInterviewPlan, useJobRecruiters, useAiMatchScores } from "@/lib/supabase/hooks";
 import type { TaskRecord } from "@/lib/supabase/hooks";
 import { KanbanBoard } from "@/components/pipeline/kanban-board";
@@ -428,7 +424,8 @@ function MatchTab({ scoredCandidates, jobTitle, onAddToPipeline, aiScores, onReq
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
-export default function JobDetailPage({ params }: { params: { id: string } }) {
+export default function JobDetailPage() {
+  const params = useParams<{ id: string }>();
   const { job, stages: dbStages, entries, loading, notFound, moveEntry, addEntry } = useJob(params.id);
   const { plan: savedInterviewPlan, savePlan: persistInterviewPlan } = useInterviewPlan(params.id);
   const { recruiters } = useJobRecruiters(params.id);

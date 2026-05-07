@@ -21,7 +21,7 @@ const serviceDb = () =>
 
 export async function GET(
   _req: NextRequest,
-  { params }: { params: { token: string } }
+  { params }: { params: Promise<{ token: string }> }
 ) {
   const db = serviceDb();
 

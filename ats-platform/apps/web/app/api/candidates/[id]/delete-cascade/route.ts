@@ -15,7 +15,7 @@ import { checkCsrf } from "@/lib/csrf";
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   // US-326: cross-origin delete guard
   const csrfError = checkCsrf(req);

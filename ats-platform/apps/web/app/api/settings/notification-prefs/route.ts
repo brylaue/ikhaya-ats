@@ -18,7 +18,7 @@ import { checkCsrf }                 from "@/lib/csrf";
 export type NotificationChannelPref = { email: boolean; inApp: boolean };
 export type NotificationPrefsMap    = Record<string, NotificationChannelPref>;
 
-export const NOTIFICATION_TYPES = [
+const NOTIFICATION_TYPES = [
   "new_candidate",
   "stage_change",
   "client_feedback",

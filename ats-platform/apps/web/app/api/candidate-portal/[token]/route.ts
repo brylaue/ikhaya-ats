@@ -25,9 +25,9 @@ const err = (msg: string, status = 404) =>
 
 export async function GET(
   _req: NextRequest,
-  { params }: { params: { token: string } }
+  { params }: { params: Promise<{ token: string }> }
 ) {
-  const { token } = params;
+  const { token } = await params;
   if (!token || token.length < 32) return err("Invalid token", 400);
 
   const db = svc();
