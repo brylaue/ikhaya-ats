@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Portal - InsuranceX</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        * {
+            font-family: Inter, system-ui, -apple-system, sans-serif;
+        }
+        body {
+            background-color: #F8FAFC;
+        }
+        .header {
+            background: white;
+            border-bottom: 1px solid #E2E8F0;
+            padding: 24px 48px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 32px;
+        }
+        .logo {
+            width: 40px;
+            height: 40px;
+            background-color: #0EA5E9;
+            border-radius: 8px;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .header-text {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .header-text h1 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #111827;
+        }
+        .header-text p {
+            font-size: 14px;
+            color: #6B7280;
+        }
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .content-area {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 48px 24px;
+        }
+        .search-list {
+            background: white;
+            border: 1px solid #E2E8F0;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 32px;
+        }
+        .search-item {
+            padding: 24px;
+            border-bottom: 1px solid #E2E8F0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: background-color 0.2s;
+            cursor: pointer;
+        }
+        .search-item:last-child {
+            border-bottom: none;
+        }
+        .search-item:hover {
+            background-color: #F8FAFC;
+        }
+        .search-info {
+            flex-grow: 1;
+        }
+        .search-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 8px;
+        }
+        .search-meta {
+            display: flex;
+            gap: 16px;
+            font-size: 13px;
+            color: #6B7280;
+        }
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            background-color: #FEF3C7;
+            color: #92400E;
+        }
+        .candidate-card {
+            background: white;
+            border: 1px solid #E2E8F0;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+        .candidate-header {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #F1F5F9;
+        }
+        .candidate-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 8px;
+            background-color: #0EA5E9;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+        .candidate-info h2 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 4px;
+        }
+        .candidate-title {
+            font-size: 14px;
+            color: #0EA5E9;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+        .recruiter-headline {
+            font-size: 13px;
+            color: #6B7280;
+            line-height: 1.5;
+        }
+        .highlights {
+            background-color: #F8FAFC;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+        .highlights h3 {
+            font-size: 13px;
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 12px;
+        }
+        .highlights ul {
+            list-style: none;
+            padding: 0;
+        }
+        .highlights li {
+            font-size: 13px;
+            color: #374151;
+            padding: 6px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+        .highlights li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #0EA5E9;
+            font-weight: bold;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: space-between;
+        }
+        .decision-btn {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid #E2E8F0;
+            border-radius: 8px;
+            background: white;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .decision-btn:hover {
+            background-color: #F1F5F9;
+        }
+        .decision-btn.advance {
+            background-color: #DCFCE7;
+            border-color: #16A34A;
+            color: #166534;
+        }
+        .decision-btn.advance:hover {
+            background-color: #BBFBDC;
+        }
+        .decision-btn.hold {
+            background-color: #FEF3C7;
+            border-color: #D97706;
+            color: #92400E;
+        }
+        .decision-btn.hold:hover {
+            background-color: #FDE68A;
+        }
+        .decision-btn.pass {
+            background-color: #FECACA;
+            border-color: #DC2626;
+            color: #7F1D1D;
+        }
+        .decision-btn.pass:hover {
+            background-color: #FCA5A5;
+        }
+        .secondary-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+        .secondary-btn {
+            padding: 10px 16px;
+            border: 1px solid #E2E8F0;
+            border-radius: 8px;
+            background: white;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #6B7280;
+        }
+        .secondary-btn:hover {
+            background-color: #F8FAFC;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <div class="header">
+        <div class="header-brand">
+            <div class="logo">IX</div>
+            <div class="header-text">
+                <h1>Talent Submissions</h1>
+                <p>InsuranceX Recruitment Portal</p>
+            </div>
+        </div>
+        <div class="header-actions">
+            <button style="display: flex; align-items: center; gap: 8px; background: none; border: none; color: #6B7280; cursor: pointer; font-size: 14px;">
+                <i data-lucide="help-circle" style="width: 18px; height: 18px;"></i>
+                Help
+            </button>
+            <button style="display: flex; align-items: center; gap: 8px; background: none; border: none; color: #6B7280; cursor: pointer;">
+                <i data-lucide="user" style="width: 18px; height: 18px;"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Content -->
+    <div class="content-area">
+        <div style="margin-bottom: 48px;">
+            <h2 style="font-size: 24px; font-weight: 600; color: #111827; margin-bottom: 16px;">Open Positions</h2>
+            <p style="font-size: 14px; color: #6B7280;">Review and provide feedback on candidates submitted for your current searches.</p>
+        </div>
+
+        <!-- Searches List -->
+        <div class="search-list">
+            <div class="search-item">
+                <div class="search-info">
+                    <div class="search-title">Head of Product</div>
+                    <div class="search-meta">
+                        <span><strong>8</strong> candidates submitted</span>
+                        <span>•</span>
+                        <span><strong>3</strong> awaiting your review</span>
+                    </div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 16px;">
+                    <span class="badge">3 Unreviewed</span>
+                    <i data-lucide="chevron-right" style="width: 20px; height: 20px; color: #6B7280;"></i>
+                </div>
+            </div>
+            <div class="search-item">
+                <div class="search-info">
+                    <div class="search-title">Senior Data Analyst</div>
+                    <div class="search-meta">
+                        <span><strong>5</strong> candidates submitted</span>
+                        <span>•</span>
+                        <span><strong>All reviewed</strong></span>
+                    </div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 16px;">
+                    <span style="font-size: 13px; color: #6B7280;">All reviewed</span>
+                    <i data-lucide="chevron-right" style="width: 20px; height: 20px; color: #6B7280;"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Selected Position Details -->
+        <div style="margin-bottom: 32px;">
+            <h2 style="font-size: 18px; font-weight: 600; color: #111827; margin-bottom: 24px;">Head of Product — Candidates</h2>
+
+            <!-- Candidate Card 1 -->
+            <div class="candidate-card">
+                <div class="candidate-header">
+                    <div class="candidate-avatar">AJ</div>
+                    <div class="candidate-info">
+                        <h2>Alex Johnson</h2>
+                        <div class="candidate-title">Former Head of Product at TechCorp</div>
+                        <div class="recruiter-headline">8+ years leading product teams. Built and scaled two SaaS products to $10M+ ARR. Deep expertise in fintech and enterprise software. Strong communicator and strategic thinker.</div>
+                    </div>
+                </div>
+
+                <div class="highlights">
+                    <h3>Key Highlights</h3>
+                    <ul>
+                        <li>Led product strategy for 50+ person cross-functional teams</li>
+                        <li>Increased product adoption by 40% through data-driven roadmap prioritization</li>
+                        <li>Hands-on with analytics, customer discovery, and technical roadmap planning</li>
+                        <li>MBA from Stanford GSB, BS Computer Science from Berkeley</li>
+                    </ul>
+                </div>
+
+                <div style="margin-bottom: 20px; display: flex; gap: 12px;">
+                    <button class="secondary-btn">
+                        <i data-lucide="download" style="width: 14px; height: 14px;"></i>
+                        Download Resume
+                    </button>
+                    <button class="secondary-btn">
+                        <i data-lucide="video" style="width: 14px; height: 14px;"></i>
+                        Watch Video
+                    </button>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="decision-btn advance">
+                        <i data-lucide="check" style="width: 18px; height: 18px;"></i>
+                        Advance
+                    </button>
+                    <button class="decision-btn hold">
+                        <i data-lucide="pause" style="width: 18px; height: 18px;"></i>
+                        Hold
+                    </button>
+                    <button class="decision-btn pass">
+                        <i data-lucide="x" style="width: 18px; height: 18px;"></i>
+                        Pass
+                    </button>
+                </div>
+            </div>
+
+            <!-- Candidate Card 2 -->
+            <div class="candidate-card">
+                <div class="candidate-header">
+                    <div class="candidate-avatar" style="background-color: #06B6D4;">MC</div>
+                    <div class="candidate-info">
+                        <h2>Morgan Chen</h2>
+                        <div class="candidate-title">Product Manager at InsuranceX (currently internal candidate)</div>
+                        <div class="recruiter-headline">5 years in product management. Proven track record growing user engagement metrics. Deep understanding of InsuranceX business model and systems. Ready for promotion to Head of Product role.</div>
+                    </div>
+                </div>
+
+                <div class="highlights">
+                    <h3>Key Highlights</h3>
+                    <ul>
+                        <li>Grew active users 35% in 12 months through feature optimization</li>
+                        <li>Led successful product pivot to new market segment</li>
+                        <li>Established quarterly OKR process and metrics dashboards</li>
+                        <li>BS Business Administration from Northwestern, Product certification from Reforge</li>
+                    </ul>
+                </div>
+
+                <div style="margin-bottom: 20px; display: flex; gap: 12px;">
+                    <button class="secondary-btn">
+                        <i data-lucide="download" style="width: 14px; height: 14px;"></i>
+                        Download Resume
+                    </button>
+                    <button class="secondary-btn">
+                        <i data-lucide="video" style="width: 14px; height: 14px;"></i>
+                        Watch Video
+                    </button>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="decision-btn advance">
+                        <i data-lucide="check" style="width: 18px; height: 18px;"></i>
+                        Advance
+                    </button>
+                    <button class="decision-btn hold">
+                        <i data-lucide="pause" style="width: 18px; height: 18px;"></i>
+                        Hold
+                    </button>
+                    <button class="decision-btn pass">
+                        <i data-lucide="x" style="width: 18px; height: 18px;"></i>
+                        Pass
+                    </button>
+                </div>
+            </div>
+
+            <!-- Candidate Card 3 -->
+            <div class="candidate-card">
+                <div class="candidate-header">
+                    <div class="candidate-avatar" style="background-color: #F59E0B;">JS</div>
+                    <div class="candidate-info">
+                        <h2>Jordan Smith</h2>
+                        <div class="candidate-title">VP Product at FinNext</div>
+                        <div class="recruiter-headline">10 years of product leadership. Founded and exited one startup. Experience scaling products from 0 to $50M+ ARR. Proven ability to work with technical teams and enterprise customers.</div>
+                    </div>
+                </div>
+
+                <div class="highlights">
+                    <h3>Key Highlights</h3>
+                    <ul>
+                        <li>Managed product teams of 10-15 across multiple global offices</li>
+                        <li>Drove expansion into 5 new international markets</li>
+                        <li>Demonstrated financial acumen with P&L responsibility for $100M+ product line</li>
+                        <li>MBA from Harvard Business School, BS Mathematics from MIT</li>
+                    </ul>
+                </div>
+
+                <div style="margin-bottom: 20px; display: flex; gap: 12px;">
+                    <button class="secondary-btn">
+                        <i data-lucide="download" style="width: 14px; height: 14px;"></i>
+                        Download Resume
+                    </button>
+                    <button class="secondary-btn">
+                        <i data-lucide="video" style="width: 14px; height: 14px;"></i>
+                        Watch Video
+                    </button>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="decision-btn advance">
+                        <i data-lucide="check" style="width: 18px; height: 18px;"></i>
+                        Advance
+                    </button>
+                    <button class="decision-btn hold">
+                        <i data-lucide="pause" style="width: 18px; height: 18px;"></i>
+                        Hold
+                    </button>
+                    <button class="decision-btn pass">
+                        <i data-lucide="x" style="width: 18px; height: 18px;"></i>
+                        Pass
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ATS Onboarding - Setup Wizard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        * {
+            font-family: Inter, system-ui, -apple-system, sans-serif;
+        }
+        body {
+            background: linear-gradient(135deg, #1E3C78 0%, #2563EB 100%);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 48px;
+            color: white;
+        }
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        .steps-container {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+        .step-card {
+            background: white;
+            border-radius: 12px;
+            padding: 32px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        .step-card.active {
+            border: 2px solid #2563EB;
+        }
+        .step-card.upcoming {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+        .step-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .step-progress {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        .step-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #E5E7EB;
+        }
+        .step-dot.active {
+            background: #2563EB;
+        }
+        .step-dot.completed {
+            background: #16A34A;
+        }
+        .step-number {
+            font-size: 14px;
+            font-weight: 600;
+            color: #6B7280;
+        }
+        .step-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 8px;
+        }
+        .step-subtitle {
+            font-size: 14px;
+            color: #6B7280;
+            margin-bottom: 24px;
+        }
+        .form-group {
+            margin-bottom: 24px;
+        }
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: #111827;
+            margin-bottom: 8px;
+        }
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #D1D5DB;
+            border-radius: 6px;
+            font-size: 14px;
+            color: #111827;
+            transition: all 0.2s;
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: #2563EB;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+        .form-select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #D1D5DB;
+            border-radius: 6px;
+            font-size: 14px;
+            color: #111827;
+            background: white;
+            cursor: pointer;
+        }
+        .color-swatches {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .color-swatch {
+            width: 56px;
+            height: 56px;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: all 0.2s;
+        }
+        .color-swatch:hover {
+            transform: scale(1.05);
+        }
+        .color-swatch.selected {
+            border-color: #111827;
+        }
+        .drag-zone {
+            border: 2px dashed #D1D5DB;
+            border-radius: 8px;
+            padding: 32px;
+            text-align: center;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .drag-zone:hover {
+            border-color: #2563EB;
+            background: #F0F7FF;
+        }
+        .drag-zone i {
+            color: #9CA3AF;
+            margin-bottom: 12px;
+        }
+        .drag-zone-text {
+            font-size: 14px;
+            color: #6B7280;
+            margin-bottom: 4px;
+        }
+        .drag-zone-hint {
+            font-size: 12px;
+            color: #9CA3AF;
+        }
+        .invite-rows {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .invite-row {
+            display: grid;
+            grid-template-columns: 1fr 140px auto;
+            gap: 12px;
+            align-items: center;
+        }
+        .add-row-link {
+            color: #2563EB;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .add-row-link:hover {
+            text-decoration: underline;
+        }
+        .import-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .import-card {
+            border: 2px solid #E5E7EB;
+            border-radius: 8px;
+            padding: 24px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .import-card:hover {
+            border-color: #2563EB;
+            background: #F0F7FF;
+        }
+        .import-card i {
+            color: #2563EB;
+            margin-bottom: 12px;
+        }
+        .import-card-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 4px;
+        }
+        .import-card-text {
+            font-size: 13px;
+            color: #6B7280;
+        }
+        .button-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+            justify-content: space-between;
+        }
+        .btn-primary {
+            background: #2563EB;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-primary:hover {
+            background: #1D4ED8;
+        }
+        .btn-secondary {
+            background: white;
+            color: #111827;
+            padding: 12px 24px;
+            border: 1px solid #D1D5DB;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-secondary:hover {
+            background: #F9FAFB;
+        }
+        .skip-link {
+            color: #6B7280;
+            font-size: 14px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .skip-link:hover {
+            color: #111827;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>Welcome to Recruit Pro</h1>
+            <p>Let's set up your agency in 3 simple steps</p>
+        </div>
+
+        <!-- Steps Container -->
+        <div class="steps-container">
+
+            <!-- Step 1: Agency Setup (Active) -->
+            <div class="step-card active">
+                <div class="step-header">
+                    <div class="step-progress">
+                        <div class="step-dot active"></div>
+                        <div class="step-dot"></div>
+                        <div class="step-dot"></div>
+                    </div>
+                    <div class="step-number">Step 1 of 3</div>
+                </div>
+
+                <div class="step-title">Agency Setup</div>
+                <div class="step-subtitle">Tell us about your recruiting firm</div>
+
+                <div class="form-group">
+                    <label class="form-label">Agency Name</label>
+                    <input type="text" class="form-input" placeholder="e.g., Apex Recruiting Group">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Upload Logo</label>
+                    <div class="drag-zone">
+                        <i data-lucide="cloud-upload" style="width: 32px; height: 32px;"></i>
+                        <div class="drag-zone-text">Drag and drop your logo here</div>
+                        <div class="drag-zone-hint">or click to browse (PNG, SVG · max 2MB)</div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Primary Brand Color</label>
+                    <div class="color-swatches">
+                        <div class="color-swatch selected" style="background: #2563EB;" onclick="selectColor(this)"></div>
+                        <div class="color-swatch" style="background: #DC2626;" onclick="selectColor(this)"></div>
+                        <div class="color-swatch" style="background: #16A34A;" onclick="selectColor(this)"></div>
+                        <div class="color-swatch" style="background: #D97706;" onclick="selectColor(this)"></div>
+                        <div class="color-swatch" style="background: #7C3AED;" onclick="selectColor(this)"></div>
+                        <div class="color-swatch" style="background: #0891B2;" onclick="selectColor(this)"></div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Timezone</label>
+                    <select class="form-select">
+                        <option>America/New_York (EST)</option>
+                        <option>America/Chicago (CST)</option>
+                        <option>America/Denver (MST)</option>
+                        <option>America/Los_Angeles (PST)</option>
+                        <option>Europe/London (GMT)</option>
+                        <option>Europe/Paris (CET)</option>
+                        <option>Asia/Singapore (SGT)</option>
+                        <option>Australia/Sydney (AEDT)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Website (Optional)</label>
+                    <input type="url" class="form-input" placeholder="https://apexrecruiting.com">
+                </div>
+
+                <div class="button-group">
+                    <a class="skip-link">Skip for now</a>
+                    <button class="btn-primary">
+                        Continue
+                        <i data-lucide="arrow-right" style="width: 16px; height: 16px;"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Step 2: Invite Team (Upcoming) -->
+            <div class="step-card upcoming">
+                <div class="step-header">
+                    <div class="step-progress">
+                        <div class="step-dot completed"></div>
+                        <div class="step-dot"></div>
+                        <div class="step-dot"></div>
+                    </div>
+                    <div class="step-number">Step 2 of 3</div>
+                </div>
+
+                <div class="step-title">Invite Your Team</div>
+                <div class="step-subtitle">Add team members and set their roles</div>
+
+                <div class="invite-rows">
+                    <div class="invite-row">
+                        <input type="email" class="form-input" placeholder="team@apexrecruiting.com">
+                        <select class="form-select">
+                            <option>Owner</option>
+                            <option>Admin</option>
+                            <option>Recruiter</option>
+                            <option>Viewer</option>
+                        </select>
+                        <i data-lucide="x" style="width: 16px; height: 16px; color: #D1D5DB; cursor: pointer;"></i>
+                    </div>
+                    <div class="invite-row">
+                        <input type="email" class="form-input" placeholder="another@apexrecruiting.com">
+                        <select class="form-select">
+                            <option>Recruiter</option>
+                            <option>Admin</option>
+                            <option>Owner</option>
+                            <option>Viewer</option>
+                        </select>
+                        <i data-lucide="x" style="width: 16px; height: 16px; color: #D1D5DB; cursor: pointer;"></i>
+                    </div>
+                </div>
+
+                <a class="add-row-link">+ Add another team member</a>
+
+                <div class="button-group">
+                    <a class="skip-link">Skip for now</a>
+                    <button class="btn-primary">
+                        Send Invitations
+                        <i data-lucide="arrow-right" style="width: 16px; height: 16px;"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Step 3: Import Candidates (Upcoming) -->
+            <div class="step-card upcoming">
+                <div class="step-header">
+                    <div class="step-progress">
+                        <div class="step-dot completed"></div>
+                        <div class="step-dot completed"></div>
+                        <div class="step-dot"></div>
+                    </div>
+                    <div class="step-number">Step 3 of 3</div>
+                </div>
+
+                <div class="step-title">Import Candidates</div>
+                <div class="step-subtitle">Start with your existing candidate database</div>
+
+                <div class="import-options">
+                    <div class="import-card">
+                        <i data-lucide="file-up" style="width: 32px; height: 32px;"></i>
+                        <div class="import-card-title">Import from CSV</div>
+                        <div class="import-card-text">Drag & drop or click to upload</div>
+                        <div style="font-size: 12px; color: #9CA3AF; margin-top: 4px;">.csv or .xlsx</div>
+                    </div>
+                    <div class="import-card">
+                        <svg style="width: 32px; height: 32px; margin: 0 auto 12px; display: block;" viewBox="0 0 24 24" fill="#2563EB">
+                            <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zm-5.04-6.71l-2.75 3.54-2.3-3.02c-.3-.38-.88-.46-1.3-.15-.42.31-.54.88-.23 1.3l2.3 3.02c.2.26.53.4.88.4.35 0 .68-.14.88-.4l3.54-4.44c.31-.42.19-.99-.23-1.3-.42-.31-.99-.19-1.3.23z"/>
+                        </svg>
+                        <div class="import-card-title">Connect LinkedIn</div>
+                        <div class="import-card-text">Import directly from LinkedIn</div>
+                    </div>
+                </div>
+
+                <p style="text-align: center; font-size: 14px; color: #6B7280; margin-bottom: 24px;">
+                    or <a class="skip-link" style="display: inline;">start fresh →</a>
+                </p>
+
+                <div class="button-group">
+                    <a class="skip-link">Back</a>
+                    <button class="btn-primary">
+                        Complete Setup
+                        <i data-lucide="check" style="width: 16px; height: 16px;"></i>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        function selectColor(element) {
+            document.querySelectorAll('.color-swatch').forEach(swatch => {
+                swatch.classList.remove('selected');
+            });
+            element.classList.add('selected');
+        }
+    </script>
+</body>
+</html>

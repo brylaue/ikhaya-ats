@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ATS Design System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        * {
+            font-family: Inter, system-ui, -apple-system, sans-serif;
+        }
+        .color-swatch {
+            border-radius: 8px;
+            height: 120px;
+            display: flex;
+            align-items: flex-end;
+            padding: 12px;
+            color: #111827;
+            font-size: 12px;
+            font-weight: 500;
+            position: relative;
+        }
+        .color-swatch.light {
+            color: #111827;
+        }
+        .color-swatch.dark {
+            color: white;
+        }
+        .component-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+        }
+        .component-card {
+            border: 1px solid #E5E7EB;
+            border-radius: 8px;
+            padding: 24px;
+            background: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .spacing-block {
+            display: inline-block;
+            background: #2563EB;
+            border-radius: 4px;
+            margin: 4px;
+        }
+        h1 { font-size: 28px; font-weight: bold; color: #111827; line-height: 1.25; margin-bottom: 16px; }
+        h2 { font-size: 20px; font-weight: 600; color: #111827; line-height: 1.3; margin: 32px 0 16px 0; }
+        h3 { font-size: 16px; font-weight: 600; color: #111827; margin: 20px 0 12px 0; }
+        .body-large { font-size: 15px; font-weight: 400; color: #111827; line-height: 1.6; }
+        .body-default { font-size: 14px; font-weight: 400; color: #374151; line-height: 1.5; }
+        .body-small { font-size: 12px; font-weight: 500; color: #6B7280; }
+        .mono { font-family: 'JetBrains Mono', 'Fira Code', monospace; font-size: 13px; }
+        .section { margin-bottom: 48px; padding-bottom: 32px; border-bottom: 1px solid #E5E7EB; }
+        .section:last-child { border-bottom: none; }
+    </style>
+</head>
+<body class="bg-gray-50 p-12">
+    <div class="max-w-7xl mx-auto">
+
+        <!-- Header -->
+        <div class="mb-12">
+            <h1>ATS Design System</h1>
+            <p class="body-default">Living reference for components, tokens, and patterns</p>
+            <p class="body-small mt-2">Version 1.0 · April 2026</p>
+        </div>
+
+        <!-- Color Palette Section -->
+        <div class="section">
+            <h2>Color Palette</h2>
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 mt-6">
+                <div>
+                    <div class="color-swatch dark" style="background-color: #2563EB;">Primary Blue</div>
+                    <p class="body-small mt-2">#2563EB</p>
+                    <p class="text-xs text-gray-400">CTAs, active states, links</p>
+                </div>
+                <div>
+                    <div class="color-swatch dark" style="background-color: #1E3C78;">Dark Navy</div>
+                    <p class="body-small mt-2">#1E3C78</p>
+                    <p class="text-xs text-gray-400">Headers, nav, backgrounds</p>
+                </div>
+                <div>
+                    <div class="color-swatch dark" style="background-color: #16A34A;">Success Green</div>
+                    <p class="body-small mt-2">#16A34A</p>
+                    <p class="text-xs text-gray-400">Placements, approved</p>
+                </div>
+                <div>
+                    <div class="color-swatch dark" style="background-color: #D97706;">Warning Amber</div>
+                    <p class="body-small mt-2">#D97706</p>
+                    <p class="text-xs text-gray-400">SLA warnings, at-risk</p>
+                </div>
+                <div>
+                    <div class="color-swatch dark" style="background-color: #DC2626;">Error Red</div>
+                    <p class="body-small mt-2">#DC2626</p>
+                    <p class="text-xs text-gray-400">Errors, rejections</p>
+                </div>
+                <div>
+                    <div class="color-swatch light" style="background-color: #111827;">Neutral 900</div>
+                    <p class="body-small mt-2">#111827</p>
+                    <p class="text-xs text-gray-400">Primary text</p>
+                </div>
+                <div>
+                    <div class="color-swatch light" style="background-color: #6B7280;">Neutral 500</div>
+                    <p class="body-small mt-2">#6B7280</p>
+                    <p class="text-xs text-gray-400">Secondary text</p>
+                </div>
+                <div>
+                    <div class="color-swatch light" style="background-color: #F3F4F6; border: 1px solid #E5E7EB;">Neutral 100</div>
+                    <p class="body-small mt-2">#F3F4F6</p>
+                    <p class="text-xs text-gray-400">Backgrounds</p>
+                </div>
+                <div>
+                    <div class="color-swatch light" style="background-color: #FFFFFF; border: 1px solid #D1D5DB;">White</div>
+                    <p class="body-small mt-2">#FFFFFF</p>
+                    <p class="text-xs text-gray-400">Card surfaces</p>
+                </div>
+                <div>
+                    <div class="color-swatch dark" style="background-color: #0EA5E9;">Portal Accent</div>
+                    <p class="body-small mt-2">#0EA5E9</p>
+                    <p class="text-xs text-gray-400">Client portal</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Typography Section -->
+        <div class="section">
+            <h2>Typography</h2>
+            <div class="space-y-6 mt-6">
+                <div>
+                    <p style="font-size: 28px; font-weight: bold; color: #111827;">H1 - Page Title (28px / Bold)</p>
+                    <p class="body-small">Line-height: 1.25</p>
+                </div>
+                <div>
+                    <p style="font-size: 20px; font-weight: 600; color: #111827;">H2 - Section Header (20px / Semibold)</p>
+                    <p class="body-small">Line-height: 1.3</p>
+                </div>
+                <div>
+                    <p style="font-size: 16px; font-weight: 600; color: #111827;">H3 - Card Title (16px / Semibold)</p>
+                    <p class="body-small">Line-height: 1.4</p>
+                </div>
+                <div>
+                    <p class="body-large">Body Large (15px / Regular / Line-height: 1.6) — Used for card content and important descriptions that need breathing room.</p>
+                </div>
+                <div>
+                    <p class="body-default">Body Default (14px / Regular / Line-height: 1.5) — Standard text for tables, lists, and UI labels.</p>
+                </div>
+                <div>
+                    <p class="body-small">Body Small / Label (12px / Medium / Color: #6B7280) — For form labels, captions, metadata.</p>
+                </div>
+                <div>
+                    <p class="mono">Mono - JetBrains Mono / Fira Code (13px) — For code, IDs, and technical values.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Spacing System -->
+        <div class="section">
+            <h2>Spacing System</h2>
+            <p class="body-default mb-6">Base unit: 4px. All spacing in multiples of 4px.</p>
+            <div class="space-y-4">
+                <div class="flex items-center gap-4">
+                    <div>
+                        <p class="body-small font-medium">space-xs (4px)</p>
+                        <p class="text-xs text-gray-400">Icon padding, tight gaps</p>
+                    </div>
+                    <div class="spacing-block" style="width: 4px; height: 32px;"></div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div>
+                        <p class="body-small font-medium">space-sm (8px)</p>
+                        <p class="text-xs text-gray-400">Form field padding</p>
+                    </div>
+                    <div class="spacing-block" style="width: 8px; height: 32px;"></div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div>
+                        <p class="body-small font-medium">space-md (16px)</p>
+                        <p class="text-xs text-gray-400">Card padding, section gaps</p>
+                    </div>
+                    <div class="spacing-block" style="width: 16px; height: 32px;"></div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div>
+                        <p class="body-small font-medium">space-lg (24px)</p>
+                        <p class="text-xs text-gray-400">Major section separators</p>
+                    </div>
+                    <div class="spacing-block" style="width: 24px; height: 32px;"></div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div>
+                        <p class="body-small font-medium">space-xl (32px)</p>
+                        <p class="text-xs text-gray-400">Page section spacing</p>
+                    </div>
+                    <div class="spacing-block" style="width: 32px; height: 32px;"></div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div>
+                        <p class="body-small font-medium">space-2xl (48px)</p>
+                        <p class="text-xs text-gray-400">Full page margins</p>
+                    </div>
+                    <div class="spacing-block" style="width: 48px; height: 32px;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Buttons Section -->
+        <div class="section">
+            <h2>Buttons</h2>
+
+            <h3>Primary Button</h3>
+            <div class="flex gap-4 flex-wrap mt-4 items-center">
+                <button class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 font-medium text-sm">Primary Button</button>
+                <button class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 font-medium text-sm opacity-60">Disabled</button>
+            </div>
+            <p class="body-small mt-2">Height: 36px · Padding: 0 16px · Radius: 6px · Hover: #1D4ED8</p>
+
+            <h3 class="mt-8">Secondary Button</h3>
+            <div class="flex gap-4 flex-wrap mt-4 items-center">
+                <button class="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded hover:bg-gray-50 font-medium text-sm">Secondary Button</button>
+                <button class="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded hover:bg-gray-50 font-medium text-sm opacity-60">Disabled</button>
+            </div>
+            <p class="body-small mt-2">Border: 1px #D1D5DB · Hover bg: #F9FAFB</p>
+
+            <h3 class="mt-8">Danger Button</h3>
+            <div class="flex gap-4 flex-wrap mt-4 items-center">
+                <button class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 font-medium text-sm">Delete</button>
+                <button class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 font-medium text-sm opacity-60">Disabled</button>
+            </div>
+            <p class="body-small mt-2">Use for destructive actions only</p>
+
+            <h3 class="mt-8">Ghost Button</h3>
+            <div class="flex gap-4 flex-wrap mt-4 items-center">
+                <button class="px-4 py-2 text-blue-600 hover:bg-blue-50 rounded font-medium text-sm">Ghost Action</button>
+                <button class="px-4 py-2 text-blue-600 hover:bg-blue-50 rounded font-medium text-sm opacity-60">Disabled</button>
+            </div>
+            <p class="body-small mt-2">Low-emphasis actions in tight spaces</p>
+        </div>
+
+        <!-- Input Fields -->
+        <div class="section">
+            <h2>Input Fields</h2>
+            <div class="space-y-4 mt-6 max-w-xs">
+                <div>
+                    <label class="body-small">Default Input</label>
+                    <input type="text" placeholder="Placeholder text" class="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-600 focus:border-transparent text-sm">
+                </div>
+                <div>
+                    <label class="body-small">With Value</label>
+                    <input type="text" value="John Smith" class="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-600 focus:border-transparent text-sm">
+                </div>
+                <div>
+                    <label class="body-small">Disabled</label>
+                    <input type="text" placeholder="Placeholder" disabled class="w-full px-3 py-2 border border-gray-300 rounded bg-gray-50 text-gray-400 text-sm opacity-60">
+                </div>
+                <div>
+                    <label class="body-small">Error State</label>
+                    <input type="text" placeholder="Invalid input" class="w-full px-3 py-2 border-2 border-red-600 rounded text-sm">
+                </div>
+            </div>
+            <p class="body-small mt-6">Height: 36px · Border: 1px #D1D5DB · Focus ring: 2px #2563EB · Radius: 6px</p>
+        </div>
+
+        <!-- Cards & Badges -->
+        <div class="section">
+            <h2>Cards & Badges</h2>
+
+            <h3>Card</h3>
+            <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm max-w-sm mt-4">
+                <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 8px;">Card Title</h3>
+                <p class="body-default">This is a card with white background, subtle border, and shadow.</p>
+            </div>
+            <p class="body-small mt-4">Border: 1px #E5E7EB · Radius: 8px · Shadow: 0 1px 3px rgba(0,0,0,0.1)</p>
+
+            <h3 class="mt-8">Badges / Tags</h3>
+            <div class="flex gap-2 flex-wrap mt-4">
+                <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-blue-100 text-blue-800">Active</span>
+                <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-green-100 text-green-800">Placement</span>
+                <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-yellow-100 text-yellow-800">Hold</span>
+                <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-red-100 text-red-800">Rejected</span>
+                <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-gray-200 text-gray-800">Tag</span>
+            </div>
+            <p class="body-small mt-4">Height: 22px · Radius: 4px · Padding: 0 8px · Font: 11px / Medium</p>
+        </div>
+
+        <!-- Avatars -->
+        <div class="section">
+            <h2>Avatars</h2>
+            <div class="flex gap-6 items-center flex-wrap mt-6">
+                <div>
+                    <p class="body-small mb-2">24px</p>
+                    <div class="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-bold">JS</div>
+                </div>
+                <div>
+                    <p class="body-small mb-2">32px</p>
+                    <div class="w-8 h-8 rounded-full bg-green-600 text-white flex items-center justify-center text-sm font-bold">AR</div>
+                </div>
+                <div>
+                    <p class="body-small mb-2">40px</p>
+                    <div class="w-10 h-10 rounded-full bg-purple-600 text-white flex items-center justify-center text-base font-bold">MC</div>
+                </div>
+                <div>
+                    <p class="body-small mb-2">56px</p>
+                    <div class="w-14 h-14 rounded-full bg-orange-600 text-white flex items-center justify-center text-lg font-bold">TB</div>
+                </div>
+            </div>
+            <p class="body-small mt-6">Deterministic color based on name hash. Initials fallback.</p>
+        </div>
+
+        <!-- Modals -->
+        <div class="section">
+            <h2>Modals</h2>
+            <p class="body-default mb-6">Standard: max-width 560px · Wide: 720px</p>
+            <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-8 max-w-sm">
+                <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 12px;">Modal Title</h3>
+                <p class="body-default mb-6">This is modal content. Backdrop is rgba(0,0,0,0.5). Border radius: 12px.</p>
+                <div class="flex gap-3 justify-end">
+                    <button class="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded hover:bg-gray-50 font-medium text-sm">Cancel</button>
+                    <button class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 font-medium text-sm">Confirm</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tooltips -->
+        <div class="section">
+            <h2>Tooltips</h2>
+            <div class="relative inline-block mt-6">
+                <button class="px-4 py-2 bg-gray-100 text-gray-700 rounded hover:bg-gray-200 font-medium text-sm">Hover me</button>
+                <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 bg-gray-900 text-white text-xs rounded px-3 py-2 whitespace-nowrap max-w-48">
+                    This is a tooltip. Max-width: 240px
+                </div>
+            </div>
+            <p class="body-small mt-6">Background: #111827 · Text: white · Font: 12px · Radius: 4px · Z-index: 9999</p>
+        </div>
+
+        <!-- Table -->
+        <div class="section">
+            <h2>Table Row</h2>
+            <div class="overflow-x-auto mt-6">
+                <table class="w-full">
+                    <thead>
+                        <tr class="border-b border-gray-200 bg-gray-50">
+                            <th class="text-left px-4 py-3 text-xs font-semibold text-gray-700">Candidate</th>
+                            <th class="text-left px-4 py-3 text-xs font-semibold text-gray-700">Title</th>
+                            <th class="text-left px-4 py-3 text-xs font-semibold text-gray-700">Status</th>
+                            <th class="text-left px-4 py-3 text-xs font-semibold text-gray-700">Last Activity</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="border-b border-gray-100 hover:bg-gray-50 h-11">
+                            <td class="px-4 py-3 body-default">Alex Johnson</td>
+                            <td class="px-4 py-3 body-default">Senior Engineer</td>
+                            <td class="px-4 py-3"><span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-blue-100 text-blue-800">Active</span></td>
+                            <td class="px-4 py-3 body-small text-gray-600">2 hours ago</td>
+                        </tr>
+                        <tr class="border-b border-gray-100 bg-blue-50 h-11">
+                            <td class="px-4 py-3 body-default">Morgan Chen</td>
+                            <td class="px-4 py-3 body-default">Product Manager</td>
+                            <td class="px-4 py-3"><span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-green-100 text-green-800">Placed</span></td>
+                            <td class="px-4 py-3 body-small text-gray-600">1 day ago</td>
+                        </tr>
+                        <tr class="border-b border-gray-100 hover:bg-gray-50 h-11">
+                            <td class="px-4 py-3 body-default">Jordan Smith</td>
+                            <td class="px-4 py-3 body-default">UX Designer</td>
+                            <td class="px-4 py-3"><span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-yellow-100 text-yellow-800">Hold</span></td>
+                            <td class="px-4 py-3 body-small text-gray-600">3 days ago</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p class="body-small mt-4">Height: 44px · Border-bottom: 1px #F3F4F6 · Hover: #F9FAFB · Selected: #EFF6FF</p>
+        </div>
+
+        <!-- Kanban Card -->
+        <div class="section">
+            <h2>Kanban Card</h2>
+            <div class="flex gap-6 flex-wrap mt-6">
+                <div class="w-64 bg-white border-l-4 border-l-green-500 border border-gray-200 rounded-lg p-4 shadow-sm">
+                    <div class="flex items-center gap-2 mb-2">
+                        <div class="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-bold">JS</div>
+                        <span class="body-small font-medium">John Smith</span>
+                    </div>
+                    <p class="body-default text-xs mb-3">Senior Software Engineer</p>
+                    <p class="text-xs text-gray-500">1 day in stage</p>
+                </div>
+                <div class="w-64 bg-white border-l-4 border-l-yellow-500 border border-gray-200 rounded-lg p-4 shadow-sm">
+                    <div class="flex items-center gap-2 mb-2">
+                        <div class="w-6 h-6 rounded-full bg-purple-600 text-white flex items-center justify-center text-xs font-bold">MC</div>
+                        <span class="body-small font-medium">Morgan Chen</span>
+                    </div>
+                    <p class="body-default text-xs mb-3">Product Manager</p>
+                    <p class="text-xs text-gray-500">5 days in stage</p>
+                </div>
+                <div class="w-64 bg-white border-l-4 border-l-red-500 border border-gray-200 rounded-lg p-4 shadow-sm">
+                    <div class="flex items-center gap-2 mb-2">
+                        <div class="w-6 h-6 rounded-full bg-orange-600 text-white flex items-center justify-center text-xs font-bold">AP</div>
+                        <span class="body-small font-medium">Alex Park</span>
+                    </div>
+                    <p class="body-default text-xs mb-3">Design Lead</p>
+                    <p class="text-xs text-gray-500">12 days in stage</p>
+                </div>
+            </div>
+            <p class="body-small mt-6">Min-height: 80px · Width: 260px · Border-left: 3px (aging) · Green: <3 days, Yellow: 3-7 days, Red: >7 days</p>
+        </div>
+
+        <!-- Sidebar Nav -->
+        <div class="section">
+            <h2>Sidebar Navigation</h2>
+            <div class="flex gap-4 mt-6">
+                <div class="w-56 bg-blue-900 text-white rounded-lg p-4">
+                    <div class="flex items-center gap-2 mb-8">
+                        <div class="w-8 h-8 bg-blue-400 rounded text-white font-bold flex items-center justify-center text-sm">A</div>
+                        <span class="font-semibold">ATS Pro</span>
+                    </div>
+                    <nav class="space-y-2">
+                        <div class="px-4 py-2 rounded bg-blue-600 text-white text-sm font-medium">Dashboard</div>
+                        <div class="px-4 py-2 rounded text-white text-sm font-medium hover:bg-blue-800">Candidates</div>
+                        <div class="px-4 py-2 rounded text-white text-sm font-medium hover:bg-blue-800">Jobs</div>
+                        <div class="px-4 py-2 rounded text-white text-sm font-medium hover:bg-blue-800">Clients</div>
+                        <div class="px-4 py-2 rounded text-white text-sm font-medium hover:bg-blue-800">Pipeline</div>
+                        <div class="px-4 py-2 rounded text-white text-sm font-medium hover:bg-blue-800">Analytics</div>
+                        <div class="px-4 py-2 rounded text-white text-sm font-medium hover:bg-blue-800">Inbox</div>
+                    </nav>
+                    <div class="mt-8 pt-4 border-t border-blue-800">
+                        <div class="flex items-center gap-2 px-4 py-2 rounded hover:bg-blue-800">
+                            <div class="w-6 h-6 rounded-full bg-green-400 text-white text-xs font-bold flex items-center justify-center">JD</div>
+                            <span class="text-xs font-medium">Jane Doe</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <p class="body-small mt-6">Width: 220px (expanded) / 56px (icon-only) · Background: #1E3C78 · Text: white · Active: #2563EB bg</p>
+        </div>
+
+        <!-- Pipeline Stage Column -->
+        <div class="section">
+            <h2>Pipeline Stage Column</h2>
+            <div class="w-72 bg-gray-50 border border-gray-200 rounded-lg p-4">
+                <div class="flex items-center gap-2 mb-4 pb-3 border-b border-gray-200">
+                    <div class="w-3 h-3 rounded-full bg-blue-500"></div>
+                    <h3 class="body-small font-semibold">Screened (3)</h3>
+                </div>
+                <div class="space-y-3">
+                    <div class="bg-white border border-gray-200 rounded p-3">
+                        <p class="body-small font-medium">Alex Johnson</p>
+                        <p class="text-xs text-gray-500 mt-1">2 days in stage</p>
+                    </div>
+                    <div class="bg-white border border-gray-200 rounded p-3">
+                        <p class="body-small font-medium">Jamie Lee</p>
+                        <p class="text-xs text-gray-500 mt-1">5 days in stage</p>
+                    </div>
+                </div>
+            </div>
+            <p class="body-small mt-6">Width: 280px · Background: #F9FAFB · Header: stage color accent · Radius: 8px</p>
+        </div>
+
+        <!-- Icons -->
+        <div class="section">
+            <h2>Icon System</h2>
+            <p class="body-default mb-6">Lucide Icons (open-source, consistent stroke weight). Standard: 20px, Compact: 16px, Featured: 24px. Stroke width: 1.5px.</p>
+            <div class="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-6 mt-6">
+                <div class="flex flex-col items-center gap-2">
+                    <i data-lucide="search" class="text-gray-700"></i>
+                    <p class="text-xs text-gray-500">Search</p>
+                </div>
+                <div class="flex flex-col items-center gap-2">
+                    <i data-lucide="bell" class="text-gray-700"></i>
+                    <p class="text-xs text-gray-500">Notifications</p>
+                </div>
+                <div class="flex flex-col items-center gap-2">
+                    <i data-lucide="plus" class="text-gray-700"></i>
+                    <p class="text-xs text-gray-500">Add</p>
+                </div>
+                <div class="flex flex-col items-center gap-2">
+                    <i data-lucide="check" class="text-gray-700"></i>
+                    <p class="text-xs text-gray-500">Check</p>
+                </div>
+                <div class="flex flex-col items-center gap-2">
+                    <i data-lucide="x" class="text-gray-700"></i>
+                    <p class="text-xs text-gray-500">Close</p>
+                </div>
+                <div class="flex flex-col items-center gap-2">
+                    <i data-lucide="menu" class="text-gray-700"></i>
+                    <p class="text-xs text-gray-500">Menu</p>
+                </div>
+                <div class="flex flex-col items-center gap-2">
+                    <i data-lucide="mail" class="text-gray-700"></i>
+                    <p class="text-xs text-gray-500">Email</p>
+                </div>
+                <div class="flex flex-col items-center gap-2">
+                    <i data-lucide="phone" class="text-gray-700"></i>
+                    <p class="text-xs text-gray-500">Phone</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

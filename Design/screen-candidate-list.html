@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Candidates</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        * {
+            font-family: Inter, system-ui, -apple-system, sans-serif;
+        }
+        body {
+            background-color: #F3F4F6;
+        }
+        .sidebar {
+            background-color: #1E3C78;
+            width: 220px;
+            position: fixed;
+            height: 100vh;
+            left: 0;
+            top: 0;
+            overflow-y: auto;
+            z-index: 40;
+        }
+        .main-content {
+            margin-left: 220px;
+        }
+        .topbar {
+            background-color: white;
+            border-bottom: 1px solid #E5E7EB;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 32px;
+            position: sticky;
+            top: 0;
+            z-index: 30;
+        }
+        .search-bar {
+            background-color: #F9FAFB;
+            border: 1px solid #D1D5DB;
+            border-radius: 6px;
+            padding: 8px 12px;
+            font-size: 14px;
+            color: #6B7280;
+            width: 280px;
+        }
+        .nav-item {
+            padding: 12px 16px;
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: background-color 0.2s;
+        }
+        .nav-item:hover {
+            background-color: rgba(255,255,255,0.1);
+        }
+        .nav-item.active {
+            background-color: #2563EB;
+        }
+        .content-area {
+            padding: 32px;
+            margin-top: 64px;
+        }
+        .card {
+            background: white;
+            border: 1px solid #E5E7EB;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .filter-bar {
+            padding: 20px;
+            background: white;
+            border-bottom: 1px solid #E5E7EB;
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .filter-input {
+            border: 1px solid #D1D5DB;
+            border-radius: 6px;
+            padding: 8px 12px;
+            font-size: 14px;
+            background-color: white;
+        }
+        .filter-select {
+            border: 1px solid #D1D5DB;
+            border-radius: 6px;
+            padding: 8px 12px;
+            font-size: 14px;
+            background-color: white;
+            cursor: pointer;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th {
+            text-align: left;
+            padding: 12px 20px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #6B7280;
+            background-color: #F9FAFB;
+            border-bottom: 1px solid #E5E7EB;
+        }
+        td {
+            padding: 12px 20px;
+            border-bottom: 1px solid #F3F4F6;
+            font-size: 14px;
+            color: #374151;
+        }
+        tr:hover {
+            background-color: #F9FAFB;
+        }
+        tr.selected {
+            background-color: #EFF6FF;
+        }
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+        .badge-active {
+            background-color: #DBEAFE;
+            color: #1E40AF;
+        }
+        .badge-hold {
+            background-color: #FEF3C7;
+            color: #92400E;
+        }
+        .badge-placed {
+            background-color: #DCFCE7;
+            color: #166534;
+        }
+        .avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .action-menu {
+            cursor: pointer;
+            color: #6B7280;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar Navigation -->
+    <div class="sidebar">
+        <div style="padding: 24px; border-bottom: 1px solid rgba(255,255,255,0.1);">
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 32px;">
+                <div style="width: 32px; height: 32px; background-color: #2563EB; border-radius: 6px; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 16px;">A</div>
+                <div style="font-weight: 600; color: white; font-size: 14px;">ATS Pro</div>
+            </div>
+            <nav style="display: flex; flex-direction: column; gap: 4px;">
+                <div class="nav-item">
+                    <i data-lucide="home" style="width: 18px; height: 18px;"></i>
+                    Dashboard
+                </div>
+                <div class="nav-item active">
+                    <i data-lucide="users" style="width: 18px; height: 18px;"></i>
+                    Candidates
+                </div>
+                <div class="nav-item">
+                    <i data-lucide="briefcase" style="width: 18px; height: 18px;"></i>
+                    Jobs
+                </div>
+                <div class="nav-item">
+                    <i data-lucide="building" style="width: 18px; height: 18px;"></i>
+                    Clients
+                </div>
+                <div class="nav-item">
+                    <i data-lucide="kanban" style="width: 18px; height: 18px;"></i>
+                    Pipeline
+                </div>
+                <div class="nav-item">
+                    <i data-lucide="bar-chart-3" style="width: 18px; height: 18px;"></i>
+                    Analytics
+                </div>
+                <div class="nav-item">
+                    <i data-lucide="inbox" style="width: 18px; height: 18px;"></i>
+                    Inbox
+                </div>
+            </nav>
+        </div>
+        <div style="padding: 24px; margin-top: auto; border-top: 1px solid rgba(255,255,255,0.1);">
+            <div style="display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 6px; cursor: pointer;">
+                <div style="width: 36px; height: 36px; background-color: #16A34A; border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px;">JD</div>
+                <div style="flex-grow: 1;">
+                    <div style="color: white; font-size: 14px; font-weight: 500;">Jane Doe</div>
+                    <div style="color: rgba(255,255,255,0.6); font-size: 12px;">Senior Recruiter</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="main-content">
+        <!-- Top Bar -->
+        <div class="topbar">
+            <div style="display: flex; align-items: center; gap: 16px; flex-grow: 1;">
+                <input type="text" placeholder="⌘K Search candidates, jobs..." class="search-bar">
+            </div>
+            <div style="display: flex; align-items: center; gap: 16px;">
+                <button style="background: none; border: none; cursor: pointer; color: #6B7280;">
+                    <i data-lucide="bell" style="width: 20px; height: 20px;"></i>
+                </button>
+                <button style="display: flex; align-items: center; gap: 8px; background-color: #2563EB; color: white; border: none; border-radius: 6px; padding: 8px 12px; cursor: pointer; font-size: 14px; font-weight: 500;">
+                    <i data-lucide="plus" style="width: 16px; height: 16px;"></i>
+                    Add Candidate
+                </button>
+            </div>
+        </div>
+
+        <!-- Content -->
+        <div class="content-area">
+            <div style="margin-bottom: 24px;">
+                <h1 style="font-size: 28px; font-weight: bold; color: #111827;">Candidates</h1>
+                <p style="font-size: 14px; color: #6B7280; margin-top: 4px;">Manage your candidate database</p>
+            </div>
+
+            <!-- Filter Bar -->
+            <div class="card" style="margin-bottom: 24px;">
+                <div class="filter-bar">
+                    <input type="text" placeholder="Search by name, email, title..." class="filter-input" style="flex: 1; min-width: 200px;">
+                    <select class="filter-select">
+                        <option>All Status</option>
+                        <option>Active</option>
+                        <option>Placed</option>
+                        <option>On Hold</option>
+                        <option>Inactive</option>
+                    </select>
+                    <select class="filter-select">
+                        <option>All Tags</option>
+                        <option>Python Expert</option>
+                        <option>Manager</option>
+                        <option>Remote</option>
+                    </select>
+                    <select class="filter-select">
+                        <option>All Locations</option>
+                        <option>San Francisco</option>
+                        <option>New York</option>
+                        <option>Seattle</option>
+                        <option>Remote</option>
+                    </select>
+                    <button style="background: none; border: 1px solid #D1D5DB; border-radius: 6px; padding: 8px 12px; cursor: pointer; color: #6B7280;">
+                        <i data-lucide="filter" style="width: 16px; height: 16px;"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Candidate Table -->
+            <div class="card">
+                <table>
+                    <thead>
+                        <tr>
+                            <th><input type="checkbox" style="cursor: pointer; width: 16px; height: 16px;"></th>
+                            <th>Candidate</th>
+                            <th>Title</th>
+                            <th>Current Company</th>
+                            <th>Location</th>
+                            <th>Last Activity</th>
+                            <th>Tags</th>
+                            <th style="text-align: right;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><input type="checkbox" style="cursor: pointer; width: 16px; height: 16px;"></td>
+                            <td>
+                                <div style="display: flex; align-items: center; gap: 12px;">
+                                    <div class="avatar" style="background-color: #2563EB;">AJ</div>
+                                    <div>
+                                        <p style="font-weight: 500; color: #111827;">Alex Johnson</p>
+                                        <p style="font-size: 12px; color: #6B7280;">alex.johnson@email.com</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>Senior Software Engineer</td>
+                            <td>TechCorp Inc</td>
+                            <td>San Francisco, CA</td>
+                            <td>2 hours ago</td>
+                            <td><span class="badge badge-active">Active</span></td>
+                            <td style="text-align: right;">
+                                <button class="action-menu" style="background: none; border: none;">
+                                    <i data-lucide="more-vertical" style="width: 16px; height: 16px;"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox" style="cursor: pointer; width: 16px; height: 16px;"></td>
+                            <td>
+                                <div style="display: flex; align-items: center; gap: 12px;">
+                                    <div class="avatar" style="background-color: #16A34A;">MC</div>
+                                    <div>
+                                        <p style="font-weight: 500; color: #111827;">Morgan Chen</p>
+                                        <p style="font-size: 12px; color: #6B7280;">morgan.chen@email.com</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>Product Manager</td>
+                            <td>InsuranceX</td>
+                            <td>New York, NY</td>
+                            <td>1 day ago</td>
+                            <td><span class="badge badge-placed">Placed</span></td>
+                            <td style="text-align: right;">
+                                <button class="action-menu" style="background: none; border: none;">
+                                    <i data-lucide="more-vertical" style="width: 16px; height: 16px;"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox" style="cursor: pointer; width: 16px; height: 16px;"></td>
+                            <td>
+                                <div style="display: flex; align-items: center; gap: 12px;">
+                                    <div class="avatar" style="background-color: #D97706;">JL</div>
+                                    <div>
+                                        <p style="font-weight: 500; color: #111827;">Jamie Lee</p>
+                                        <p style="font-size: 12px; color: #6B7280;">jamie.lee@email.com</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>UX Designer</td>
+                            <td>FinNext</td>
+                            <td>Seattle, WA</td>
+                            <td>3 days ago</td>
+                            <td><span class="badge badge-hold">Hold</span></td>
+                            <td style="text-align: right;">
+                                <button class="action-menu" style="background: none; border: none;">
+                                    <i data-lucide="more-vertical" style="width: 16px; height: 16px;"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox" style="cursor: pointer; width: 16px; height: 16px;"></td>
+                            <td>
+                                <div style="display: flex; align-items: center; gap: 12px;">
+                                    <div class="avatar" style="background-color: #8B5CF6;">JS</div>
+                                    <div>
+                                        <p style="font-weight: 500; color: #111827;">Jordan Smith</p>
+                                        <p style="font-size: 12px; color: #6B7280;">jordan.smith@email.com</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>Data Analyst</td>
+                            <td>CloudCorp</td>
+                            <td>Austin, TX</td>
+                            <td>5 hours ago</td>
+                            <td><span class="badge badge-active">Active</span></td>
+                            <td style="text-align: right;">
+                                <button class="action-menu" style="background: none; border: none;">
+                                    <i data-lucide="more-vertical" style="width: 16px; height: 16px;"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox" style="cursor: pointer; width: 16px; height: 16px;"></td>
+                            <td>
+                                <div style="display: flex; align-items: center; gap: 12px;">
+                                    <div class="avatar" style="background-color: #F59E0B;">CP</div>
+                                    <div>
+                                        <p style="font-weight: 500; color: #111827;">Chris Park</p>
+                                        <p style="font-size: 12px; color: #6B7280;">chris.park@email.com</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>Frontend Engineer</td>
+                            <td>DataFlow Systems</td>
+                            <td>Remote</td>
+                            <td>12 minutes ago</td>
+                            <td><span class="badge badge-active">Active</span></td>
+                            <td style="text-align: right;">
+                                <button class="action-menu" style="background: none; border: none;">
+                                    <i data-lucide="more-vertical" style="width: 16px; height: 16px;"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox" style="cursor: pointer; width: 16px; height: 16px;"></td>
+                            <td>
+                                <div style="display: flex; align-items: center; gap: 12px;">
+                                    <div class="avatar" style="background-color: #10B981;">TS</div>
+                                    <div>
+                                        <p style="font-weight: 500; color: #111827;">Taylor Smith</p>
+                                        <p style="font-size: 12px; color: #6B7280;">taylor.smith@email.com</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>QA Engineer</td>
+                            <td>TechVenture</td>
+                            <td>Boston, MA</td>
+                            <td>2 days ago</td>
+                            <td><span class="badge badge-hold">Hold</span></td>
+                            <td style="text-align: right;">
+                                <button class="action-menu" style="background: none; border: none;">
+                                    <i data-lucide="more-vertical" style="width: 16px; height: 16px;"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox" style="cursor: pointer; width: 16px; height: 16px;"></td>
+                            <td>
+                                <div style="display: flex; align-items: center; gap: 12px;">
+                                    <div class="avatar" style="background-color: #EC4899;">RW</div>
+                                    <div>
+                                        <p style="font-weight: 500; color: #111827;">Riley West</p>
+                                        <p style="font-size: 12px; color: #6B7280;">riley.west@email.com</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>DevOps Engineer</td>
+                            <td>InfraFlow</td>
+                            <td>San Francisco, CA</td>
+                            <td>4 hours ago</td>
+                            <td><span class="badge badge-active">Active</span></td>
+                            <td style="text-align: right;">
+                                <button class="action-menu" style="background: none; border: none;">
+                                    <i data-lucide="more-vertical" style="width: 16px; height: 16px;"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox" style="cursor: pointer; width: 16px; height: 16px;"></td>
+                            <td>
+                                <div style="display: flex; align-items: center; gap: 12px;">
+                                    <div class="avatar" style="background-color: #06B6D4;">MJ</div>
+                                    <div>
+                                        <p style="font-weight: 500; color: #111827;">Marcus Johnson</p>
+                                        <p style="font-size: 12px; color: #6B7280;">marcus.j@email.com</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>Solutions Architect</td>
+                            <td>EnterpriseAI</td>
+                            <td>Chicago, IL</td>
+                            <td>1 hour ago</td>
+                            <td><span class="badge badge-active">Active</span></td>
+                            <td style="text-align: right;">
+                                <button class="action-menu" style="background: none; border: none;">
+                                    <i data-lucide="more-vertical" style="width: 16px; height: 16px;"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox" style="cursor: pointer; width: 16px; height: 16px;"></td>
+                            <td>
+                                <div style="display: flex; align-items: center; gap: 12px;">
+                                    <div class="avatar" style="background-color: #14B8A6;">SN</div>
+                                    <div>
+                                        <p style="font-weight: 500; color: #111827;">Sophia Nielsen</p>
+                                        <p style="font-size: 12px; color: #6B7280;">sophia.n@email.com</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>Marketing Manager</td>
+                            <td>GrowthCo</td>
+                            <td>Denver, CO</td>
+                            <td>6 hours ago</td>
+                            <td><span class="badge badge-placed">Placed</span></td>
+                            <td style="text-align: right;">
+                                <button class="action-menu" style="background: none; border: none;">
+                                    <i data-lucide="more-vertical" style="width: 16px; height: 16px;"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox" style="cursor: pointer; width: 16px; height: 16px;"></td>
+                            <td>
+                                <div style="display: flex; align-items: center; gap: 12px;">
+                                    <div class="avatar" style="background-color: #EF4444;">LP</div>
+                                    <div>
+                                        <p style="font-weight: 500; color: #111827;">Lucas Parker</p>
+                                        <p style="font-size: 12px; color: #6B7280;">lucas.parker@email.com</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>Backend Engineer</td>
+                            <td>ByteWorks</td>
+                            <td>Portland, OR</td>
+                            <td>3 days ago</td>
+                            <td><span class="badge badge-hold">Hold</span></td>
+                            <td style="text-align: right;">
+                                <button class="action-menu" style="background: none; border: none;">
+                                    <i data-lucide="more-vertical" style="width: 16px; height: 16px;"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <div style="margin-top: 24px; display: flex; align-items: center; justify-content: space-between;">
+                <p style="font-size: 14px; color: #6B7280;">Showing 1 to 10 of 287 candidates</p>
+                <div style="display: flex; gap: 8px;">
+                    <button style="border: 1px solid #D1D5DB; border-radius: 6px; padding: 8px 12px; background: white; cursor: pointer; font-size: 14px;">← Previous</button>
+                    <button style="border: 1px solid #2563EB; background-color: #2563EB; color: white; border-radius: 6px; padding: 8px 12px; cursor: pointer; font-size: 14px;">1</button>
+                    <button style="border: 1px solid #D1D5DB; border-radius: 6px; padding: 8px 12px; background: white; cursor: pointer; font-size: 14px;">2</button>
+                    <button style="border: 1px solid #D1D5DB; border-radius: 6px; padding: 8px 12px; background: white; cursor: pointer; font-size: 14px;">3</button>
+                    <button style="border: 1px solid #D1D5DB; border-radius: 6px; padding: 8px 12px; background: white; cursor: pointer; font-size: 14px;">Next →</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+    </script>
+
+</body>
+</html>

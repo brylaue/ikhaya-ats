@@ -1,0 +1,21 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "crons": [
+    {
+      "path": "/api/cron/email-refresh-subscriptions",
+      "schedule": "0 */6 * * *"
+    },
+    {
+      "path": "/api/cron/email-fallback-poll",
+      "schedule": "*/5 * * * *"
+    },
+    {
+      "path": "/api/cron/webhook-retry",
+      "schedule": "* * * * *"
+    },
+    {
+      "path": "/api/cron/placement-anniversaries",
+      "schedule": "0 13 * * *"
+    }
+  ]
+}

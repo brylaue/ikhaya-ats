@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workflow Builder</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        * {
+            font-family: Inter, system-ui, -apple-system, sans-serif;
+        }
+        body {
+            background-color: #F3F4F6;
+        }
+        .topbar {
+            background: white;
+            border-bottom: 1px solid #E5E7EB;
+            padding: 0 24px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 40;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .workflow-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #111827;
+        }
+        .workflow-meta {
+            font-size: 12px;
+            color: #6B7280;
+        }
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            background: #D1FAE5;
+            color: #065F46;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            background: #059669;
+            border-radius: 50%;
+        }
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .topbar-btn {
+            padding: 8px 16px;
+            border: 1px solid #D1D5DB;
+            border-radius: 6px;
+            background: white;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .topbar-btn:hover {
+            background: #F9FAFB;
+            border-color: #9CA3AF;
+        }
+        .topbar-btn.primary {
+            background: #2563EB;
+            border-color: #2563EB;
+            color: white;
+        }
+        .topbar-btn.primary:hover {
+            background: #1D4ED8;
+        }
+        .main-container {
+            display: grid;
+            grid-template-columns: 280px 1fr 320px;
+            gap: 0;
+            height: calc(100vh - 64px);
+        }
+        .sidebar {
+            background: white;
+            border-right: 1px solid #E5E7EB;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        .sidebar-header {
+            padding: 16px;
+            border-bottom: 1px solid #E5E7EB;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: #6B7280;
+            letter-spacing: 0.5px;
+            background: #F9FAFB;
+        }
+        .sidebar-section {
+            padding: 12px 0;
+            border-bottom: 1px solid #F3F4F6;
+        }
+        .sidebar-section:last-child {
+            border-bottom: none;
+        }
+        .sidebar-section-title {
+            padding: 0 16px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: #9CA3AF;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+        .node-item {
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            color: #374151;
+            cursor: move;
+            transition: all 0.2s;
+            user-select: none;
+        }
+        .node-item:hover {
+            background: #F9FAFB;
+            color: #111827;
+        }
+        .node-icon {
+            width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6B7280;
+            flex-shrink: 0;
+        }
+        .canvas {
+            background: linear-gradient(90deg, #F3F4F6 0%, #FAFBFC 100%);
+            background-size: 20px 20px;
+            background-image:
+                linear-gradient(0deg, transparent 24%, rgba(0,0,0,.05) 25%, rgba(0,0,0,.05) 26%, transparent 27%, transparent 74%, rgba(0,0,0,.05) 75%, rgba(0,0,0,.05) 76%, transparent 77%, transparent),
+                linear-gradient(90deg, transparent 24%, rgba(0,0,0,.05) 25%, rgba(0,0,0,.05) 26%, transparent 27%, transparent 74%, rgba(0,0,0,.05) 75%, rgba(0,0,0,.05) 76%, transparent 77%, transparent);
+            background-size: 40px 40px;
+            position: relative;
+            overflow: auto;
+            display: flex;
+            align-items: flex-start;
+            padding: 40px;
+            flex: 1;
+        }
+        .workflow-path {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            min-width: 600px;
+        }
+        .workflow-node {
+            background: white;
+            border: 2px solid #E5E7EB;
+            border-radius: 8px;
+            padding: 16px;
+            min-width: 220px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            position: relative;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .workflow-node:hover {
+            border-color: #2563EB;
+            box-shadow: 0 2px 8px rgba(37,99,235,0.15);
+        }
+        .workflow-node.selected {
+            border-color: #2563EB;
+            box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+        }
+        .node-type-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+        .node-type-badge.trigger {
+            background: #DBEAFE;
+            color: #0C4A6E;
+        }
+        .node-type-badge.condition {
+            background: #FEF3C7;
+            color: #78350F;
+        }
+        .node-type-badge.action {
+            background: #D1FAE5;
+            color: #065F46;
+        }
+        .node-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 6px;
+        }
+        .node-desc {
+            font-size: 12px;
+            color: #6B7280;
+            line-height: 1.4;
+        }
+        .node-arrow {
+            width: 2px;
+            height: 40px;
+            background: linear-gradient(to bottom, #D1D5DB, #E5E7EB);
+            margin: -8px 0;
+            position: relative;
+        }
+        .arrow-tip {
+            position: absolute;
+            bottom: -6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            border-top: 6px solid #E5E7EB;
+        }
+        .right-panel {
+            background: white;
+            border-left: 1px solid #E5E7EB;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        .panel-header {
+            padding: 16px;
+            border-bottom: 1px solid #E5E7EB;
+            font-size: 13px;
+            font-weight: 600;
+            color: #111827;
+            background: #F9FAFB;
+        }
+        .panel-content {
+            padding: 16px;
+            flex: 1;
+        }
+        .config-group {
+            margin-bottom: 20px;
+        }
+        .config-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #6B7280;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+            display: block;
+        }
+        .config-input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #D1D5DB;
+            border-radius: 6px;
+            font-size: 13px;
+            color: #374151;
+            background: #F9FAFB;
+            margin-bottom: 8px;
+        }
+        .config-input:focus {
+            outline: none;
+            border-color: #2563EB;
+            background: white;
+            box-shadow: 0 0 0 2px rgba(37,99,235,0.1);
+        }
+        .config-select {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #D1D5DB;
+            border-radius: 6px;
+            font-size: 13px;
+            color: #374151;
+            background: white;
+        }
+        .panel-empty {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #9CA3AF;
+            text-align: center;
+        }
+        .panel-empty-icon {
+            font-size: 32px;
+            margin-bottom: 12px;
+        }
+        .panel-empty-text {
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Topbar -->
+    <div class="topbar">
+        <div class="topbar-left">
+            <div>
+                <div class="workflow-title">Client Follow-Up Sequence</div>
+                <div class="workflow-meta" style="margin-top: 2px;">
+                    <span class="status-badge">
+                        <span class="status-dot"></span>
+                        Active
+                    </span>
+                    <span style="margin-left: 12px; color: #6B7280;">Last run: 2 hours ago</span>
+                </div>
+            </div>
+        </div>
+        <div class="topbar-right">
+            <button class="topbar-btn">Test</button>
+            <button class="topbar-btn primary">Save</button>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="main-container">
+
+        <!-- Left Sidebar: Node Palette -->
+        <div class="sidebar">
+            <div class="sidebar-header">Node Palette</div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Triggers</div>
+                <div class="node-item">
+                    <div class="node-icon"><i data-lucide="play-circle" style="width: 16px; height: 16px;"></i></div>
+                    <span>Stage Changed</span>
+                </div>
+                <div class="node-item">
+                    <div class="node-icon"><i data-lucide="clock" style="width: 16px; height: 16px;"></i></div>
+                    <span>Time Elapsed</span>
+                </div>
+                <div class="node-item">
+                    <div class="node-icon"><i data-lucide="tag" style="width: 16px; height: 16px;"></i></div>
+                    <span>Tag Added</span>
+                </div>
+                <div class="node-item">
+                    <div class="node-icon"><i data-lucide="form" style="width: 16px; height: 16px;"></i></div>
+                    <span>Form Submitted</span>
+                </div>
+                <div class="node-item">
+                    <div class="node-icon"><i data-lucide="briefcase" style="width: 16px; height: 16px;"></i></div>
+                    <span>Job Status Changed</span>
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Conditions</div>
+                <div class="node-item">
+                    <div class="node-icon"><i data-lucide="filter" style="width: 16px; height: 16px;"></i></div>
+                    <span>Candidate Field</span>
+                </div>
+                <div class="node-item">
+                    <div class="node-icon"><i data-lucide="filter" style="width: 16px; height: 16px;"></i></div>
+                    <span>Job Field</span>
+                </div>
+                <div class="node-item">
+                    <div class="node-icon"><i data-lucide="calendar" style="width: 16px; height: 16px;"></i></div>
+                    <span>Days Since Event</span>
+                </div>
+                <div class="node-item">
+                    <div class="node-icon"><i data-lucide="user-check" style="width: 16px; height: 16px;"></i></div>
+                    <span>Recruiter Assigned</span>
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Actions</div>
+                <div class="node-item">
+                    <div class="node-icon"><i data-lucide="mail" style="width: 16px; height: 16px;"></i></div>
+                    <span>Send Email</span>
+                </div>
+                <div class="node-item">
+                    <div class="node-icon"><i data-lucide="message-square" style="width: 16px; height: 16px;"></i></div>
+                    <span>Send SMS</span>
+                </div>
+                <div class="node-item">
+                    <div class="node-icon"><i data-lucide="check-square" style="width: 16px; height: 16px;"></i></div>
+                    <span>Create Task</span>
+                </div>
+                <div class="node-item">
+                    <div class="node-icon"><i data-lucide="move" style="width: 16px; height: 16px;"></i></div>
+                    <span>Move Stage</span>
+                </div>
+                <div class="node-item">
+                    <div class="node-icon"><i data-lucide="tag" style="width: 16px; height: 16px;"></i></div>
+                    <span>Add Tag</span>
+                </div>
+                <div class="node-item">
+                    <div class="node-icon"><i data-lucide="bell" style="width: 16px; height: 16px;"></i></div>
+                    <span>Notify User</span>
+                </div>
+                <div class="node-item">
+                    <div class="node-icon"><i data-lucide="webhook" style="width: 16px; height: 16px;"></i></div>
+                    <span>Webhook</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Canvas -->
+        <div class="canvas">
+            <div class="workflow-path">
+                <!-- Node 1: Trigger -->
+                <div class="workflow-node selected" onclick="selectNode(this)">
+                    <div class="node-type-badge trigger">
+                        <i data-lucide="play-circle" style="width: 10px; height: 10px;"></i>
+                        Trigger
+                    </div>
+                    <div class="node-title">Stage Changed</div>
+                    <div class="node-desc">When a candidate moves to "Submitted" stage</div>
+                </div>
+
+                <div class="node-arrow">
+                    <div class="arrow-tip"></div>
+                </div>
+
+                <!-- Node 2: Condition -->
+                <div class="workflow-node" onclick="selectNode(this)">
+                    <div class="node-type-badge condition">
+                        <i data-lucide="filter" style="width: 10px; height: 10px;"></i>
+                        Condition
+                    </div>
+                    <div class="node-title">Client Not Responded</div>
+                    <div class="node-desc">Days Since "Client Review" started > 3</div>
+                </div>
+
+                <div class="node-arrow">
+                    <div class="arrow-tip"></div>
+                </div>
+
+                <!-- Node 3: Action - Create Task -->
+                <div class="workflow-node" onclick="selectNode(this)">
+                    <div class="node-type-badge action">
+                        <i data-lucide="check-square" style="width: 10px; height: 10px;"></i>
+                        Action
+                    </div>
+                    <div class="node-title">Create Task</div>
+                    <div class="node-desc">Assigned to: Recruiter Owner</div>
+                </div>
+
+                <div class="node-arrow">
+                    <div class="arrow-tip"></div>
+                </div>
+
+                <!-- Node 4: Action - Send Email -->
+                <div class="workflow-node" onclick="selectNode(this)">
+                    <div class="node-type-badge action">
+                        <i data-lucide="mail" style="width: 10px; height: 10px;"></i>
+                        Action
+                    </div>
+                    <div class="node-title">Send Email</div>
+                    <div class="node-desc">To: Candidate | Template: "Follow-up"</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Panel: Config -->
+        <div class="right-panel">
+            <div class="panel-header">
+                <div>Node Configuration</div>
+            </div>
+            <div class="panel-content">
+                <div class="config-group">
+                    <label class="config-label">Stage</label>
+                    <select class="config-select">
+                        <option>Submitted</option>
+                        <option>Client Review</option>
+                        <option>Interview</option>
+                    </select>
+                </div>
+                <div class="config-group">
+                    <label class="config-label">Description</label>
+                    <input type="text" class="config-input" value="When a candidate moves to &quot;Submitted&quot; stage" readonly>
+                </div>
+                <div style="margin-top: 24px; padding-top: 24px; border-top: 1px solid #E5E7EB;">
+                    <p style="font-size: 12px; color: #6B7280; line-height: 1.5;">
+                        This trigger fires whenever any candidate is moved to the "Submitted" stage in this workflow, regardless of which recruiter performs the action.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        function selectNode(element) {
+            // Remove selected class from all nodes
+            document.querySelectorAll('.workflow-node').forEach(node => {
+                node.classList.remove('selected');
+            });
+            // Add selected class to clicked node
+            element.classList.add('selected');
+        }
+    </script>
+</body>
+</html>

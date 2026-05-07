@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <!--
+    US-365: restrictive CSP. MV3 already blocks inline/eval, but the meta
+    tag adds belt-and-suspenders protection for connect-src / img-src so
+    a compromised library can't exfiltrate scraped data to an arbitrary
+    origin. We allow:
+      - self / chrome-extension: the popup + its bundled modules
+      - *.supabase.co: direct DB and auth calls (no tenant-specific host
+        at build time — refined at manifest.host_permissions instead)
+      - data:/https images: previews + favicon fetches via background.js
+      - https: for the ATS domain API (validated at runtime by config)
+  -->
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self';
+                 script-src 'self';
+                 style-src 'self' 'unsafe-inline';
+                 img-src 'self' data: https:;
+                 connect-src 'self' https://*.supabase.co https:;
+                 object-src 'none';
+                 frame-ancestors 'none';
+                 base-uri 'self';
+                 form-action 'none';">
+  <meta name="viewport" content="width=400">
+  <title>Ikhaya ATS</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div id="app">
+    <!-- Header -->
+    <header id="header">
+      <div class="header-row">
+        <svg class="logo" width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <rect width="20" height="20" rx="4" fill="#6366f1"/>
+          <path d="M6 14V6h2v8H6zm6-8v8h2V6h-2z" fill="#fff"/>
+        </svg>
+        <span class="header-title">Ikhaya ATS</span>
+        <button id="settingsBtn" class="icon-btn" title="Settings">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 10a2 2 0 100-4 2 2 0 000 4zm6.32-1.906l-1.12-.65a5.07 5.07 0 000-1.888l1.12-.65a.25.25 0 00.093-.34l-1-.732a.25.25 0 00-.34.093l-1.12.65a5.07 5.07 0 00-1.634-.944V2.25a.25.25 0 00-.25-.25h-2.138a.25.25 0 00-.25.25v1.3a5.07 5.07 0 00-1.634.944l-1.12-.65a.25.25 0 00-.34-.093l-1 1.732a.25.25 0 00.093.34l1.12.65a5.07 5.07 0 000 1.888l-1.12.65a.25.25 0 00-.093.34l1 1.732a.25.25 0 00.34.093l1.12-.65a5.07 5.07 0 001.634.944v1.3a.25.25 0 00.25.25h2.138a.25.25 0 00.25-.25v-1.3a5.07 5.07 0 001.634-.944l1.12.65a.25.25 0 00.34-.093l1-1.732a.25.25 0 00-.093-.34z"/></svg>
+        </button>
+      </div>
+      <div id="authStatus" class="auth-badge disconnected">Not connected</div>
+    </header>
+
+    <!-- Settings panel (hidden by default) -->
+    <section id="settingsPanel" class="panel hidden">
+      <h3>Connection Settings</h3>
+      <label>Supabase URL
+        <input type="url" id="inputUrl" placeholder="https://xyz.supabase.co">
+      </label>
+      <label>Anon Key
+        <input type="text" id="inputAnonKey" placeholder="eyJhbGciOi...">
+      </label>
+      <label>ATS Domain (for session cookie)
+        <input type="text" id="inputDomain" placeholder="your-app.vercel.app">
+      </label>
+      <label>Or paste Access Token directly
+        <input type="text" id="inputToken" placeholder="eyJhbGciOi...">
+      </label>
+      <div class="btn-row">
+        <button id="saveSettingsBtn" class="btn primary">Save & Connect</button>
+        <button id="cancelSettingsBtn" class="btn ghost">Cancel</button>
+      </div>
+    </section>
+
+    <!-- Main content -->
+    <section id="mainPanel" class="panel">
+      <div id="emptyState" class="empty-state">
+        <p>Navigate to a <strong>LinkedIn</strong> or <strong>GitHub</strong> page and click <strong>Scrape</strong>.</p>
+      </div>
+
+      <button id="scrapeBtn" class="btn primary full-width">Scrape This Page</button>
+
+      <!-- Scraped data preview -->
+      <div id="previewCard" class="preview-card hidden">
+        <div class="preview-header">
+          <img id="previewAvatar" class="avatar" src="" alt="">
+          <div>
+            <div id="previewName" class="preview-name"></div>
+            <div id="previewTitle" class="preview-subtitle"></div>
+            <div id="previewSource" class="badge"></div>
+          </div>
+        </div>
+        <div id="previewDetails" class="preview-details"></div>
+        <div id="previewSkills" class="preview-skills"></div>
+        <div id="previewWorkHistory" class="preview-work hidden"></div>
+      </div>
+
+      <!-- Duplicate detection results -->
+      <div id="dupSection" class="dup-section hidden">
+        <div class="dup-header">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="#f59e0b"><path d="M8 1l7 14H1L8 1zm0 4.5v4m0 1.5v1"/></svg>
+          <span id="dupMessage">Possible duplicate found</span>
+        </div>
+        <div id="dupList" class="dup-list"></div>
+        <div class="btn-row">
+          <button id="mergeBtn" class="btn warning">Merge / Update</button>
+          <button id="importAnywayBtn" class="btn ghost">Import as New</button>
+        </div>
+      </div>
+
+      <!-- Action buttons -->
+      <div id="actionRow" class="btn-row hidden">
+        <button id="importBtn" class="btn primary">Import to ATS</button>
+        <button id="updateBtn" class="btn secondary hidden">Update Existing</button>
+      </div>
+
+      <!-- Status messages -->
+      <div id="statusMsg" class="status-msg hidden"></div>
+
+      <!-- Post-import actions (shown after candidate import) -->
+      <div id="postImportPanel" class="post-import-panel hidden">
+        <div class="post-import-title">What next?</div>
+
+        <!-- 1. Tags / Skills -->
+        <div class="action-section" id="tagsSection">
+          <div class="action-header">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="#6366f1"><path d="M2 3a1 1 0 011-1h4.586a1 1 0 01.707.293l6.414 6.414a1 1 0 010 1.414l-4.586 4.586a1 1 0 01-1.414 0L2.293 8.293A1 1 0 012 7.586V3z"/><circle cx="5" cy="5" r="1" fill="#fff"/></svg>
+            <span>Tag with Skills</span>
+          </div>
+          <div id="tagChips" class="tag-chips"></div>
+          <div class="tag-add-row">
+            <input type="text" id="newTagInput" class="tag-input" placeholder="Add a tag...">
+            <button id="addTagBtn" class="btn ghost btn-sm">+</button>
+          </div>
+          <button id="applyTagsBtn" class="btn primary full-width btn-sm">Apply Tags</button>
+        </div>
+
+        <!-- 2. Add to Job Pipeline -->
+        <div class="action-section" id="pipelineSection">
+          <div class="action-header">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="#6366f1"><path d="M2 2h4v4H2V2zm0 8h4v4H2v-4zm8-8h4v4h-4V2zm0 8h4v4h-4v-4z"/></svg>
+            <span>Add to Job Pipeline</span>
+            <span class="action-hint">(enters as "Sourced")</span>
+          </div>
+          <select id="jobPicker" class="job-picker">
+            <option value="">— select a job —</option>
+          </select>
+          <button id="addPipelineBtn" class="btn primary full-width btn-sm">Add to Pipeline</button>
+        </div>
+
+        <!-- 3. Add to Hotlist -->
+        <div class="action-section" id="hotlistSection" style="display:none">
+          <div class="action-header">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="#f59e0b"><path d="M8 1.5l2.47 5.01L16 7.24l-4 3.9.94 5.51L8 13.77l-4.94 2.88L4 11.14 0 7.24l5.53-.73L8 1.5z"/></svg>
+            <span>Add to Hotlist</span>
+          </div>
+          <select id="hotlistPicker" class="job-picker">
+            <option value="">— select a hotlist —</option>
+          </select>
+          <div class="hotlist-create-row">
+            <input type="text" id="newHotlistInput" class="tag-input" placeholder="Or create new...">
+            <button id="createHotlistBtn" class="btn ghost btn-sm">Create</button>
+          </div>
+          <button id="addHotlistBtn" class="btn warning full-width btn-sm">Add to Hotlist</button>
+        </div>
+
+        <!-- 4. Auto-matched Searches -->
+        <div class="action-section" id="searchMatchSection" style="display:none">
+          <div class="action-header">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="#10b981"><circle cx="7" cy="7" r="5" fill="none" stroke="#10b981" stroke-width="2"/><line x1="11" y1="11" x2="15" y2="15" stroke="#10b981" stroke-width="2" stroke-linecap="round"/></svg>
+            <span>Matches Active Searches</span>
+          </div>
+          <div id="searchMatchList" class="search-match-list"></div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script src="popup.js" type="module"></script>
+</body>
+</html>

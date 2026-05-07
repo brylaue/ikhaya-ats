@@ -1,0 +1,2654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apex Recruiting Portal - Candidate Review</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #F8FAFC;
+            color: #0F172A;
+            line-height: 1.6;
+        }
+
+        /* ===== UTILITY CLASSES ===== */
+        .text-secondary {
+            color: #475569;
+        }
+
+        .text-tertiary {
+            color: #94A3B8;
+        }
+
+        .border-line {
+            border: 1px solid #E2E8F0;
+        }
+
+        .rounded-lg {
+            border-radius: 8px;
+        }
+
+        .rounded-md {
+            border-radius: 6px;
+        }
+
+        .gap-4 {
+            gap: 1rem;
+        }
+
+        .gap-6 {
+            gap: 1.5rem;
+        }
+
+        .p-4 {
+            padding: 1rem;
+        }
+
+        .p-6 {
+            padding: 1.5rem;
+        }
+
+        .px-4 {
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+
+        .py-2 {
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+        }
+
+        .py-4 {
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+        }
+
+        .mt-2 {
+            margin-top: 0.5rem;
+        }
+
+        .mt-4 {
+            margin-top: 1rem;
+        }
+
+        .mt-6 {
+            margin-top: 1.5rem;
+        }
+
+        .mb-2 {
+            margin-bottom: 0.5rem;
+        }
+
+        .mb-4 {
+            margin-bottom: 1rem;
+        }
+
+        .mb-6 {
+            margin-bottom: 1.5rem;
+        }
+
+        .flex {
+            display: flex;
+        }
+
+        .flex-col {
+            flex-direction: column;
+        }
+
+        .items-center {
+            align-items: center;
+        }
+
+        .items-start {
+            align-items: flex-start;
+        }
+
+        .justify-center {
+            justify-content: center;
+        }
+
+        .justify-between {
+            justify-content: space-between;
+        }
+
+        .w-full {
+            width: 100%;
+        }
+
+        .h-full {
+            height: 100%;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* ===== HEADER / TOP NAV ===== */
+        .top-nav {
+            background: white;
+            border-bottom: 1px solid #E2E8F0;
+            padding: 0.75rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 70px;
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo {
+            font-size: 16px;
+            font-weight: 700;
+            color: #0F172A;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo-mark {
+            width: 32px;
+            height: 32px;
+            background: #0EA5E9;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .nav-center {
+            font-weight: 600;
+            color: #0F172A;
+            font-size: 15px;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .notification-bell {
+            cursor: pointer;
+            position: relative;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            background: #EF4444;
+            color: white;
+            font-size: 10px;
+            font-weight: 700;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #0EA5E9, #06B6D4);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .notification-dropdown {
+            position: absolute;
+            top: 70px;
+            right: 2rem;
+            background: white;
+            border: 1px solid #E2E8F0;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            width: 340px;
+            max-height: 400px;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+
+        .notification-header {
+            padding: 1rem;
+            border-bottom: 1px solid #E2E8F0;
+            font-weight: 600;
+            font-size: 13px;
+            color: #0F172A;
+        }
+
+        .notification-item {
+            padding: 1rem;
+            border-bottom: 1px solid #E2E8F0;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .notification-item:hover {
+            background: #F1F5F9;
+        }
+
+        .notification-item-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #0F172A;
+            margin-bottom: 0.25rem;
+        }
+
+        .notification-item-desc {
+            font-size: 12px;
+            color: #94A3B8;
+        }
+
+        /* ===== SCREENS ===== */
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        /* ===== SCREEN 1: LOGIN ===== */
+        #screen-login {
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%);
+        }
+
+        .login-container {
+            background: white;
+            border-radius: 12px;
+            padding: 3rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+            width: 100%;
+            max-width: 420px;
+        }
+
+        .login-logo {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .login-logo-mark {
+            width: 48px;
+            height: 48px;
+            background: #0EA5E9;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 18px;
+            margin: 0 auto 1rem;
+        }
+
+        .login-heading {
+            font-size: 24px;
+            font-weight: 700;
+            color: #0F172A;
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+
+        .login-subheading {
+            font-size: 14px;
+            color: #475569;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #0F172A;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #E2E8F0;
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 14px;
+            transition: border-color 0.2s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #0EA5E9;
+            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+        }
+
+        .btn {
+            padding: 0.75rem 1rem;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: #0EA5E9;
+            color: white;
+            width: 100%;
+        }
+
+        .btn-primary:hover {
+            background: #0284C7;
+        }
+
+        .btn-secondary {
+            background: #F1F5F9;
+            color: #0F172A;
+            width: 100%;
+            border: 1px solid #E2E8F0;
+        }
+
+        .btn-secondary:hover {
+            background: #E2E8F0;
+        }
+
+        .btn-ghost {
+            background: transparent;
+            border: 1px solid #E2E8F0;
+            color: #0F172A;
+            padding: 0.5rem 1rem;
+            font-size: 13px;
+        }
+
+        .btn-ghost:hover {
+            background: #F1F5F9;
+        }
+
+        .btn-sm {
+            padding: 0.5rem 0.75rem;
+            font-size: 13px;
+        }
+
+        .divider {
+            text-align: center;
+            margin: 1.5rem 0;
+            position: relative;
+        }
+
+        .divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: #E2E8F0;
+        }
+
+        .divider span {
+            background: white;
+            padding: 0 0.5rem;
+            color: #94A3B8;
+            font-size: 13px;
+            position: relative;
+        }
+
+        .login-footer {
+            text-align: center;
+            margin-top: 1.5rem;
+            font-size: 12px;
+            color: #94A3B8;
+        }
+
+        .login-footer a {
+            color: #0EA5E9;
+            text-decoration: none;
+        }
+
+        /* ===== SCREEN 2: PORTAL HOME ===== */
+        #screen-home {
+            flex-direction: column;
+        }
+
+        .home-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2rem;
+        }
+
+        .welcome-banner {
+            background: white;
+            border-radius: 8px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border-left: 4px solid #0EA5E9;
+        }
+
+        .welcome-heading {
+            font-size: 20px;
+            font-weight: 700;
+            color: #0F172A;
+            margin-bottom: 0.5rem;
+        }
+
+        .welcome-subheading {
+            font-size: 14px;
+            color: #475569;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #0F172A;
+            margin-bottom: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .job-cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .job-card {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            border: 1px solid #E2E8F0;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .job-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            border-color: #0EA5E9;
+        }
+
+        .job-card-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #0F172A;
+            margin-bottom: 0.5rem;
+        }
+
+        .job-card-awaiting {
+            font-size: 13px;
+            font-weight: 600;
+            color: #0F172A;
+            margin-bottom: 1rem;
+            display: inline-block;
+        }
+
+        .job-card-awaiting.highlight {
+            background: #FEF3C7;
+            color: #92400E;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+        }
+
+        .job-card-badge {
+            display: inline-block;
+            background: #FEF3C7;
+            color: #92400E;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 0.25rem 0.5rem;
+            border-radius: 3px;
+            margin-left: 0.5rem;
+        }
+
+        .progress-label {
+            font-size: 12px;
+            color: #94A3B8;
+            margin-bottom: 0.5rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #E2E8F0;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 1rem;
+            display: flex;
+        }
+
+        .progress-segment {
+            height: 100%;
+            background: #94A3B8;
+            font-size: 10px;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .progress-segment.submitted {
+            background: #0EA5E9;
+            flex: 0 0 40%;
+        }
+
+        .progress-segment.under-review {
+            background: #06B6D4;
+            flex: 0 0 27%;
+        }
+
+        .progress-segment.advancing {
+            background: #14B8A6;
+            flex: 0 0 10%;
+        }
+
+        .progress-segment.offer {
+            background: #10B981;
+            flex: 0 0 3%;
+        }
+
+        .job-card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            font-size: 13px;
+            color: #475569;
+        }
+
+        .recruiter-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .recruiter-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #F59E0B, #D97706);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 12px;
+        }
+
+        .job-card-cta {
+            width: 100%;
+            background: #0EA5E9;
+            color: white;
+            border: none;
+            padding: 0.75rem;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 13px;
+            transition: background 0.2s;
+        }
+
+        .job-card-cta:hover {
+            background: #0284C7;
+        }
+
+        .completed-section {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid #E2E8F0;
+        }
+
+        .completed-card {
+            background: white;
+            border-radius: 8px;
+            padding: 1rem 1.5rem;
+            border: 1px solid #E2E8F0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .completed-card-left {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .completed-card-title {
+            font-weight: 700;
+            color: #0F172A;
+            font-size: 15px;
+        }
+
+        .completed-card-detail {
+            font-size: 13px;
+            color: #475569;
+        }
+
+        .completed-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #D1FAE5;
+            color: #065F46;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        /* ===== SCREEN 3: CANDIDATE LIST ===== */
+        #screen-list {
+            flex-direction: column;
+        }
+
+        .list-header {
+            background: white;
+            border-bottom: 1px solid #E2E8F0;
+            padding: 1.5rem 2rem;
+        }
+
+        .list-breadcrumb {
+            font-size: 13px;
+            color: #94A3B8;
+            margin-bottom: 1rem;
+            cursor: pointer;
+        }
+
+        .list-breadcrumb a {
+            color: #0EA5E9;
+            text-decoration: none;
+        }
+
+        .list-title-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .list-title-left h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #0F172A;
+            margin-bottom: 0.5rem;
+        }
+
+        .list-title-detail {
+            font-size: 13px;
+            color: #475569;
+        }
+
+        .list-filters {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-tab {
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            background: transparent;
+            border: 1px solid #E2E8F0;
+            color: #475569;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .filter-tab.active {
+            background: #0EA5E9;
+            color: white;
+            border-color: #0EA5E9;
+        }
+
+        .filter-tab:hover {
+            border-color: #0EA5E9;
+        }
+
+        .list-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2rem;
+        }
+
+        .candidate-card-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .candidate-card {
+            background: white;
+            border: 1px solid #E2E8F0;
+            border-radius: 8px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .candidate-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            border-color: #0EA5E9;
+        }
+
+        .candidate-avatar {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: #0EA5E9;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .candidate-card-avatar.alt1 {
+            background: #06B6D4;
+        }
+
+        .candidate-card-avatar.alt2 {
+            background: #14B8A6;
+        }
+
+        .candidate-card-avatar.alt3 {
+            background: #F59E0B;
+        }
+
+        .candidate-card-avatar.alt4 {
+            background: #8B5CF6;
+        }
+
+        .candidate-card-avatar.alt5 {
+            background: #EC4899;
+        }
+
+        .candidate-left {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .candidate-name {
+            font-size: 15px;
+            font-weight: 700;
+            color: #0F172A;
+            margin-bottom: 0.25rem;
+        }
+
+        .candidate-title {
+            font-size: 13px;
+            color: #475569;
+            margin-bottom: 0.75rem;
+        }
+
+        .candidate-summary {
+            font-size: 13px;
+            color: #475569;
+            line-height: 1.5;
+            margin-bottom: 0.75rem;
+        }
+
+        .candidate-tags {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .candidate-tag {
+            background: #F1F5F9;
+            color: #475569;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .candidate-middle {
+            flex: 0 0 250px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .candidate-status {
+            display: inline-block;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 0.5rem 0.75rem;
+            border-radius: 4px;
+            width: fit-content;
+        }
+
+        .candidate-status.awaiting {
+            background: #FEF3C7;
+            color: #92400E;
+        }
+
+        .candidate-status.advancing {
+            background: #DBEAFE;
+            color: #0C4A6E;
+        }
+
+        .candidate-status.hold {
+            background: #FEE2E2;
+            color: #7F1D1D;
+        }
+
+        .candidate-status.passed {
+            background: #F3F4F6;
+            color: #374151;
+        }
+
+        .candidate-right {
+            flex: 0 0 auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: flex-end;
+            gap: 1rem;
+        }
+
+        .candidate-decision-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-advance {
+            padding: 0.5rem 0.75rem;
+            background: #10B981;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-advance:hover {
+            background: #059669;
+        }
+
+        .btn-hold {
+            padding: 0.5rem 0.75rem;
+            background: #F59E0B;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-hold:hover {
+            background: #D97706;
+        }
+
+        .btn-pass {
+            padding: 0.5rem 0.75rem;
+            background: transparent;
+            color: #EF4444;
+            border: 1px solid #FCA5A5;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-pass:hover {
+            background: #FEE2E2;
+            border-color: #EF4444;
+        }
+
+        .candidate-decided {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 12px;
+            color: #475569;
+        }
+
+        .candidate-decided-status {
+            font-weight: 600;
+            color: #0F172A;
+        }
+
+        /* ===== SCREEN 4: CANDIDATE PROFILE ===== */
+        #screen-profile {
+            flex-direction: column;
+        }
+
+        .profile-header {
+            background: white;
+            border-bottom: 1px solid #E2E8F0;
+            padding: 1.5rem 2rem;
+        }
+
+        .profile-breadcrumb {
+            font-size: 13px;
+            color: #94A3B8;
+            margin-bottom: 1rem;
+            cursor: pointer;
+        }
+
+        .profile-breadcrumb a {
+            color: #0EA5E9;
+            text-decoration: none;
+        }
+
+        .profile-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2rem;
+        }
+
+        .profile-main {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .profile-left {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .profile-hero {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #0EA5E9;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .profile-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .profile-name {
+            font-size: 28px;
+            font-weight: 700;
+            color: #0F172A;
+            margin-bottom: 0.25rem;
+        }
+
+        .profile-headline {
+            font-size: 14px;
+            color: #475569;
+            margin-bottom: 0.75rem;
+        }
+
+        .profile-current {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 13px;
+            color: #0F172A;
+            font-weight: 600;
+        }
+
+        .profile-location {
+            font-size: 13px;
+            color: #475569;
+            margin-top: 0.5rem;
+        }
+
+        .profile-links {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .profile-link {
+            width: 36px;
+            height: 36px;
+            border-radius: 6px;
+            background: #F1F5F9;
+            color: #0F172A;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid #E2E8F0;
+        }
+
+        .profile-link:hover {
+            background: #0EA5E9;
+            color: white;
+            border-color: #0EA5E9;
+        }
+
+        .profile-section {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            border: 1px solid #E2E8F0;
+        }
+
+        .profile-section-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #0F172A;
+            margin-bottom: 1rem;
+        }
+
+        .recruiter-take {
+            background: #EFF6FF;
+            border-left: 4px solid #0EA5E9;
+            padding: 1.5rem;
+            border-radius: 6px;
+        }
+
+        .recruiter-take-text {
+            font-size: 13px;
+            color: #1E293B;
+            line-height: 1.6;
+        }
+
+        .work-history {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .work-item {
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #E2E8F0;
+        }
+
+        .work-item:last-child {
+            border-bottom: none;
+        }
+
+        .work-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #0F172A;
+            margin-bottom: 0.25rem;
+        }
+
+        .work-company {
+            font-size: 13px;
+            color: #475569;
+            margin-bottom: 0.25rem;
+        }
+
+        .work-years {
+            font-size: 12px;
+            color: #94A3B8;
+        }
+
+        .education {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .education-item {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .education-degree {
+            font-size: 13px;
+            font-weight: 600;
+            color: #0F172A;
+        }
+
+        .education-school {
+            font-size: 13px;
+            color: #475569;
+        }
+
+        .skills-cloud {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .skill-badge {
+            background: #DBEAFE;
+            color: #0C4A6E;
+            padding: 0.5rem 0.75rem;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .profile-right {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .profile-status-box {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            border: 1px solid #E2E8F0;
+        }
+
+        .status-badge-large {
+            display: inline-block;
+            background: #FEF3C7;
+            color: #92400E;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+
+        .decision-buttons-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .btn-decision {
+            padding: 0.75rem 1rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+            width: 100%;
+        }
+
+        .btn-decision-advance {
+            background: #10B981;
+            color: white;
+        }
+
+        .btn-decision-advance:hover {
+            background: #059669;
+        }
+
+        .btn-decision-hold {
+            background: #F59E0B;
+            color: white;
+        }
+
+        .btn-decision-hold:hover {
+            background: #D97706;
+        }
+
+        .btn-decision-pass {
+            background: white;
+            color: #EF4444;
+            border: 1px solid #FECACA;
+        }
+
+        .btn-decision-pass:hover {
+            background: #FEE2E2;
+        }
+
+        .profile-textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #E2E8F0;
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 13px;
+            resize: vertical;
+            min-height: 80px;
+            margin-bottom: 1rem;
+        }
+
+        .profile-textarea:focus {
+            outline: none;
+            border-color: #0EA5E9;
+            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+        }
+
+        .profile-textarea-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #0F172A;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .interview-toggle {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #E2E8F0;
+        }
+
+        .toggle-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #0F172A;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .toggle-group {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .toggle-btn {
+            flex: 1;
+            padding: 0.5rem;
+            border: 1px solid #E2E8F0;
+            background: white;
+            color: #475569;
+            font-size: 12px;
+            font-weight: 600;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .toggle-btn.active {
+            background: #0EA5E9;
+            color: white;
+            border-color: #0EA5E9;
+        }
+
+        .profile-info-box {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            border: 1px solid #E2E8F0;
+        }
+
+        .info-box-row {
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #E2E8F0;
+        }
+
+        .info-box-row:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .info-box-label {
+            font-size: 12px;
+            color: #94A3B8;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .info-box-value {
+            font-size: 13px;
+            font-weight: 600;
+            color: #0F172A;
+        }
+
+        .recruiter-card {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            border: 1px solid #E2E8F0;
+            text-align: center;
+        }
+
+        .recruiter-card-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #F59E0B, #D97706);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            margin: 0 auto 0.75rem;
+        }
+
+        .recruiter-card-name {
+            font-size: 13px;
+            font-weight: 700;
+            color: #0F172A;
+        }
+
+        .recruiter-card-title {
+            font-size: 12px;
+            color: #475569;
+        }
+
+        .recruiter-card-date {
+            font-size: 12px;
+            color: #94A3B8;
+            margin-top: 0.75rem;
+        }
+
+        .profile-navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid #E2E8F0;
+        }
+
+        .nav-link {
+            color: #0EA5E9;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .nav-link:hover {
+            text-decoration: underline;
+        }
+
+        /* ===== SCREEN 5: CONFIRMATION ===== */
+        #screen-confirmation {
+            justify-content: center;
+            align-items: center;
+            flex: 1;
+        }
+
+        .confirmation-container {
+            text-align: center;
+            max-width: 420px;
+        }
+
+        .confirmation-icon {
+            width: 80px;
+            height: 80px;
+            background: #D1FAE5;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            color: #10B981;
+        }
+
+        .confirmation-heading {
+            font-size: 24px;
+            font-weight: 700;
+            color: #0F172A;
+            margin-bottom: 0.5rem;
+        }
+
+        .confirmation-text {
+            font-size: 14px;
+            color: #475569;
+            margin-bottom: 1.5rem;
+        }
+
+        .confirmation-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .confirmation-actions a {
+            color: #0EA5E9;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        /* ===== SCREEN 6: COMPARISON ===== */
+        #screen-comparison {
+            flex-direction: column;
+        }
+
+        .comparison-header {
+            background: white;
+            border-bottom: 1px solid #E2E8F0;
+            padding: 1.5rem 2rem;
+        }
+
+        .comparison-breadcrumb {
+            font-size: 13px;
+            color: #94A3B8;
+            margin-bottom: 1rem;
+            cursor: pointer;
+        }
+
+        .comparison-breadcrumb a {
+            color: #0EA5E9;
+            text-decoration: none;
+        }
+
+        .comparison-content {
+            flex: 1;
+            overflow: auto;
+            padding: 2rem;
+        }
+
+        .comparison-table {
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #E2E8F0;
+            overflow: hidden;
+            max-width: 100%;
+        }
+
+        .comparison-row {
+            display: grid;
+            grid-template-columns: 150px 1fr 1fr 1fr;
+            border-bottom: 1px solid #E2E8F0;
+        }
+
+        .comparison-row:last-child {
+            border-bottom: none;
+        }
+
+        .comparison-cell {
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .comparison-label {
+            background: #F8FAFC;
+            font-weight: 600;
+            color: #0F172A;
+            font-size: 13px;
+        }
+
+        .comparison-value {
+            font-size: 13px;
+            color: #475569;
+        }
+
+        .comparison-value.highlight {
+            background: #EFF6FF;
+            color: #0C4A6E;
+            font-weight: 600;
+        }
+
+        .comparison-header-row {
+            display: grid;
+            grid-template-columns: 150px 1fr 1fr 1fr;
+            background: white;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .comparison-header-cell {
+            padding: 1rem;
+            font-weight: 700;
+            color: #0F172A;
+            font-size: 13px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            border-bottom: 2px solid #0EA5E9;
+            gap: 0.5rem;
+        }
+
+        .comparison-candidate-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 11px;
+            color: white;
+        }
+
+        .comparison-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .comparison-actions .btn-sm {
+            width: 100%;
+        }
+
+        .comparison-footer {
+            padding: 2rem;
+            background: white;
+            border-radius: 8px;
+            margin-top: 1.5rem;
+            border: 1px solid #E2E8F0;
+        }
+
+        .comparison-ranking {
+            margin-bottom: 1.5rem;
+        }
+
+        .ranking-title {
+            font-weight: 600;
+            color: #0F172A;
+            margin-bottom: 1rem;
+            font-size: 13px;
+        }
+
+        .ranking-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.5rem 0;
+            font-size: 13px;
+            color: #475569;
+        }
+
+        .ranking-number {
+            width: 24px;
+            height: 24px;
+            background: #E2E8F0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: #0F172A;
+        }
+
+        .ranking-candidate {
+            flex: 1;
+        }
+
+        .ranking-dots {
+            cursor: grab;
+            color: #CBD5E1;
+        }
+
+        .comparison-notes {
+            margin-top: 1.5rem;
+        }
+
+        .comparison-notes-label {
+            font-weight: 600;
+            color: #0F172A;
+            margin-bottom: 0.5rem;
+            font-size: 13px;
+        }
+
+        .comparison-notes-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #E2E8F0;
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 13px;
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .comparison-submit {
+            margin-top: 1.5rem;
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .comparison-submit .btn-primary {
+            flex: 1;
+            width: 100%;
+        }
+
+        /* ===== FOOTER ===== */
+        footer {
+            background: white;
+            border-top: 1px solid #E2E8F0;
+            padding: 1rem 2rem;
+            text-align: center;
+            font-size: 12px;
+            color: #94A3B8;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1024px) {
+            .profile-main {
+                grid-template-columns: 1fr;
+            }
+
+            .job-cards-grid {
+                grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            }
+
+            .comparison-row,
+            .comparison-header-row {
+                grid-template-columns: 120px 1fr 1fr;
+            }
+
+            .comparison-row.third-only {
+                grid-template-columns: 120px 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .top-nav {
+                padding: 0.75rem 1rem;
+            }
+
+            .nav-center {
+                display: none;
+            }
+
+            .home-content,
+            .list-content,
+            .profile-content {
+                padding: 1rem;
+            }
+
+            .candidate-card {
+                flex-direction: column;
+            }
+
+            .candidate-right {
+                flex-direction: row;
+                justify-content: space-between;
+            }
+
+            .profile-hero {
+                flex-direction: column;
+            }
+
+            .job-cards-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .comparison-row,
+            .comparison-header-row {
+                grid-template-columns: 100px 1fr 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- TOP NAVIGATION -->
+    <div class="top-nav hidden" id="top-nav">
+        <div class="nav-left">
+            <div class="logo">
+                <div class="logo-mark">A</div>
+                <span>Apex Recruiting</span>
+            </div>
+        </div>
+        <div class="nav-center" id="nav-center-client">Acme Corp</div>
+        <div class="nav-right">
+            <div class="notification-bell" id="notification-bell">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                </svg>
+                <div class="notification-badge">2</div>
+            </div>
+            <div class="user-avatar" id="user-avatar">AS</div>
+        </div>
+        <div class="notification-dropdown hidden" id="notification-dropdown">
+            <div class="notification-header">Notifications</div>
+            <div class="notification-item">
+                <div class="notification-item-title">4 new candidates added</div>
+                <div class="notification-item-desc">VP Engineering search</div>
+            </div>
+            <div class="notification-item">
+                <div class="notification-item-title">Feedback received</div>
+                <div class="notification-item-desc">Your feedback on Marcus Williams was received</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCREEN 1: LOGIN -->
+    <div class="screen active" id="screen-login">
+        <div class="login-container">
+            <div class="login-logo">
+                <div class="login-logo-mark">A</div>
+                <div style="font-size: 14px; font-weight: 600; color: #0F172A;">Apex Recruiting</div>
+            </div>
+            <h1 class="login-heading">Welcome back</h1>
+            <p class="login-subheading">You're reviewing candidates for Acme Corp</p>
+
+            <div class="form-group">
+                <label class="form-label">Email address</label>
+                <input type="email" class="form-input" placeholder="alex@acmecorp.com" value="alex@acmecorp.com">
+            </div>
+            <button class="btn btn-primary" onclick="goToHome()">Send Magic Link</button>
+
+            <div class="divider"><span>OR</span></div>
+
+            <button class="btn btn-secondary">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                </svg>
+                Sign in with Google
+            </button>
+
+            <p class="login-footer">
+                Questions? Contact your recruiter at <a href="mailto:sarah@apexrecruiting.com">sarah@apexrecruiting.com</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- SCREEN 2: PORTAL HOME -->
+    <div class="screen" id="screen-home">
+        <div class="top-nav" style="display: flex;">
+            <div class="nav-left">
+                <div class="logo">
+                    <div class="logo-mark">A</div>
+                    <span>Apex Recruiting</span>
+                </div>
+            </div>
+            <div class="nav-center">Acme Corp</div>
+            <div class="nav-right">
+                <div class="notification-bell" id="notification-bell-2">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                    </svg>
+                    <div class="notification-badge">2</div>
+                </div>
+                <div class="user-avatar">AS</div>
+            </div>
+            <div class="notification-dropdown hidden" id="notification-dropdown-2">
+                <div class="notification-header">Notifications</div>
+                <div class="notification-item">
+                    <div class="notification-item-title">4 new candidates added</div>
+                    <div class="notification-item-desc">VP Engineering search</div>
+                </div>
+                <div class="notification-item">
+                    <div class="notification-item-title">Feedback received</div>
+                    <div class="notification-item-desc">Your feedback on Marcus Williams was received</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="home-content">
+            <div class="welcome-banner">
+                <div class="welcome-heading">Hello, Alex 👋</div>
+                <div class="welcome-subheading">You have 3 new candidates to review across 2 searches.</div>
+            </div>
+
+            <div class="section-title">Active Searches</div>
+
+            <div class="job-cards-grid">
+                <!-- VP Engineering -->
+                <div class="job-card" onclick="goToList('VP of Engineering', 4)">
+                    <div class="job-card-title">VP of Engineering</div>
+                    <div class="mb-4">
+                        <span class="job-card-awaiting highlight">4 awaiting your review</span>
+                    </div>
+                    <div class="progress-label">Submitted: 12 → Under Review: 8 → Advancing: 3 → Offer: 1</div>
+                    <div class="progress-bar">
+                        <div class="progress-segment submitted"></div>
+                        <div class="progress-segment under-review"></div>
+                        <div class="progress-segment advancing"></div>
+                        <div class="progress-segment offer"></div>
+                    </div>
+                    <div class="job-card-footer">
+                        <div class="recruiter-info">
+                            <div class="recruiter-avatar">SK</div>
+                            <span>Sarah Kim</span>
+                        </div>
+                        <span>Updated 2 days ago</span>
+                    </div>
+                    <button class="job-card-cta">Review Candidates →</button>
+                </div>
+
+                <!-- Senior Product Manager -->
+                <div class="job-card" onclick="goToList('Senior Product Manager', 0)">
+                    <div class="job-card-title">Senior Product Manager</div>
+                    <div class="mb-4">
+                        <span class="job-card-awaiting">0 awaiting review</span>
+                    </div>
+                    <div class="progress-label">Submitted: 7 → Under Review: 5 → Advancing: 2 → Offer: 0</div>
+                    <div class="progress-bar">
+                        <div class="progress-segment submitted" style="flex: 0 0 35%;"></div>
+                        <div class="progress-segment under-review" style="flex: 0 0 25%;"></div>
+                        <div class="progress-segment advancing" style="flex: 0 0 10%;"></div>
+                    </div>
+                    <div class="job-card-footer">
+                        <div class="recruiter-info">
+                            <div class="recruiter-avatar" style="background: linear-gradient(135deg, #06B6D4, #0284C7);">RJ</div>
+                            <span>Richard Johnson</span>
+                        </div>
+                        <span>Updated 5 days ago</span>
+                    </div>
+                    <button class="job-card-cta">Review Candidates →</button>
+                </div>
+
+                <!-- Director of Sales -->
+                <div class="job-card" onclick="goToList('Director of Sales', 2)">
+                    <div class="job-card-title">Director of Sales</div>
+                    <div class="mb-4">
+                        <span class="job-card-awaiting highlight">2 awaiting review</span>
+                    </div>
+                    <div class="progress-label">Submitted: 8 → Under Review: 4 → Advancing: 2 → Offer: 1</div>
+                    <div class="progress-bar">
+                        <div class="progress-segment submitted" style="flex: 0 0 40%;"></div>
+                        <div class="progress-segment under-review" style="flex: 0 0 25%;"></div>
+                        <div class="progress-segment advancing" style="flex: 0 0 12%;"></div>
+                        <div class="progress-segment offer" style="flex: 0 0 5%;"></div>
+                    </div>
+                    <div class="job-card-footer">
+                        <div class="recruiter-info">
+                            <div class="recruiter-avatar" style="background: linear-gradient(135deg, #14B8A6, #0D9488);">MC</div>
+                            <span>Michelle Chen</span>
+                        </div>
+                        <span>Updated 3 days ago</span>
+                    </div>
+                    <button class="job-card-cta">Review Candidates →</button>
+                </div>
+
+                <!-- Head of Data Science -->
+                <div class="job-card" onclick="goToList('Head of Data Science', 6)">
+                    <div class="job-card-title">Head of Data Science</div>
+                    <div class="mb-4">
+                        <span class="job-card-awaiting highlight">6 awaiting review <span class="job-card-badge">NEW</span></span>
+                    </div>
+                    <div class="progress-label">Submitted: 6 → Under Review: 6 → Advancing: 0 → Offer: 0</div>
+                    <div class="progress-bar">
+                        <div class="progress-segment submitted" style="flex: 0 0 50%;"></div>
+                        <div class="progress-segment under-review" style="flex: 0 0 50%;"></div>
+                    </div>
+                    <div class="job-card-footer">
+                        <div class="recruiter-info">
+                            <div class="recruiter-avatar" style="background: linear-gradient(135deg, #8B5CF6, #7C3AED);">PT</div>
+                            <span>Patrick Torres</span>
+                        </div>
+                        <span>Updated 1 day ago</span>
+                    </div>
+                    <button class="job-card-cta">Review Candidates →</button>
+                </div>
+            </div>
+
+            <div class="completed-section">
+                <div class="section-title">Recently Completed</div>
+                <div class="completed-card">
+                    <div class="completed-card-left">
+                        <div class="completed-card-title">CTO</div>
+                        <div class="completed-card-detail">Placed: Marcus Chen, started Jan 15</div>
+                    </div>
+                    <div class="completed-badge">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" fill="currentColor"/>
+                        </svg>
+                        Completed
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCREEN 3: CANDIDATE LIST -->
+    <div class="screen" id="screen-list">
+        <div class="top-nav" style="display: flex;">
+            <div class="nav-left">
+                <div class="logo">
+                    <div class="logo-mark">A</div>
+                    <span>Apex Recruiting</span>
+                </div>
+            </div>
+            <div class="nav-center">Acme Corp</div>
+            <div class="nav-right">
+                <div class="notification-bell" id="notification-bell-3">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                    </svg>
+                    <div class="notification-badge">2</div>
+                </div>
+                <div class="user-avatar">AS</div>
+            </div>
+            <div class="notification-dropdown hidden" id="notification-dropdown-3">
+                <div class="notification-header">Notifications</div>
+                <div class="notification-item">
+                    <div class="notification-item-title">4 new candidates added</div>
+                    <div class="notification-item-desc">VP Engineering search</div>
+                </div>
+                <div class="notification-item">
+                    <div class="notification-item-title">Feedback received</div>
+                    <div class="notification-item-desc">Your feedback on Marcus Williams was received</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="list-header">
+            <div class="list-breadcrumb"><a onclick="goToHome()">← Back to all searches</a></div>
+            <div class="list-title-row">
+                <div class="list-title-left">
+                    <h1 id="list-title">VP of Engineering</h1>
+                    <div class="list-title-detail">
+                        <span id="list-client">Acme Corp</span> • <span id="list-count">12 candidates submitted</span>
+                    </div>
+                </div>
+            </div>
+            <div class="list-filters">
+                <button class="filter-tab active" onclick="filterCandidates('all')">All (12)</button>
+                <button class="filter-tab" onclick="filterCandidates('awaiting')">Awaiting Review (4)</button>
+                <button class="filter-tab" onclick="filterCandidates('advancing')">Advancing (3)</button>
+                <button class="filter-tab" onclick="filterCandidates('hold')">On Hold (2)</button>
+                <button class="filter-tab" onclick="filterCandidates('passed')">Passed (3)</button>
+                <button class="btn btn-ghost" onclick="goToComparison()" style="margin-left: auto;">Compare</button>
+            </div>
+        </div>
+
+        <div class="list-content">
+            <div class="candidate-card-list" id="candidate-list"></div>
+        </div>
+    </div>
+
+    <!-- SCREEN 4: CANDIDATE PROFILE -->
+    <div class="screen" id="screen-profile">
+        <div class="top-nav" style="display: flex;">
+            <div class="nav-left">
+                <div class="logo">
+                    <div class="logo-mark">A</div>
+                    <span>Apex Recruiting</span>
+                </div>
+            </div>
+            <div class="nav-center">Acme Corp</div>
+            <div class="nav-right">
+                <div class="notification-bell" id="notification-bell-4">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                    </svg>
+                    <div class="notification-badge">2</div>
+                </div>
+                <div class="user-avatar">AS</div>
+            </div>
+            <div class="notification-dropdown hidden" id="notification-dropdown-4">
+                <div class="notification-header">Notifications</div>
+                <div class="notification-item">
+                    <div class="notification-item-title">4 new candidates added</div>
+                    <div class="notification-item-desc">VP Engineering search</div>
+                </div>
+                <div class="notification-item">
+                    <div class="notification-item-title">Feedback received</div>
+                    <div class="notification-item-desc">Your feedback on Marcus Williams was received</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="profile-header">
+            <div class="profile-breadcrumb"><a onclick="backToList()">← Back to candidates</a></div>
+        </div>
+
+        <div class="profile-content">
+            <div class="profile-main">
+                <!-- LEFT PANEL -->
+                <div class="profile-left">
+                    <div class="profile-hero">
+                        <div class="profile-avatar" id="profile-avatar">SC</div>
+                        <div class="profile-info">
+                            <div class="profile-name" id="profile-name">Sarah Chen</div>
+                            <div class="profile-headline" id="profile-headline">Senior Software Engineer → VP Engineering potential</div>
+                            <div class="profile-current" id="profile-current">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                </svg>
+                                Google • Senior Staff Engineer • 4 years
+                            </div>
+                            <div class="profile-location" id="profile-location">San Francisco, CA</div>
+                            <div class="profile-links">
+                                <a class="profile-link" title="LinkedIn">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.39v-1.2h-2.5v8.5h2.5v-4.34c0-.77.62-1.4 1.4-1.4a1.4 1.4 0 0 1 1.4 1.4v4.34h2.5M6.5 8a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m-1 13.5h2.5V9h-2.5v12.5z"/>
+                                    </svg>
+                                </a>
+                                <a class="profile-link" title="Email">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+                                        <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
+                                    </svg>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="profile-section">
+                        <div class="profile-section-title">Recruiter's Take</div>
+                        <div class="recruiter-take">
+                            <div class="recruiter-take-text">Sarah is one of the strongest candidates we've evaluated in 2 years of running engineering searches. What sets her apart is the combination of deep technical credibility—she's still a respected IC voice—with genuine management maturity. At Google she grew and managed a team of 40 across 3 time zones, drove 40% improvement in deployment frequency, and was a key voice in the org's hiring bar decisions. She's leaving for mission-driven reasons: she wants to build something, not maintain. We think the scale of Acme's engineering challenge is exactly the kind of problem she'll thrive in. Strong recommend.</div>
+                        </div>
+                    </div>
+
+                    <div class="profile-section">
+                        <div class="profile-section-title">Work History</div>
+                        <div class="work-history">
+                            <div class="work-item">
+                                <div class="work-title">Senior Staff Engineer</div>
+                                <div class="work-company">Google</div>
+                                <div class="work-years">2020 – Present (4 years)</div>
+                            </div>
+                            <div class="work-item">
+                                <div class="work-title">Principal Engineer</div>
+                                <div class="work-company">Stripe</div>
+                                <div class="work-years">2017 – 2020 (3 years)</div>
+                            </div>
+                            <div class="work-item">
+                                <div class="work-title">Software Engineer</div>
+                                <div class="work-company">Dropbox</div>
+                                <div class="work-years">2014 – 2017 (3 years)</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="profile-section">
+                        <div class="profile-section-title">Education</div>
+                        <div class="education">
+                            <div class="education-item">
+                                <div>
+                                    <div class="education-degree">MS Computer Science</div>
+                                    <div class="education-school">Stanford University</div>
+                                </div>
+                            </div>
+                            <div class="education-item">
+                                <div>
+                                    <div class="education-degree">BS Computer Science</div>
+                                    <div class="education-school">UCLA</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="profile-section">
+                        <div class="profile-section-title">Key Skills</div>
+                        <div class="skills-cloud">
+                            <div class="skill-badge">Leadership</div>
+                            <div class="skill-badge">System Design</div>
+                            <div class="skill-badge">Distributed Systems</div>
+                            <div class="skill-badge">Team Scaling</div>
+                            <div class="skill-badge">Performance Optimization</div>
+                            <div class="skill-badge">Go</div>
+                            <div class="skill-badge">Python</div>
+                            <div class="skill-badge">AWS</div>
+                        </div>
+                    </div>
+
+                    <div class="profile-navigation" style="margin-bottom: 2rem;">
+                        <a class="nav-link" onclick="previousCandidate()"← Previous candidate</a>
+                        <a class="nav-link" onclick="nextCandidate()">Next candidate →</a>
+                    </div>
+                </div>
+
+                <!-- RIGHT PANEL -->
+                <div class="profile-right">
+                    <div class="profile-status-box">
+                        <div class="status-badge-large" id="profile-status">Awaiting Your Review</div>
+                        <div class="decision-buttons-group">
+                            <button class="btn-decision btn-decision-advance" onclick="submitDecision('advance')">✓ Advance to Next Stage</button>
+                            <button class="btn-decision btn-decision-hold" onclick="submitDecision('hold')">⏸ Put on Hold</button>
+                            <button class="btn-decision btn-decision-pass" onclick="submitDecision('pass')">✕ Pass</button>
+                        </div>
+                        <label class="profile-textarea-label">Add a note</label>
+                        <textarea class="profile-textarea" placeholder="Optional reason or feedback..." id="profile-note"></textarea>
+
+                        <div class="interview-toggle">
+                            <label class="toggle-label">Schedule an interview?</label>
+                            <div class="toggle-group">
+                                <button class="toggle-btn active" onclick="setInterviewStatus(true)">Yes</button>
+                                <button class="toggle-btn" onclick="setInterviewStatus(false)">No</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="profile-info-box">
+                        <div class="profile-section-title">About This Search</div>
+                        <div class="info-box-row">
+                            <div class="info-box-label">Role</div>
+                            <div class="info-box-value">VP of Engineering</div>
+                        </div>
+                        <div class="info-box-row">
+                            <div class="info-box-label">Compensation</div>
+                            <div class="info-box-value">$280–320k + equity</div>
+                        </div>
+                        <div class="info-box-row">
+                            <div class="info-box-label">Timeline</div>
+                            <div class="info-box-value">Want to hire by Mar 15</div>
+                        </div>
+                        <div class="info-box-row">
+                            <div class="info-box-label">Key Must-Haves</div>
+                            <div class="info-box-value">50+ person team exp, distributed systems, startup exp a plus</div>
+                        </div>
+                    </div>
+
+                    <div class="recruiter-card">
+                        <div class="recruiter-card-avatar">SK</div>
+                        <div class="recruiter-card-name">Sarah Kim</div>
+                        <div class="recruiter-card-title">Senior Recruiter</div>
+                        <div class="recruiter-card-date">Submitted 3 days ago</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCREEN 5: CONFIRMATION -->
+    <div class="screen" id="screen-confirmation">
+        <div class="top-nav" style="display: flex;">
+            <div class="nav-left">
+                <div class="logo">
+                    <div class="logo-mark">A</div>
+                    <span>Apex Recruiting</span>
+                </div>
+            </div>
+            <div class="nav-center">Acme Corp</div>
+            <div class="nav-right">
+                <div class="notification-bell" id="notification-bell-5">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                    </svg>
+                    <div class="notification-badge">2</div>
+                </div>
+                <div class="user-avatar">AS</div>
+            </div>
+            <div class="notification-dropdown hidden" id="notification-dropdown-5">
+                <div class="notification-header">Notifications</div>
+                <div class="notification-item">
+                    <div class="notification-item-title">4 new candidates added</div>
+                    <div class="notification-item-desc">VP Engineering search</div>
+                </div>
+                <div class="notification-item">
+                    <div class="notification-item-title">Feedback received</div>
+                    <div class="notification-item-desc">Your feedback on Marcus Williams was received</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="confirmation-container">
+            <div class="confirmation-icon">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+            </div>
+            <h2 class="confirmation-heading">Feedback submitted!</h2>
+            <p class="confirmation-text">We'll reach out to schedule <span id="confirmation-name">Sarah Chen</span> for next steps. You'll receive an email confirmation shortly.</p>
+            <div class="confirmation-actions">
+                <a onclick="goToList('VP of Engineering', 4)">← Return to all candidates</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCREEN 6: COMPARISON -->
+    <div class="screen" id="screen-comparison">
+        <div class="top-nav" style="display: flex;">
+            <div class="nav-left">
+                <div class="logo">
+                    <div class="logo-mark">A</div>
+                    <span>Apex Recruiting</span>
+                </div>
+            </div>
+            <div class="nav-center">Acme Corp</div>
+            <div class="nav-right">
+                <div class="notification-bell" id="notification-bell-6">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                    </svg>
+                    <div class="notification-badge">2</div>
+                </div>
+                <div class="user-avatar">AS</div>
+            </div>
+            <div class="notification-dropdown hidden" id="notification-dropdown-6">
+                <div class="notification-header">Notifications</div>
+                <div class="notification-item">
+                    <div class="notification-item-title">4 new candidates added</div>
+                    <div class="notification-item-desc">VP Engineering search</div>
+                </div>
+                <div class="notification-item">
+                    <div class="notification-item-title">Feedback received</div>
+                    <div class="notification-item-desc">Your feedback on Marcus Williams was received</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="comparison-header">
+            <div class="comparison-breadcrumb"><a onclick="backToList()">← Back to candidates</a></div>
+            <h1 style="font-size: 24px; font-weight: 700; color: #0F172A;">Comparing 3 Candidates for VP of Engineering</h1>
+        </div>
+
+        <div class="comparison-content">
+            <div class="comparison-table">
+                <div class="comparison-header-row">
+                    <div class="comparison-header-cell"></div>
+                    <div class="comparison-header-cell">
+                        <div class="comparison-candidate-avatar" style="background: #0EA5E9;">SC</div>
+                        <div>Sarah Chen</div>
+                    </div>
+                    <div class="comparison-header-cell">
+                        <div class="comparison-candidate-avatar" style="background: #06B6D4;">MW</div>
+                        <div>Marcus Williams</div>
+                    </div>
+                    <div class="comparison-header-cell">
+                        <div class="comparison-candidate-avatar" style="background: #14B8A6;">JP</div>
+                        <div>Jennifer Park</div>
+                    </div>
+                </div>
+
+                <div class="comparison-row">
+                    <div class="comparison-cell comparison-label">Current Title</div>
+                    <div class="comparison-cell comparison-value highlight">Senior Staff Eng</div>
+                    <div class="comparison-cell comparison-value">Sr Manager, Eng</div>
+                    <div class="comparison-cell comparison-value">Senior PM</div>
+                </div>
+
+                <div class="comparison-row">
+                    <div class="comparison-cell comparison-label">Years of Experience</div>
+                    <div class="comparison-cell comparison-value highlight">14 years</div>
+                    <div class="comparison-cell comparison-value">11 years</div>
+                    <div class="comparison-cell comparison-value">9 years</div>
+                </div>
+
+                <div class="comparison-row">
+                    <div class="comparison-cell comparison-label">Team Size Managed</div>
+                    <div class="comparison-cell comparison-value highlight">40+ engineers</div>
+                    <div class="comparison-cell comparison-value">30+ engineers</div>
+                    <div class="comparison-cell comparison-value">N/A (IC)</div>
+                </div>
+
+                <div class="comparison-row">
+                    <div class="comparison-cell comparison-label">Company Scale</div>
+                    <div class="comparison-cell comparison-value highlight">10,000+ (Google)</div>
+                    <div class="comparison-cell comparison-value">1,500+ (Slack)</div>
+                    <div class="comparison-cell comparison-value">300+ (YC startup)</div>
+                </div>
+
+                <div class="comparison-row">
+                    <div class="comparison-cell comparison-label">Education</div>
+                    <div class="comparison-cell comparison-value highlight">MS Stanford CS</div>
+                    <div class="comparison-cell comparison-value">BS MIT</div>
+                    <div class="comparison-cell comparison-value">BS Berkeley</div>
+                </div>
+
+                <div class="comparison-row">
+                    <div class="comparison-cell comparison-label">Location / Remote</div>
+                    <div class="comparison-cell comparison-value">SF / Open to reloc</div>
+                    <div class="comparison-cell comparison-value highlight">NY / Fully remote</div>
+                    <div class="comparison-cell comparison-value">Boston / Hybrid</div>
+                </div>
+
+                <div class="comparison-row">
+                    <div class="comparison-cell comparison-label">Salary Expectation</div>
+                    <div class="comparison-cell comparison-value">$280–320k</div>
+                    <div class="comparison-cell comparison-value highlight">$250–290k</div>
+                    <div class="comparison-cell comparison-value">$300–350k</div>
+                </div>
+
+                <div class="comparison-row">
+                    <div class="comparison-cell comparison-label">Recruiter Rating</div>
+                    <div class="comparison-cell comparison-value highlight">★★★★★</div>
+                    <div class="comparison-cell comparison-value">★★★★☆</div>
+                    <div class="comparison-cell comparison-value">★★★★☆</div>
+                </div>
+
+                <div class="comparison-row">
+                    <div class="comparison-cell comparison-label">Available From</div>
+                    <div class="comparison-cell comparison-value">Feb 15</div>
+                    <div class="comparison-cell comparison-value">Immediate</div>
+                    <div class="comparison-cell comparison-value highlight">Immediate</div>
+                </div>
+            </div>
+
+            <div class="comparison-footer">
+                <div class="comparison-ranking">
+                    <div class="ranking-title">Rank Your Top Choice</div>
+                    <div class="ranking-item">
+                        <div class="ranking-number">1</div>
+                        <div class="ranking-candidate">Sarah Chen (Top choice)</div>
+                        <div class="ranking-dots">⋮</div>
+                    </div>
+                    <div class="ranking-item">
+                        <div class="ranking-number">2</div>
+                        <div class="ranking-candidate">Marcus Williams</div>
+                        <div class="ranking-dots">⋮</div>
+                    </div>
+                    <div class="ranking-item">
+                        <div class="ranking-number">3</div>
+                        <div class="ranking-candidate">Jennifer Park</div>
+                        <div class="ranking-dots">⋮</div>
+                    </div>
+                </div>
+
+                <div class="comparison-notes">
+                    <label class="comparison-notes-label">Additional Notes</label>
+                    <textarea class="comparison-notes-input" placeholder="Share your thoughts on these candidates..."></textarea>
+                </div>
+
+                <div class="comparison-submit">
+                    <button class="btn btn-primary" onclick="submitComparison()">Submit Rankings</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER (optional) -->
+    <footer class="hidden" id="footer">
+        Apex Recruiting Portal — Helping agencies find top talent faster
+    </footer>
+
+    <script>
+        // CANDIDATE DATA
+        const candidates = [
+            {
+                id: 1,
+                name: 'Sarah Chen',
+                title: 'Senior Software Engineer → VP Engineering potential',
+                company: 'Google',
+                position: 'Senior Staff Engineer',
+                years: 4,
+                location: 'San Francisco, CA',
+                summary: 'Exceptional technical depth with strong leadership background. Previously led 40-person eng team at Google. Stanford CS.',
+                status: 'awaiting',
+                avatar: 'SC',
+                avatarClass: '',
+                tags: ['12 yrs exp', 'Led 40+ person team', 'Open to relocation', 'Distributed systems']
+            },
+            {
+                id: 2,
+                name: 'Marcus Williams',
+                title: 'Engineering Manager with IC credibility',
+                company: 'Slack',
+                position: 'Senior Manager, Engineering',
+                years: 3,
+                location: 'New York, NY',
+                summary: 'Unique combination of IC and EM experience. 8 patents. Excited about your mission.',
+                status: 'awaiting',
+                avatar: 'MW',
+                avatarClass: 'alt1',
+                tags: ['11 yrs exp', 'Led 30+ person team', '8 patents', 'Remote-friendly']
+            },
+            {
+                id: 3,
+                name: 'Jennifer Park',
+                title: 'Senior Product Manager → Engineering Leader',
+                company: 'Figma',
+                position: 'Senior Product Manager',
+                years: 5,
+                location: 'San Francisco, CA',
+                summary: 'Strong product instincts, technical background enables deep eng collaboration. YC founder background.',
+                status: 'advancing',
+                avatar: 'JP',
+                avatarClass: 'alt2',
+                tags: ['9 yrs exp', 'YC founder exp', 'Product leadership', 'Technical PM']
+            },
+            {
+                id: 4,
+                name: 'David Kumar',
+                title: 'Infrastructure & Scaling Expert',
+                company: 'Amazon',
+                position: 'Senior SDE II',
+                years: 6,
+                location: 'Seattle, WA',
+                summary: 'Infrastructure expert with scale experience. AWS certified, led migration of 10M+ user systems.',
+                status: 'awaiting',
+                avatar: 'DK',
+                avatarClass: 'alt3',
+                tags: ['13 yrs exp', 'Scaling expert', 'AWS certified', '10M+ user scale']
+            },
+            {
+                id: 5,
+                name: 'Lisa Torres',
+                title: 'VP Engineering (Previous Role)',
+                company: 'Various',
+                position: 'VP Engineering',
+                years: 8,
+                location: 'Austin, TX',
+                summary: 'Overqualified but expressed strong interest. Culture fit confirmed in pre-screen.',
+                status: 'hold',
+                avatar: 'LT',
+                avatarClass: 'alt4',
+                tags: ['15 yrs exp', 'VP-level background', 'Culture fit', 'Interested in role']
+            },
+            {
+                id: 6,
+                name: 'James O\'Brien',
+                title: 'Senior Software Engineer',
+                company: 'Microsoft',
+                position: 'Senior SDE',
+                years: 4,
+                location: 'Redmond, WA',
+                summary: 'Great background but compensation expectations above range.',
+                status: 'passed',
+                avatar: 'JO',
+                avatarClass: 'alt5',
+                tags: ['10 yrs exp', 'Cloud expertise', 'Compensation mismatch']
+            }
+        ];
+
+        let currentTab = 'all';
+        let currentJob = 'VP of Engineering';
+        let currentAwaitingCount = 4;
+        let currentCandidateIndex = 0;
+
+        // UTILITIES
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+
+            const topNav = document.querySelector('.top-nav');
+            if (screenId === 'screen-login') {
+                topNav.classList.add('hidden');
+            } else {
+                topNav.classList.remove('hidden');
+            }
+        }
+
+        // NOTIFICATION TOGGLE
+        document.addEventListener('click', function(e) {
+            const notificationBells = document.querySelectorAll('.notification-bell');
+            const dropdowns = document.querySelectorAll('.notification-dropdown');
+
+            notificationBells.forEach((bell, index) => {
+                if (bell.contains(e.target)) {
+                    e.stopPropagation();
+                    const dropdown = dropdowns[index];
+                    dropdown.classList.toggle('hidden');
+                }
+            });
+
+            dropdowns.forEach(dropdown => {
+                if (!dropdown.previousElementSibling.contains(e.target)) {
+                    dropdown.classList.add('hidden');
+                }
+            });
+        });
+
+        // NAVIGATION
+        function goToHome() {
+            showScreen('screen-home');
+            currentTab = 'all';
+        }
+
+        function goToList(jobTitle, awaitingCount) {
+            currentJob = jobTitle;
+            currentAwaitingCount = awaitingCount;
+            currentTab = 'all';
+            document.getElementById('list-title').textContent = jobTitle;
+            document.getElementById('list-count').textContent = candidates.length + ' candidates submitted';
+            renderCandidateList();
+            showScreen('screen-list');
+        }
+
+        function goToProfile(candidateIndex) {
+            currentCandidateIndex = candidateIndex;
+            const candidate = candidates[candidateIndex];
+
+            document.getElementById('profile-avatar').textContent = candidate.avatar;
+            document.getElementById('profile-name').textContent = candidate.name;
+            document.getElementById('profile-headline').textContent = candidate.title;
+            document.getElementById('profile-current').innerHTML = `
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                </svg>
+                ${candidate.company} • ${candidate.position} • ${candidate.years} years
+            `;
+            document.getElementById('profile-location').textContent = candidate.location;
+            document.getElementById('profile-status').textContent = candidate.status === 'awaiting' ? 'Awaiting Your Review' : 'Already Reviewed';
+            document.getElementById('profile-note').value = '';
+            document.getElementById('profile-note').style.display = 'block';
+            document.getElementById('confirmation-name').textContent = candidate.name;
+
+            showScreen('screen-profile');
+        }
+
+        function backToList() {
+            showScreen('screen-list');
+        }
+
+        function previousCandidate() {
+            if (currentCandidateIndex > 0) {
+                goToProfile(currentCandidateIndex - 1);
+            }
+        }
+
+        function nextCandidate() {
+            if (currentCandidateIndex < candidates.length - 1) {
+                goToProfile(currentCandidateIndex + 1);
+            }
+        }
+
+        // FILTER CANDIDATES
+        function filterCandidates(status) {
+            currentTab = status;
+            document.querySelectorAll('.filter-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            renderCandidateList();
+        }
+
+        // RENDER CANDIDATE LIST
+        function renderCandidateList() {
+            const listEl = document.getElementById('candidate-list');
+            listEl.innerHTML = '';
+
+            const filteredCandidates = currentTab === 'all'
+                ? candidates
+                : candidates.filter(c => c.status === currentTab);
+
+            filteredCandidates.forEach((candidate, idx) => {
+                const cardHTML = `
+                    <div class="candidate-card" onclick="goToProfile(${candidates.indexOf(candidate)})">
+                        <div class="candidate-avatar candidate-card-avatar ${candidate.avatarClass}">${candidate.avatar}</div>
+                        <div class="candidate-left">
+                            <div class="candidate-name">${candidate.name}</div>
+                            <div class="candidate-title">${candidate.position} at ${candidate.company}</div>
+                            <div class="candidate-summary">${candidate.summary}</div>
+                            <div class="candidate-tags">
+                                ${candidate.tags.map(tag => `<div class="candidate-tag">${tag}</div>`).join('')}
+                            </div>
+                        </div>
+                        <div class="candidate-middle">
+                            <div class="candidate-status ${candidate.status}">${statusLabel(candidate.status)}</div>
+                        </div>
+                        <div class="candidate-right">
+                            <div class="candidate-decision-buttons" onclick="event.stopPropagation();">
+                                <button class="btn-advance">✓</button>
+                                <button class="btn-hold">⏸</button>
+                                <button class="btn-pass">✕</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                listEl.innerHTML += cardHTML;
+            });
+        }
+
+        function statusLabel(status) {
+            const labels = {
+                'awaiting': 'Awaiting Review',
+                'advancing': 'Advancing',
+                'hold': 'On Hold',
+                'passed': 'Passed'
+            };
+            return labels[status] || status;
+        }
+
+        // DECISIONS
+        function submitDecision(decision) {
+            const notes = document.getElementById('profile-note').value;
+            console.log(`Decision: ${decision}, Notes: ${notes}`);
+            showScreen('screen-confirmation');
+        }
+
+        function setInterviewStatus(available) {
+            console.log(`Interview status: ${available}`);
+        }
+
+        // COMPARISON
+        function goToComparison() {
+            showScreen('screen-comparison');
+        }
+
+        function submitComparison() {
+            alert('Rankings submitted!');
+            backToList();
+        }
+
+        // INITIALIZE
+        window.addEventListener('load', function() {
+            renderCandidateList();
+        });
+    </script>
+</body>
+</html>

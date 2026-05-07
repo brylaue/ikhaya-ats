@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Funnel Analytics</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        * {
+            font-family: Inter, system-ui, -apple-system, sans-serif;
+        }
+        body {
+            background-color: #F3F4F6;
+        }
+        .sidebar {
+            background-color: #1E3C78;
+            width: 220px;
+            position: fixed;
+            height: 100vh;
+            left: 0;
+            top: 0;
+            overflow-y: auto;
+            z-index: 40;
+        }
+        .main-content {
+            margin-left: 220px;
+        }
+        .topbar {
+            background-color: white;
+            border-bottom: 1px solid #E5E7EB;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 32px;
+            position: sticky;
+            top: 0;
+            z-index: 30;
+        }
+        .nav-item {
+            padding: 12px 16px;
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: background-color 0.2s;
+        }
+        .nav-item.active {
+            background-color: #2563EB;
+        }
+        .content-area {
+            padding: 32px;
+            margin-top: 64px;
+        }
+        .card {
+            background: white;
+            border: 1px solid #E5E7EB;
+            border-radius: 8px;
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 24px;
+        }
+        .funnel-container {
+            display: flex;
+            align-items: flex-end;
+            gap: 12px;
+            height: 280px;
+            padding: 24px 0;
+        }
+        .funnel-stage {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .funnel-stage:hover {
+            transform: translateY(-4px);
+        }
+        .funnel-bar {
+            width: 100%;
+            background: linear-gradient(to right, #DBEAFE, #2563EB);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 13px;
+            position: relative;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .funnel-stage:nth-child(1) .funnel-bar { height: 220px; width: 100%; }
+        .funnel-stage:nth-child(2) .funnel-bar { height: 200px; width: 92%; }
+        .funnel-stage:nth-child(3) .funnel-bar { height: 175px; width: 84%; }
+        .funnel-stage:nth-child(4) .funnel-bar { height: 155px; width: 76%; }
+        .funnel-stage:nth-child(5) .funnel-bar { height: 135px; width: 68%; }
+        .funnel-stage:nth-child(6) .funnel-bar { height: 100px; width: 60%; }
+        .funnel-stage:nth-child(7) .funnel-bar { height: 75px; width: 48%; }
+        .funnel-stage:nth-child(8) .funnel-bar { height: 50px; width: 32%; }
+        .funnel-label {
+            margin-top: 12px;
+            text-align: center;
+            font-size: 12px;
+            font-weight: 500;
+            color: #111827;
+        }
+        .funnel-count {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1E3C78;
+        }
+        .funnel-pct {
+            font-size: 11px;
+            color: #6B7280;
+            margin-top: 2px;
+        }
+        .metric-card {
+            background: white;
+            border: 1px solid #E5E7EB;
+            border-radius: 8px;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .metric-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: #111827;
+        }
+        .metric-label {
+            font-size: 12px;
+            color: #6B7280;
+            margin-top: 4px;
+        }
+        .recruiter-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .recruiter-table thead {
+            background-color: #F9FAFB;
+            border-bottom: 1px solid #E5E7EB;
+        }
+        .recruiter-table th {
+            padding: 12px 16px;
+            text-align: left;
+            font-size: 12px;
+            font-weight: 600;
+            color: #6B7280;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .recruiter-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid #F3F4F6;
+            font-size: 14px;
+        }
+        .recruiter-table tbody tr:hover {
+            background-color: #F9FAFB;
+        }
+        .trend-up {
+            color: #16A34A;
+        }
+        .trend-down {
+            color: #DC2626;
+        }
+        .star-rating {
+            display: flex;
+            gap: 2px;
+        }
+        .star {
+            font-size: 14px;
+            color: #D97706;
+        }
+        .job-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #E5E7EB;
+        }
+        .job-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: #2563EB;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 18px;
+        }
+        .job-info h2 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 4px;
+        }
+        .job-meta {
+            font-size: 13px;
+            color: #6B7280;
+        }
+        .date-selector {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            background: white;
+            border: 1px solid #D1D5DB;
+            border-radius: 6px;
+            font-size: 13px;
+            color: #374151;
+            cursor: pointer;
+        }
+        .bar-chart {
+            display: flex;
+            align-items: flex-end;
+            gap: 8px;
+            height: 200px;
+            padding: 24px 0;
+            margin: 16px 0;
+        }
+        .bar-group {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+        .bar-pair {
+            display: flex;
+            gap: 4px;
+            align-items: flex-end;
+            width: 100%;
+            height: 100%;
+        }
+        .bar {
+            flex: 1;
+            background: #2563EB;
+            border-radius: 2px;
+            position: relative;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        .bar.alt {
+            background: #0EA5E9;
+        }
+        .bar-label {
+            font-size: 11px;
+            color: #6B7280;
+            margin-top: 8px;
+            white-space: nowrap;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar Navigation -->
+    <div class="sidebar">
+        <div style="padding: 24px; border-bottom: 1px solid rgba(255,255,255,0.1);">
+            <div style="display: flex; align-items: center; gap: 8px; color: white; font-weight: 700;">
+                <div style="width: 28px; height: 28px; background: #2563EB; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 14px;">A</div>
+                <span>ATS Pro</span>
+            </div>
+        </div>
+        <nav style="padding: 16px; space-y: 8px;">
+            <div class="nav-item" style="color: rgba(255,255,255,0.7);">
+                <i data-lucide="grid" style="width: 18px; height: 18px;"></i>
+                Dashboard
+            </div>
+            <div class="nav-item" style="color: rgba(255,255,255,0.7);">
+                <i data-lucide="users" style="width: 18px; height: 18px;"></i>
+                Candidates
+            </div>
+            <div class="nav-item" style="color: rgba(255,255,255,0.7);">
+                <i data-lucide="briefcase" style="width: 18px; height: 18px;"></i>
+                Jobs
+            </div>
+            <div class="nav-item" style="color: rgba(255,255,255,0.7);">
+                <i data-lucide="building" style="width: 18px; height: 18px;"></i>
+                Clients
+            </div>
+            <div class="nav-item" style="color: rgba(255,255,255,0.7);">
+                <i data-lucide="git-branch" style="width: 18px; height: 18px;"></i>
+                Pipeline
+            </div>
+            <div class="nav-item active">
+                <i data-lucide="bar-chart-3" style="width: 18px; height: 18px;"></i>
+                Analytics
+            </div>
+            <div class="nav-item" style="color: rgba(255,255,255,0.7);">
+                <i data-lucide="inbox" style="width: 18px; height: 18px;"></i>
+                Inbox
+            </div>
+        </nav>
+        <div style="margin-top: 32px; padding-top: 16px; padding-left: 16px; padding-right: 16px; border-top: 1px solid rgba(255,255,255,0.1);">
+            <div style="display: flex; align-items: center; gap: 8px; color: white; cursor: pointer;">
+                <div style="width: 24px; height: 24px; background: #16A34A; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700;">JS</div>
+                <span style="font-size: 12px; font-weight: 500;">Jane Smith</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="topbar">
+            <div style="display: flex; align-items: center; gap: 8px; color: #6B7280;">
+                <i data-lucide="bar-chart-3" style="width: 20px; height: 20px;"></i>
+                <span style="font-size: 14px; font-weight: 500;">Funnel Analytics</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 16px;">
+                <i data-lucide="bell" style="width: 20px; height: 20px; color: #6B7280; cursor: pointer;"></i>
+                <div style="width: 32px; height: 32px; background: #DC2626; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 13px;">MK</div>
+            </div>
+        </div>
+
+        <div class="content-area">
+            <div class="card">
+                <!-- Job Header -->
+                <div class="job-header">
+                    <div class="job-avatar">AV</div>
+                    <div class="job-info">
+                        <h2>VP of Engineering · Apex Ventures</h2>
+                        <div style="display: flex; gap: 24px;">
+                            <div class="job-meta">
+                                <i data-lucide="calendar" style="width: 12px; height: 12px; display: inline; margin-right: 4px;"></i>47 days open
+                            </div>
+                            <div class="job-meta">
+                                <i data-lucide="dollar-sign" style="width: 12px; height: 12px; display: inline; margin-right: 4px;"></i>$42,000 fee
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Funnel Visualization -->
+                <h3 style="font-size: 16px; font-weight: 600; color: #111827; margin-bottom: 16px;">Recruitment Funnel</h3>
+                <div style="background: #FAFBFC; border-radius: 8px; padding: 24px;">
+                    <div class="funnel-container">
+                        <div class="funnel-stage">
+                            <div class="funnel-bar">28</div>
+                            <div class="funnel-label">
+                                <div class="funnel-count">28</div>
+                                <div>Sourced</div>
+                                <div class="funnel-pct">—</div>
+                            </div>
+                        </div>
+                        <div class="funnel-stage">
+                            <div class="funnel-bar">18</div>
+                            <div class="funnel-label">
+                                <div class="funnel-count">18</div>
+                                <div>Screened</div>
+                                <div class="funnel-pct">64%</div>
+                            </div>
+                        </div>
+                        <div class="funnel-stage">
+                            <div class="funnel-bar">12</div>
+                            <div class="funnel-label">
+                                <div class="funnel-count">12</div>
+                                <div>Ready</div>
+                                <div class="funnel-pct">67%</div>
+                            </div>
+                        </div>
+                        <div class="funnel-stage">
+                            <div class="funnel-bar">9</div>
+                            <div class="funnel-label">
+                                <div class="funnel-count">9</div>
+                                <div>Submitted</div>
+                                <div class="funnel-pct">75%</div>
+                            </div>
+                        </div>
+                        <div class="funnel-stage">
+                            <div class="funnel-bar">7</div>
+                            <div class="funnel-label">
+                                <div class="funnel-count">7</div>
+                                <div>In Review</div>
+                                <div class="funnel-pct">78%</div>
+                            </div>
+                        </div>
+                        <div class="funnel-stage">
+                            <div class="funnel-bar">4</div>
+                            <div class="funnel-label">
+                                <div class="funnel-count">4</div>
+                                <div>Interview</div>
+                                <div class="funnel-pct">57%</div>
+                            </div>
+                        </div>
+                        <div class="funnel-stage">
+                            <div class="funnel-bar">2</div>
+                            <div class="funnel-label">
+                                <div class="funnel-count">2</div>
+                                <div>Offer</div>
+                                <div class="funnel-pct">50%</div>
+                            </div>
+                        </div>
+                        <div class="funnel-stage">
+                            <div class="funnel-bar">1</div>
+                            <div class="funnel-label">
+                                <div class="funnel-count">1</div>
+                                <div>Placed</div>
+                                <div class="funnel-pct">50%</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Key Metrics -->
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 24px;">
+                    <div class="metric-card">
+                        <div>
+                            <div class="metric-label">Avg Days Sourced→Placed</div>
+                            <div class="metric-value">34 days</div>
+                        </div>
+                        <div style="font-size: 13px; color: #6B7280;">
+                            <i data-lucide="trending-up" style="width: 16px; height: 16px; color: #D97706;"></i>
+                        </div>
+                    </div>
+                    <div class="metric-card">
+                        <div>
+                            <div class="metric-label">Client Response Time</div>
+                            <div class="metric-value">2.1 days</div>
+                        </div>
+                        <div style="font-size: 13px; color: #16A34A;">
+                            <i data-lucide="trending-down" style="width: 16px; height: 16px;"></i>
+                        </div>
+                    </div>
+                    <div class="metric-card">
+                        <div>
+                            <div class="metric-label">Submission→Interview Rate</div>
+                            <div class="metric-value">44%</div>
+                        </div>
+                        <div style="font-size: 13px; color: #16A34A;">
+                            <i data-lucide="trending-up" style="width: 16px; height: 16px;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recruiter Performance Dashboard -->
+            <div class="card">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px;">
+                    <h3 style="font-size: 16px; font-weight: 600; color: #111827;">Recruiter Performance</h3>
+                    <div class="date-selector">
+                        <span>Last 30 days</span>
+                        <i data-lucide="chevron-down" style="width: 16px; height: 16px;"></i>
+                    </div>
+                </div>
+
+                <!-- Performance Metrics -->
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 32px;">
+                    <div class="metric-card">
+                        <div>
+                            <div class="metric-label">Submissions</div>
+                            <div class="metric-value">47</div>
+                            <div style="font-size: 12px; color: #16A34A; margin-top: 4px;">↑ 12%</div>
+                        </div>
+                    </div>
+                    <div class="metric-card">
+                        <div>
+                            <div class="metric-label">Interviews Arranged</div>
+                            <div class="metric-value">21</div>
+                            <div style="font-size: 12px; color: #16A34A; margin-top: 4px;">↑ 8%</div>
+                        </div>
+                    </div>
+                    <div class="metric-card">
+                        <div>
+                            <div class="metric-label">Placements</div>
+                            <div class="metric-value">6</div>
+                            <div style="font-size: 12px; color: #16A34A; margin-top: 4px;">↑ 50%</div>
+                        </div>
+                    </div>
+                    <div class="metric-card">
+                        <div>
+                            <div class="metric-label">Avg Days to Fill</div>
+                            <div class="metric-value">34</div>
+                            <div style="font-size: 12px; color: #16A34A; margin-top: 4px;">↓ 6 days</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Weekly Activity Chart -->
+                <h3 style="font-size: 14px; font-weight: 600; color: #111827; margin-bottom: 16px;">Weekly Activity (8 weeks)</h3>
+                <div style="background: #FAFBFC; border-radius: 8px; padding: 24px; margin-bottom: 24px;">
+                    <div class="bar-chart">
+                        <div class="bar-group">
+                            <div class="bar-pair">
+                                <div class="bar" style="height: 65%;"></div>
+                                <div class="bar alt" style="height: 45%;"></div>
+                            </div>
+                            <div class="bar-label">Week 1</div>
+                        </div>
+                        <div class="bar-group">
+                            <div class="bar-pair">
+                                <div class="bar" style="height: 72%;"></div>
+                                <div class="bar alt" style="height: 52%;"></div>
+                            </div>
+                            <div class="bar-label">Week 2</div>
+                        </div>
+                        <div class="bar-group">
+                            <div class="bar-pair">
+                                <div class="bar" style="height: 58%;"></div>
+                                <div class="bar alt" style="height: 48%;"></div>
+                            </div>
+                            <div class="bar-label">Week 3</div>
+                        </div>
+                        <div class="bar-group">
+                            <div class="bar-pair">
+                                <div class="bar" style="height: 80%;"></div>
+                                <div class="bar alt" style="height: 62%;"></div>
+                            </div>
+                            <div class="bar-label">Week 4</div>
+                        </div>
+                        <div class="bar-group">
+                            <div class="bar-pair">
+                                <div class="bar" style="height: 85%;"></div>
+                                <div class="bar alt" style="height: 68%;"></div>
+                            </div>
+                            <div class="bar-label">Week 5</div>
+                        </div>
+                        <div class="bar-group">
+                            <div class="bar-pair">
+                                <div class="bar" style="height: 75%;"></div>
+                                <div class="bar alt" style="height: 55%;"></div>
+                            </div>
+                            <div class="bar-label">Week 6</div>
+                        </div>
+                        <div class="bar-group">
+                            <div class="bar-pair">
+                                <div class="bar" style="height: 90%;"></div>
+                                <div class="bar alt" style="height: 72%;"></div>
+                            </div>
+                            <div class="bar-label">Week 7</div>
+                        </div>
+                        <div class="bar-group">
+                            <div class="bar-pair">
+                                <div class="bar" style="height: 100%;"></div>
+                                <div class="bar alt" style="height: 80%;"></div>
+                            </div>
+                            <div class="bar-label">Week 8</div>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 24px; margin-top: 24px; justify-content: center; font-size: 12px;">
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <div style="width: 12px; height: 12px; background: #2563EB; border-radius: 2px;"></div>
+                            Submissions
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <div style="width: 12px; height: 12px; background: #0EA5E9; border-radius: 2px;"></div>
+                            Interviews
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recruiter Leaderboard -->
+                <h3 style="font-size: 14px; font-weight: 600; color: #111827; margin-bottom: 16px;">Recruiter Leaderboard</h3>
+                <table class="recruiter-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Submissions</th>
+                            <th>Interviews</th>
+                            <th>Placements</th>
+                            <th>Conversion Rate</th>
+                            <th>Trend</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="font-weight: 500; color: #111827;">
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <div style="width: 28px; height: 28px; background: #2563EB; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 11px; font-weight: 600;">JS</div>
+                                    Jane Smith
+                                </div>
+                            </td>
+                            <td>18</td>
+                            <td>9</td>
+                            <td>3</td>
+                            <td>
+                                <div class="star-rating">
+                                    <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span>
+                                </div>
+                                17%
+                            </td>
+                            <td><span class="trend-up">↑</span></td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: 500; color: #111827;">
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <div style="width: 28px; height: 28px; background: #16A34A; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 11px; font-weight: 600;">MC</div>
+                                    Marcus Chen
+                                </div>
+                            </td>
+                            <td>15</td>
+                            <td>7</td>
+                            <td>2</td>
+                            <td>
+                                <div class="star-rating">
+                                    <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span>
+                                </div>
+                                13%
+                            </td>
+                            <td><span class="trend-down">↓</span></td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: 500; color: #111827;">
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <div style="width: 28px; height: 28px; background: #D97706; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 11px; font-weight: 600;">AR</div>
+                                    Alex Rodriguez
+                                </div>
+                            </td>
+                            <td>10</td>
+                            <td>4</td>
+                            <td>1</td>
+                            <td>
+                                <div class="star-rating">
+                                    <span class="star">★</span><span class="star">★</span><span class="star">★</span>
+                                </div>
+                                10%
+                            </td>
+                            <td><span style="color: #6B7280;">→</span></td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: 500; color: #111827;">
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <div style="width: 28px; height: 28px; background: #DC2626; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 11px; font-weight: 600;">TK</div>
+                                    Tessa Kim
+                                </div>
+                            </td>
+                            <td>4</td>
+                            <td>1</td>
+                            <td>0</td>
+                            <td>
+                                <div class="star-rating">
+                                    <span class="star">★</span><span class="star">★</span>
+                                </div>
+                                25%
+                            </td>
+                            <td><span class="trend-down">↓</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

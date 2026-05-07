@@ -1,0 +1,223 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* ── Core palette ── */
+    --background:           0 0% 100%;
+    --foreground:           224 71.4% 4.1%;
+    --card:                 0 0% 100%;
+    --card-foreground:      224 71.4% 4.1%;
+    --surface:              220 20% 98%;        /* slightly elevated card bg */
+    --popover:              0 0% 100%;
+    --popover-foreground:   224 71.4% 4.1%;
+
+    /* ── Semantic ── */
+    --primary:              246 84% 60%;   /* brand-600 ≈ #5e44ef — electric indigo-violet */
+    --primary-foreground:   0 0% 100%;
+    --secondary:            220 14.3% 95.9%;
+    --secondary-foreground: 220.9 39.3% 11%;
+    --muted:                220 14% 96%;
+    --muted-foreground:     220 9% 46%;
+    --accent:               220 14% 95%;
+    --accent-foreground:    220.9 39% 11%;
+    --destructive:          0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border:               220 13% 91%;
+    --input:                220 13% 91%;
+    --ring:                 246 84% 60%;
+
+    /* ── Status semantic colors ── */
+    --status-success:       142 71% 45%;
+    --status-warning:       38 92% 50%;
+    --status-error:         0 84% 60%;
+    --status-info:          213 94% 55%;
+
+    /* ── Shadows ── */
+    --shadow-sm:  0 1px 2px 0 rgb(0 0 0 / 0.04);
+    --shadow:     0 1px 3px 0 rgb(0 0 0 / 0.07), 0 1px 2px -1px rgb(0 0 0 / 0.07);
+    --shadow-md:  0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.07);
+    --shadow-lg:  0 10px 15px -3px rgb(0 0 0 / 0.07), 0 4px 6px -4px rgb(0 0 0 / 0.07);
+    --shadow-xl:  0 20px 25px -5px rgb(0 0 0 / 0.08), 0 8px 10px -6px rgb(0 0 0 / 0.08);
+
+    /* ── Layout ── */
+    --radius:         0.5rem;
+    --sidebar-width:  224px;
+  }
+
+  .dark {
+    --background:           222 47% 8%;
+    --foreground:           210 20% 98%;
+    --card:                 222 44% 10%;
+    --card-foreground:      210 20% 98%;
+    --surface:              222 44% 12%;
+    --popover:              222 44% 10%;
+    --popover-foreground:   210 20% 98%;
+    --primary:              246 84% 65%;   /* slightly lighter for dark mode legibility */
+    --primary-foreground:   0 0% 100%;
+    --secondary:            215 27.9% 16.9%;
+    --secondary-foreground: 210 20% 98%;
+    --muted:                215 27.9% 16.9%;
+    --muted-foreground:     217.9 10.6% 64.9%;
+    --accent:               215 27.9% 16.9%;
+    --accent-foreground:    210 20% 98%;
+    --destructive:          0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 100%;
+    --border:               215 27.9% 18%;
+    --input:                215 27.9% 18%;
+    --ring:                 246 84% 65%;
+    --shadow-sm:  0 1px 2px 0 rgb(0 0 0 / 0.25);
+    --shadow:     0 1px 3px 0 rgb(0 0 0 / 0.3), 0 1px 2px -1px rgb(0 0 0 / 0.3);
+    --shadow-md:  0 4px 6px -1px rgb(0 0 0 / 0.3), 0 2px 4px -2px rgb(0 0 0 / 0.3);
+    --shadow-lg:  0 10px 15px -3px rgb(0 0 0 / 0.35), 0 4px 6px -4px rgb(0 0 0 / 0.35);
+    --shadow-xl:  0 20px 25px -5px rgb(0 0 0 / 0.4), 0 8px 10px -6px rgb(0 0 0 / 0.4);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* ── Selection ── */
+  ::selection {
+    background: hsl(237 83% 63% / 0.15);
+    color: hsl(237 83% 45%);
+  }
+
+  /* ── Focus visible — keyboard-only, brand ring ── */
+  :focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+  }
+  /* Override for inputs — tighter ring inside the border */
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px hsl(var(--background)), 0 0 0 4px hsl(var(--ring) / 0.5);
+  }
+
+  /* ── Scrollbar ── */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply rounded-full;
+    background: hsl(var(--border));
+    transition: background 0.2s;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground) / 0.35);
+  }
+
+  /* ── Form elements ── */
+  input,
+  textarea,
+  select {
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  /* Placeholder color consistency */
+  ::placeholder {
+    color: hsl(var(--muted-foreground) / 0.65);
+  }
+}
+
+@layer components {
+  /* ── Card surface elevations ── */
+  .card-base {
+    @apply rounded-xl border border-border bg-card;
+    box-shadow: var(--shadow-sm);
+  }
+  .card-elevated {
+    @apply rounded-xl border border-border bg-card;
+    box-shadow: var(--shadow);
+  }
+  .card-modal {
+    @apply rounded-2xl border border-border bg-card;
+    box-shadow: var(--shadow-xl);
+  }
+
+  /* ── Interactive rows ── */
+  .table-row-interactive {
+    @apply border-b border-border transition-colors duration-100 hover:bg-accent/40 cursor-pointer;
+  }
+
+  /* ── Badge variants ── */
+  .badge {
+    @apply inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-semibold;
+  }
+  .badge-success { @apply bg-emerald-50 text-emerald-700; }
+  .badge-warning { @apply bg-amber-50 text-amber-700; }
+  .badge-error   { @apply bg-red-50 text-red-700; }
+  .badge-info    { @apply bg-brand-50 text-brand-700; }
+  .badge-neutral { @apply bg-slate-100 text-slate-600; }
+  .badge-brand   { @apply bg-brand-50 text-brand-700; }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /* ── Stage aging colors ── */
+  .stage-fresh {
+    @apply bg-emerald-50 text-emerald-700 border-emerald-200;
+  }
+  .stage-aging {
+    @apply bg-amber-50 text-amber-700 border-amber-200;
+  }
+  .stage-stale {
+    @apply bg-red-50 text-red-700 border-red-200;
+  }
+
+  /* ── Shadow utilities ── */
+  .shadow-token-sm { box-shadow: var(--shadow-sm); }
+  .shadow-token    { box-shadow: var(--shadow); }
+  .shadow-token-md { box-shadow: var(--shadow-md); }
+  .shadow-token-lg { box-shadow: var(--shadow-lg); }
+  .shadow-token-xl { box-shadow: var(--shadow-xl); }
+
+  /* ── Smooth interactive ── */
+  .interactive {
+    @apply transition-all duration-150 ease-in-out;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────────
+   US-447: Animation QA — prefers-reduced-motion
+   Users who've opted into reduced motion at the OS level get near-zero
+   animation durations. We keep duration at 0.01ms (not 0) so components
+   that listen for transitionend still fire their cleanup callbacks.
+   See docs/animation-qa-checklist.md for the reviewer checklist.
+   ────────────────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Ikhaya ATS Chrome Extension — Privacy Policy</title>
+  <style>
+    body { max-width: 720px; margin: 40px auto; font-family: system-ui, sans-serif; line-height: 1.6; color: #1e1e2e; padding: 0 20px; }
+    h1 { font-size: 24px; }
+    h2 { font-size: 18px; margin-top: 28px; }
+    p, li { font-size: 15px; }
+    .updated { color: #6b7280; font-size: 13px; }
+  </style>
+</head>
+<body>
+  <h1>Privacy Policy — Ikhaya ATS Chrome Extension</h1>
+  <p class="updated">Last updated: April 2026</p>
+
+  <h2>What data we collect</h2>
+  <p>This extension scrapes publicly visible information from web pages you actively choose to import, including names, job titles, company names, locations, profile images, skills, work history, and education. No data is collected in the background or without your explicit action (clicking "Scrape This Page").</p>
+
+  <h2>How we use it</h2>
+  <p>Scraped data is sent directly to your own Supabase database instance to populate your Applicant Tracking System. We do not operate any intermediary servers. The extension communicates only with:</p>
+  <ul>
+    <li>Your configured Supabase project URL (for database reads/writes)</li>
+    <li>The active browser tab (to extract page content when you click Scrape)</li>
+  </ul>
+
+  <h2>Data storage</h2>
+  <p>Your Supabase URL and authentication token are stored locally in Chrome's <code>chrome.storage.local</code> and never transmitted to any third party. All candidate, client, and job data is stored in your own Supabase database, governed by your own data retention policies.</p>
+
+  <h2>Third-party services</h2>
+  <p>This extension does not use analytics, tracking pixels, advertising SDKs, or any third-party data collection services.</p>
+
+  <h2>Permissions explained</h2>
+  <ul>
+    <li><strong>activeTab</strong> — to read the current page content when you click Scrape</li>
+    <li><strong>storage</strong> — to save your connection settings locally</li>
+    <li><strong>cookies</strong> — to read your ATS session cookie for authentication (optional; you can paste a token instead)</li>
+    <li><strong>Host permissions (linkedin.com, github.com)</strong> — to inject content scripts that can read page DOM on these sites</li>
+    <li><strong>Host permissions (*.supabase.co)</strong> — to communicate with your Supabase database</li>
+  </ul>
+
+  <h2>Contact</h2>
+  <p>For questions about this privacy policy, contact: <a href="mailto:bryan@ikhaya.io">bryan@ikhaya.io</a></p>
+</body>
+</html>

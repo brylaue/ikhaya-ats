@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Candidate Profile - Alex Johnson</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        * {
+            font-family: Inter, system-ui, -apple-system, sans-serif;
+        }
+        body {
+            background-color: #F3F4F6;
+        }
+        .sidebar {
+            background-color: #1E3C78;
+            width: 220px;
+            position: fixed;
+            height: 100vh;
+            left: 0;
+            top: 0;
+            overflow-y: auto;
+            z-index: 40;
+        }
+        .main-content {
+            margin-left: 220px;
+        }
+        .topbar {
+            background-color: white;
+            border-bottom: 1px solid #E5E7EB;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 32px;
+            position: sticky;
+            top: 0;
+            z-index: 30;
+        }
+        .search-bar {
+            background-color: #F9FAFB;
+            border: 1px solid #D1D5DB;
+            border-radius: 6px;
+            padding: 8px 12px;
+            font-size: 14px;
+            color: #6B7280;
+            width: 280px;
+        }
+        .nav-item {
+            padding: 12px 16px;
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: background-color 0.2s;
+        }
+        .nav-item:hover {
+            background-color: rgba(255,255,255,0.1);
+        }
+        .nav-item.active {
+            background-color: #2563EB;
+        }
+        .content-area {
+            padding: 32px;
+            margin-top: 64px;
+        }
+        .card {
+            background: white;
+            border: 1px solid #E5E7EB;
+            border-radius: 8px;
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .timeline-item {
+            display: flex;
+            gap: 16px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid #E5E7EB;
+        }
+        .timeline-item:last-child {
+            border-bottom: none;
+        }
+        .timeline-dot {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            flex-shrink: 0;
+            font-size: 14px;
+        }
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+        .badge-blue {
+            background-color: #DBEAFE;
+            color: #1E40AF;
+        }
+        .large-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background-color: #2563EB;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar Navigation -->
+    <div class="sidebar">
+        <div style="padding: 24px; border-bottom: 1px solid rgba(255,255,255,0.1);">
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 32px;">
+                <div style="width: 32px; height: 32px; background-color: #2563EB; border-radius: 6px; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 16px;">A</div>
+                <div style="font-weight: 600; color: white; font-size: 14px;">ATS Pro</div>
+            </div>
+            <nav style="display: flex; flex-direction: column; gap: 4px;">
+                <div class="nav-item">
+                    <i data-lucide="home" style="width: 18px; height: 18px;"></i>
+                    Dashboard
+                </div>
+                <div class="nav-item active">
+                    <i data-lucide="users" style="width: 18px; height: 18px;"></i>
+                    Candidates
+                </div>
+                <div class="nav-item">
+                    <i data-lucide="briefcase" style="width: 18px; height: 18px;"></i>
+                    Jobs
+                </div>
+                <div class="nav-item">
+                    <i data-lucide="building" style="width: 18px; height: 18px;"></i>
+                    Clients
+                </div>
+                <div class="nav-item">
+                    <i data-lucide="kanban" style="width: 18px; height: 18px;"></i>
+                    Pipeline
+                </div>
+                <div class="nav-item">
+                    <i data-lucide="bar-chart-3" style="width: 18px; height: 18px;"></i>
+                    Analytics
+                </div>
+                <div class="nav-item">
+                    <i data-lucide="inbox" style="width: 18px; height: 18px;"></i>
+                    Inbox
+                </div>
+            </nav>
+        </div>
+        <div style="padding: 24px; margin-top: auto; border-top: 1px solid rgba(255,255,255,0.1);">
+            <div style="display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 6px;">
+                <div style="width: 36px; height: 36px; background-color: #16A34A; border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold;">JD</div>
+                <div style="flex-grow: 1;">
+                    <div style="color: white; font-size: 14px; font-weight: 500;">Jane Doe</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="main-content">
+        <!-- Top Bar -->
+        <div class="topbar">
+            <div style="display: flex; align-items: center; gap: 16px; flex-grow: 1;">
+                <button style="background: none; border: none; color: #6B7280; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 14px;">
+                    <i data-lucide="chevron-left" style="width: 20px; height: 20px;"></i>
+                    Back to Candidates
+                </button>
+            </div>
+            <div style="display: flex; align-items: center; gap: 16px;">
+                <button style="display: flex; align-items: center; gap: 8px; background-color: white; border: 1px solid #D1D5DB; border-radius: 6px; padding: 8px 12px; cursor: pointer; font-size: 14px; color: #374151; font-weight: 500;">
+                    <i data-lucide="share-2" style="width: 16px; height: 16px;"></i>
+                    Share
+                </button>
+                <button style="background: none; border: none; cursor: pointer; color: #6B7280;">
+                    <i data-lucide="more-vertical" style="width: 20px; height: 20px;"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Content -->
+        <div class="content-area">
+            <div style="display: grid; grid-template-columns: 1fr 320px; gap: 24px;">
+                <!-- Left Column -->
+                <div>
+                    <!-- Header Card -->
+                    <div class="card" style="margin-bottom: 24px;">
+                        <div style="display: flex; align-items: flex-start; gap: 24px;">
+                            <div class="large-avatar">AJ</div>
+                            <div style="flex-grow: 1;">
+                                <h1 style="font-size: 28px; font-weight: bold; color: #111827; margin-bottom: 4px;">Alex Johnson</h1>
+                                <p style="font-size: 16px; color: #6B7280; margin-bottom: 12px;">Senior Software Engineer</p>
+                                <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 16px;">
+                                    <a href="#" style="color: #2563EB; text-decoration: none; font-size: 14px;">alex.johnson@email.com</a>
+                                    <span style="color: #D1D5DB;">•</span>
+                                    <a href="#" style="color: #2563EB; text-decoration: none; font-size: 14px;">+1 (415) 234-5678</a>
+                                    <span style="color: #D1D5DB;">•</span>
+                                    <span style="color: #6B7280; font-size: 14px;">San Francisco, CA</span>
+                                </div>
+                                <div style="display: flex; gap: 8px;">
+                                    <span class="badge badge-blue">Python Expert</span>
+                                    <span class="badge badge-blue">Manager</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Work History -->
+                    <div class="card" style="margin-bottom: 24px;">
+                        <h2 style="font-size: 18px; font-weight: 600; color: #111827; margin-bottom: 20px;">Work History</h2>
+                        <div class="timeline-item">
+                            <div style="display: flex; flex-direction: column; align-items: center;">
+                                <div style="width: 8px; height: 8px; background-color: #2563EB; border-radius: 50%; margin-top: 6px; margin-bottom: 16px;"></div>
+                                <div style="width: 2px; height: 60px; background-color: #E5E7EB;"></div>
+                            </div>
+                            <div style="padding-top: 2px;">
+                                <p style="font-size: 14px; font-weight: 600; color: #111827;">Senior Software Engineer</p>
+                                <p style="font-size: 13px; color: #6B7280; margin-top: 2px;">TechCorp Inc • San Francisco, CA</p>
+                                <p style="font-size: 12px; color: #9CA3AF; margin-top: 4px;">January 2021 - Present (5 years)</p>
+                                <p style="font-size: 13px; color: #374151; margin-top: 8px; line-height: 1.5;">Led development of microservices architecture serving 2M+ users. Mentored team of 5 junior engineers. Improved deployment time by 40%.</p>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div style="display: flex; flex-direction: column; align-items: center;">
+                                <div style="width: 8px; height: 8px; background-color: #2563EB; border-radius: 50%; margin-top: 6px; margin-bottom: 16px;"></div>
+                                <div style="width: 2px; height: 60px; background-color: #E5E7EB;"></div>
+                            </div>
+                            <div style="padding-top: 2px;">
+                                <p style="font-size: 14px; font-weight: 600; color: #111827;">Software Engineer</p>
+                                <p style="font-size: 13px; color: #6B7280; margin-top: 2px;">DataFlow Systems • San Francisco, CA</p>
+                                <p style="font-size: 12px; color: #9CA3AF; margin-top: 4px;">March 2018 - December 2020 (2 years 10 months)</p>
+                                <p style="font-size: 13px; color: #374151; margin-top: 8px; line-height: 1.5;">Built distributed data pipeline processing 100GB+ daily. Designed Python APIs used by 20+ teams.</p>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div style="display: flex; flex-direction: column; align-items: center;">
+                                <div style="width: 8px; height: 8px; background-color: #2563EB; border-radius: 50%; margin-top: 6px;"></div>
+                            </div>
+                            <div style="padding-top: 2px;">
+                                <p style="font-size: 14px; font-weight: 600; color: #111827;">Junior Software Engineer</p>
+                                <p style="font-size: 13px; color: #6B7280; margin-top: 2px;">StartupXYZ • San Francisco, CA</p>
+                                <p style="font-size: 12px; color: #9CA3AF; margin-top: 4px;">July 2016 - February 2018 (1 year 8 months)</p>
+                                <p style="font-size: 13px; color: #374151; margin-top: 8px; line-height: 1.5;">Full-stack development of web application. Implemented real-time collaboration features.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Education & Skills -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
+                        <div class="card">
+                            <h2 style="font-size: 16px; font-weight: 600; color: #111827; margin-bottom: 16px;">Education</h2>
+                            <div style="margin-bottom: 16px;">
+                                <p style="font-size: 14px; font-weight: 600; color: #111827;">B.S. Computer Science</p>
+                                <p style="font-size: 13px; color: #6B7280; margin-top: 4px;">UC Berkeley, 2016</p>
+                            </div>
+                            <div>
+                                <p style="font-size: 14px; font-weight: 600; color: #111827;">AWS Solutions Architect Certification</p>
+                                <p style="font-size: 13px; color: #6B7280; margin-top: 4px;">2021</p>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <h2 style="font-size: 16px; font-weight: 600; color: #111827; margin-bottom: 16px;">Skills</h2>
+                            <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                                <span class="badge badge-blue">Python</span>
+                                <span class="badge badge-blue">Go</span>
+                                <span class="badge badge-blue">SQL</span>
+                                <span class="badge badge-blue">AWS</span>
+                                <span class="badge badge-blue">Docker</span>
+                                <span class="badge badge-blue">Kubernetes</span>
+                                <span class="badge badge-blue">Leadership</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Activity Timeline -->
+                    <div class="card">
+                        <h2 style="font-size: 18px; font-weight: 600; color: #111827; margin-bottom: 20px;">Activity Feed</h2>
+                        <div class="timeline-item">
+                            <div class="timeline-dot" style="background-color: #2563EB; font-size: 12px;">📤</div>
+                            <div>
+                                <p style="font-size: 14px; color: #111827; font-weight: 500;">Submitted to TechCorp for Senior Engineer role</p>
+                                <p style="font-size: 12px; color: #6B7280; margin-top: 2px;">2 hours ago by Jane Doe</p>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-dot" style="background-color: #16A34A; font-size: 12px;">📞</div>
+                            <div>
+                                <p style="font-size: 14px; color: #111827; font-weight: 500;">Call logged with candidate</p>
+                                <p style="font-size: 12px; color: #6B7280; margin-top: 2px;">3 hours ago by Jane Doe</p>
+                                <p style="font-size: 13px; color: #374151; margin-top: 6px;">Discussed role requirements and salary expectations. Candidate very interested.</p>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-dot" style="background-color: #2563EB; font-size: 12px;">📧</div>
+                            <div>
+                                <p style="font-size: 14px; color: #111827; font-weight: 500;">Email sent to candidate</p>
+                                <p style="font-size: 12px; color: #6B7280; margin-top: 2px;">1 day ago by Jane Doe</p>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-dot" style="background-color: #6B7280; font-size: 12px;">➕</div>
+                            <div>
+                                <p style="font-size: 14px; color: #111827; font-weight: 500;">Candidate added to database</p>
+                                <p style="font-size: 12px; color: #6B7280; margin-top: 2px;">3 days ago by Jane Doe</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column (Sidebar) -->
+                <div>
+                    <!-- Quick Actions -->
+                    <div class="card" style="margin-bottom: 24px;">
+                        <h2 style="font-size: 14px; font-weight: 600; color: #111827; margin-bottom: 16px;">Quick Actions</h2>
+                        <div style="display: flex; flex-direction: column; gap: 8px;">
+                            <button style="display: flex; align-items: center; gap: 8px; width: 100%; padding: 10px 12px; background-color: #2563EB; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 500;">
+                                <i data-lucide="plus" style="width: 16px; height: 16px;"></i>
+                                Add to Pipeline
+                            </button>
+                            <button style="display: flex; align-items: center; gap: 8px; width: 100%; padding: 10px 12px; background-color: white; border: 1px solid #D1D5DB; color: #374151; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 500;">
+                                <i data-lucide="mail" style="width: 16px; height: 16px;"></i>
+                                Send Email
+                            </button>
+                            <button style="display: flex; align-items: center; gap: 8px; width: 100%; padding: 10px 12px; background-color: white; border: 1px solid #D1D5DB; color: #374151; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 500;">
+                                <i data-lucide="phone" style="width: 16px; height: 16px;"></i>
+                                Schedule Call
+                            </button>
+                            <button style="display: flex; align-items: center; gap: 8px; width: 100%; padding: 10px 12px; background-color: white; border: 1px solid #D1D5DB; color: #374151; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 500;">
+                                <i data-lucide="note" style="width: 16px; height: 16px;"></i>
+                                Add Note
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Tags -->
+                    <div class="card" style="margin-bottom: 24px;">
+                        <h2 style="font-size: 14px; font-weight: 600; color: #111827; margin-bottom: 12px;">Tags</h2>
+                        <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px;">
+                            <span class="badge badge-blue">Python Expert</span>
+                            <span class="badge badge-blue">Manager</span>
+                            <span class="badge badge-blue">Remote OK</span>
+                        </div>
+                        <input type="text" placeholder="Add tags..." style="width: 100%; border: 1px solid #D1D5DB; border-radius: 6px; padding: 8px 12px; font-size: 13px;">
+                    </div>
+
+                    <!-- Active Pipelines -->
+                    <div class="card" style="margin-bottom: 24px;">
+                        <h2 style="font-size: 14px; font-weight: 600; color: #111827; margin-bottom: 12px;">Active Pipelines</h2>
+                        <div style="space-y: 12px;">
+                            <div style="padding: 12px; background-color: #F3F4F6; border-radius: 6px; border-left: 3px solid #2563EB;">
+                                <p style="font-size: 13px; font-weight: 500; color: #111827;">TechCorp - Senior Engineer</p>
+                                <p style="font-size: 12px; color: #6B7280; margin-top: 4px;">In: Submitted</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Candidate Info -->
+                    <div class="card">
+                        <h2 style="font-size: 14px; font-weight: 600; color: #111827; margin-bottom: 12px;">Details</h2>
+                        <div style="space-y: 12px;">
+                            <div style="padding-bottom: 12px; border-bottom: 1px solid #E5E7EB;">
+                                <p style="font-size: 12px; color: #6B7280; font-weight: 500;">Added</p>
+                                <p style="font-size: 13px; color: #111827; margin-top: 4px;">3 days ago</p>
+                            </div>
+                            <div style="padding: 12px 0; border-bottom: 1px solid #E5E7EB;">
+                                <p style="font-size: 12px; color: #6B7280; font-weight: 500;">Last Activity</p>
+                                <p style="font-size: 13px; color: #111827; margin-top: 4px;">2 hours ago</p>
+                            </div>
+                            <div style="padding: 12px 0;">
+                                <p style="font-size: 12px; color: #6B7280; font-weight: 500;">Source</p>
+                                <p style="font-size: 13px; color: #111827; margin-top: 4px;">LinkedIn</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+    </script>
+
+</body>
+</html>

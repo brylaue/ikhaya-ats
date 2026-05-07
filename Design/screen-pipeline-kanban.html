@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Pipeline - Senior Software Engineer (TechCorp)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        * {
+            font-family: Inter, system-ui, -apple-system, sans-serif;
+        }
+        body {
+            background-color: #F3F4F6;
+        }
+        .sidebar {
+            background-color: #1E3C78;
+            width: 220px;
+            position: fixed;
+            height: 100vh;
+            left: 0;
+            top: 0;
+            overflow-y: auto;
+            z-index: 40;
+        }
+        .main-content {
+            margin-left: 220px;
+        }
+        .topbar {
+            background-color: white;
+            border-bottom: 1px solid #E5E7EB;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 32px;
+            position: sticky;
+            top: 0;
+            z-index: 30;
+        }
+        .search-bar {
+            background-color: #F9FAFB;
+            border: 1px solid #D1D5DB;
+            border-radius: 6px;
+            padding: 8px 12px;
+            font-size: 14px;
+            color: #6B7280;
+            width: 280px;
+        }
+        .nav-item {
+            padding: 12px 16px;
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: background-color 0.2s;
+        }
+        .nav-item:hover {
+            background-color: rgba(255,255,255,0.1);
+        }
+        .nav-item.active {
+            background-color: #2563EB;
+        }
+        .content-area {
+            padding: 32px;
+            margin-top: 64px;
+            overflow-x: auto;
+        }
+        .job-header {
+            background: white;
+            border: 1px solid #E5E7EB;
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .kanban-board {
+            display: grid;
+            grid-template-columns: repeat(6, 280px);
+            gap: 20px;
+            min-height: calc(100vh - 300px);
+        }
+        .kanban-column {
+            background-color: #F9FAFB;
+            border: 1px solid #E5E7EB;
+            border-radius: 8px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+        }
+        .column-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #E5E7EB;
+        }
+        .column-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #111827;
+        }
+        .column-count {
+            font-size: 12px;
+            color: #6B7280;
+            background-color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+        .stage-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+        }
+        .kanban-card {
+            background: white;
+            border: 1px solid #E5E7EB;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 12px;
+            cursor: grab;
+            transition: box-shadow 0.2s;
+            border-left: 3px solid #2563EB;
+        }
+        .kanban-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .kanban-card.aging-green {
+            border-left-color: #16A34A;
+        }
+        .kanban-card.aging-yellow {
+            border-left-color: #D97706;
+        }
+        .kanban-card.aging-red {
+            border-left-color: #DC2626;
+        }
+        .avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar Navigation -->
+    <div class="sidebar">
+        <div style="padding: 24px; border-bottom: 1px solid rgba(255,255,255,0.1);">
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 32px;">
+                <div style="width: 32px; height: 32px; background-color: #2563EB; border-radius: 6px; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 16px;">A</div>
+                <div style="font-weight: 600; color: white; font-size: 14px;">ATS Pro</div>
+            </div>
+            <nav style="display: flex; flex-direction: column; gap: 4px;">
+                <div class="nav-item">
+                    <i data-lucide="home" style="width: 18px; height: 18px;"></i>
+                    Dashboard
+                </div>
+                <div class="nav-item">
+                    <i data-lucide="users" style="width: 18px; height: 18px;"></i>
+                    Candidates
+                </div>
+                <div class="nav-item">
+                    <i data-lucide="briefcase" style="width: 18px; height: 18px;"></i>
+                    Jobs
+                </div>
+                <div class="nav-item">
+                    <i data-lucide="building" style="width: 18px; height: 18px;"></i>
+                    Clients
+                </div>
+                <div class="nav-item active">
+                    <i data-lucide="kanban" style="width: 18px; height: 18px;"></i>
+                    Pipeline
+                </div>
+                <div class="nav-item">
+                    <i data-lucide="bar-chart-3" style="width: 18px; height: 18px;"></i>
+                    Analytics
+                </div>
+                <div class="nav-item">
+                    <i data-lucide="inbox" style="width: 18px; height: 18px;"></i>
+                    Inbox
+                </div>
+            </nav>
+        </div>
+        <div style="padding: 24px; margin-top: auto; border-top: 1px solid rgba(255,255,255,0.1);">
+            <div style="display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 6px;">
+                <div style="width: 36px; height: 36px; background-color: #16A34A; border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold;">JD</div>
+                <div style="flex-grow: 1;">
+                    <div style="color: white; font-size: 14px; font-weight: 500;">Jane Doe</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="main-content">
+        <!-- Top Bar -->
+        <div class="topbar">
+            <div style="display: flex; align-items: center; gap: 16px; flex-grow: 1;">
+                <button style="background: none; border: none; color: #6B7280; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 14px;">
+                    <i data-lucide="chevron-left" style="width: 20px; height: 20px;"></i>
+                    Back to Jobs
+                </button>
+            </div>
+            <div style="display: flex; align-items: center; gap: 16px;">
+                <button style="display: flex; align-items: center; gap: 8px; background-color: white; border: 1px solid #D1D5DB; border-radius: 6px; padding: 8px 12px; cursor: pointer; font-size: 14px; color: #374151; font-weight: 500;">
+                    <i data-lucide="list" style="width: 16px; height: 16px;"></i>
+                    List View
+                </button>
+                <button style="background: none; border: none; cursor: pointer; color: #6B7280;">
+                    <i data-lucide="settings" style="width: 20px; height: 20px;"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Content -->
+        <div class="content-area">
+            <!-- Job Header -->
+            <div class="job-header">
+                <div style="flex-grow: 1;">
+                    <h1 style="font-size: 28px; font-weight: bold; color: #111827;">Senior Software Engineer</h1>
+                    <div style="display: flex; gap: 16px; margin-top: 12px; font-size: 14px; color: #6B7280;">
+                        <span><strong>Client:</strong> TechCorp Inc</span>
+                        <span>•</span>
+                        <span><strong>Recruiter:</strong> Jane Doe</span>
+                        <span>•</span>
+                        <span><strong>Days Open:</strong> 32</span>
+                        <span>•</span>
+                        <span><strong>Fee:</strong> $28,000</span>
+                    </div>
+                </div>
+                <button style="display: flex; align-items: center; gap: 8px; background-color: white; border: 1px solid #D1D5DB; border-radius: 6px; padding: 10px 16px; cursor: pointer; font-size: 14px; color: #374151; font-weight: 500;">
+                    <i data-lucide="settings" style="width: 16px; height: 16px;"></i>
+                    Configure Stages
+                </button>
+            </div>
+
+            <!-- Kanban Board -->
+            <div class="kanban-board">
+                <!-- Sourced Column -->
+                <div>
+                    <div class="column-header">
+                        <div class="stage-color" style="background-color: #6B7280;"></div>
+                        <span class="column-title">Sourced</span>
+                        <span class="column-count">3</span>
+                    </div>
+                    <div class="kanban-card aging-green">
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                            <div class="avatar" style="background-color: #2563EB;">AJ</div>
+                            <div style="flex-grow: 1;">
+                                <p style="font-size: 13px; font-weight: 600; color: #111827;">Alex Johnson</p>
+                                <p style="font-size: 11px; color: #6B7280;">Senior Engineer</p>
+                            </div>
+                        </div>
+                        <p style="font-size: 11px; color: #9CA3AF;">1 day in stage</p>
+                    </div>
+                    <div class="kanban-card aging-yellow">
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                            <div class="avatar" style="background-color: #8B5CF6;">CP</div>
+                            <div style="flex-grow: 1;">
+                                <p style="font-size: 13px; font-weight: 600; color: #111827;">Chris Park</p>
+                                <p style="font-size: 11px; color: #6B7280;">Tech Lead</p>
+                            </div>
+                        </div>
+                        <p style="font-size: 11px; color: #9CA3AF;">5 days in stage</p>
+                    </div>
+                    <div class="kanban-card aging-yellow">
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                            <div class="avatar" style="background-color: #EC4899;">EM</div>
+                            <div style="flex-grow: 1;">
+                                <p style="font-size: 13px; font-weight: 600; color: #111827;">Emma Miller</p>
+                                <p style="font-size: 11px; color: #6B7280;">Principal Eng</p>
+                            </div>
+                        </div>
+                        <p style="font-size: 11px; color: #9CA3AF;">6 days in stage</p>
+                    </div>
+                </div>
+
+                <!-- Screened Column -->
+                <div>
+                    <div class="column-header">
+                        <div class="stage-color" style="background-color: #2563EB;"></div>
+                        <span class="column-title">Screened</span>
+                        <span class="column-count">4</span>
+                    </div>
+                    <div class="kanban-card aging-green">
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                            <div class="avatar" style="background-color: #16A34A;">MC</div>
+                            <div style="flex-grow: 1;">
+                                <p style="font-size: 13px; font-weight: 600; color: #111827;">Morgan Chen</p>
+                                <p style="font-size: 11px; color: #6B7280;">Sr. Engineer</p>
+                            </div>
+                        </div>
+                        <p style="font-size: 11px; color: #9CA3AF;">1 day in stage</p>
+                    </div>
+                    <div class="kanban-card aging-green">
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                            <div class="avatar" style="background-color: #F59E0B;">JL</div>
+                            <div style="flex-grow: 1;">
+                                <p style="font-size: 13px; font-weight: 600; color: #111827;">Jamie Lee</p>
+                                <p style="font-size: 11px; color: #6B7280;">Architect</p>
+                            </div>
+                        </div>
+                        <p style="font-size: 11px; color: #9CA3AF;">2 days in stage</p>
+                    </div>
+                    <div class="kanban-card aging-yellow">
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                            <div class="avatar" style="background-color: #06B6D4;">SN</div>
+                            <div style="flex-grow: 1;">
+                                <p style="font-size: 13px; font-weight: 600; color: #111827;">Samuel Nelson</p>
+                                <p style="font-size: 11px; color: #6B7280;">Platform Eng</p>
+                            </div>
+                        </div>
+                        <p style="font-size: 11px; color: #9CA3AF;">4 days in stage</p>
+                    </div>
+                    <div class="kanban-card aging-red">
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                            <div class="avatar" style="background-color: #EF4444;">LW</div>
+                            <div style="flex-grow: 1;">
+                                <p style="font-size: 13px; font-weight: 600; color: #111827;">Lucas West</p>
+                                <p style="font-size: 11px; color: #6B7280;">Sr. Backend</p>
+                            </div>
+                        </div>
+                        <p style="font-size: 11px; color: #9CA3AF;">8 days in stage</p>
+                    </div>
+                </div>
+
+                <!-- Submitted Column -->
+                <div>
+                    <div class="column-header">
+                        <div class="stage-color" style="background-color: #F59E0B;"></div>
+                        <span class="column-title">Submitted</span>
+                        <span class="column-count">3</span>
+                    </div>
+                    <div class="kanban-card aging-green">
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                            <div class="avatar" style="background-color: #14B8A6;">JS</div>
+                            <div style="flex-grow: 1;">
+                                <p style="font-size: 13px; font-weight: 600; color: #111827;">Jordan Smith</p>
+                                <p style="font-size: 11px; color: #6B7280;">Full Stack</p>
+                            </div>
+                        </div>
+                        <p style="font-size: 11px; color: #9CA3AF;">2 days in stage</p>
+                    </div>
+                    <div class="kanban-card aging-yellow">
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                            <div class="avatar" style="background-color: #A78BFA;">RJ</div>
+                            <div style="flex-grow: 1;">
+                                <p style="font-size: 13px; font-weight: 600; color: #111827;">Riley James</p>
+                                <p style="font-size: 11px; color: #6B7280;">Backend Eng</p>
+                            </div>
+                        </div>
+                        <p style="font-size: 11px; color: #9CA3AF;">5 days in stage</p>
+                    </div>
+                    <div class="kanban-card aging-red">
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                            <div class="avatar" style="background-color: #64748B;">TC</div>
+                            <div style="flex-grow: 1;">
+                                <p style="font-size: 13px; font-weight: 600; color: #111827;">Taylor Chen</p>
+                                <p style="font-size: 11px; color: #6B7280;">Cloud Arch</p>
+                            </div>
+                        </div>
+                        <p style="font-size: 11px; color: #9CA3AF;">9 days in stage</p>
+                    </div>
+                </div>
+
+                <!-- Client Review Column -->
+                <div>
+                    <div class="column-header">
+                        <div class="stage-color" style="background-color: #10B981;"></div>
+                        <span class="column-title">Client Review</span>
+                        <span class="column-count">2</span>
+                    </div>
+                    <div class="kanban-card aging-green">
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                            <div class="avatar" style="background-color: #6366F1;">KP</div>
+                            <div style="flex-grow: 1;">
+                                <p style="font-size: 13px; font-weight: 600; color: #111827;">Kevin Park</p>
+                                <p style="font-size: 11px; color: #6B7280;">Sr. Dev</p>
+                            </div>
+                        </div>
+                        <p style="font-size: 11px; color: #9CA3AF;">1 day in stage</p>
+                    </div>
+                    <div class="kanban-card aging-yellow">
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                            <div class="avatar" style="background-color: #8B5CF6;">MK</div>
+                            <div style="flex-grow: 1;">
+                                <p style="font-size: 13px; font-weight: 600; color: #111827;">Michelle King</p>
+                                <p style="font-size: 11px; color: #6B7280;">Platform Eng</p>
+                            </div>
+                        </div>
+                        <p style="font-size: 11px; color: #9CA3AF;">4 days in stage</p>
+                    </div>
+                </div>
+
+                <!-- Interview Column -->
+                <div>
+                    <div class="column-header">
+                        <div class="stage-color" style="background-color: #3B82F6;"></div>
+                        <span class="column-title">Interview</span>
+                        <span class="column-count">2</span>
+                    </div>
+                    <div class="kanban-card aging-green">
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                            <div class="avatar" style="background-color: #F97316;">DC</div>
+                            <div style="flex-grow: 1;">
+                                <p style="font-size: 13px; font-weight: 600; color: #111827;">Daniel Carter</p>
+                                <p style="font-size: 11px; color: #6B7280;">Eng Manager</p>
+                            </div>
+                        </div>
+                        <p style="font-size: 11px; color: #9CA3AF;">1 day in stage</p>
+                    </div>
+                    <div class="kanban-card aging-green">
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                            <div class="avatar" style="background-color: #0EA5E9;">RS</div>
+                            <div style="flex-grow: 1;">
+                                <p style="font-size: 13px; font-weight: 600; color: #111827;">Ryan Scott</p>
+                                <p style="font-size: 11px; color: #6B7280;">Sr. Software</p>
+                            </div>
+                        </div>
+                        <p style="font-size: 11px; color: #9CA3AF;">2 days in stage</p>
+                    </div>
+                </div>
+
+                <!-- Offer Column -->
+                <div>
+                    <div class="column-header">
+                        <div class="stage-color" style="background-color: #16A34A;"></div>
+                        <span class="column-title">Offer</span>
+                        <span class="column-count">1</span>
+                    </div>
+                    <div class="kanban-card aging-green">
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                            <div class="avatar" style="background-color: #22C55E;">PH</div>
+                            <div style="flex-grow: 1;">
+                                <p style="font-size: 13px; font-weight: 600; color: #111827;">Patricia Harris</p>
+                                <p style="font-size: 11px; color: #6B7280;">Principal Eng</p>
+                            </div>
+                        </div>
+                        <p style="font-size: 11px; color: #9CA3AF;">1 day in stage</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+    </script>
+
+</body>
+</html>

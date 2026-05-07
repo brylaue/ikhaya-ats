@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Candidate Comparison - Client Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        * {
+            font-family: Inter, system-ui, -apple-system, sans-serif;
+        }
+        body {
+            background: linear-gradient(135deg, #ECF2FF 0%, #E0F2FE 100%);
+            min-height: 100vh;
+        }
+        .navbar {
+            background: white;
+            border-bottom: 1px solid #E5E7EB;
+            padding: 0 32px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .navbar-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 700;
+            color: #111827;
+        }
+        .navbar-logo img {
+            height: 32px;
+        }
+        .navbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .navbar-actions button {
+            padding: 8px 16px;
+            background: #0EA5E9;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .navbar-actions button:hover {
+            background: #0284C7;
+        }
+        .content-area {
+            padding: 32px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .page-header {
+            background: white;
+            border: 1px solid #E5E7EB;
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 32px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .header-content {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 12px;
+        }
+        .header-icon {
+            width: 40px;
+            height: 40px;
+            background: #DBEAFE;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #0284C7;
+        }
+        .header-text h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #111827;
+            margin: 0;
+        }
+        .header-text p {
+            font-size: 13px;
+            color: #6B7280;
+            margin: 4px 0 0 0;
+        }
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+        .candidate-card {
+            background: white;
+            border: 2px solid #E5E7EB;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            transition: all 0.2s;
+            position: relative;
+        }
+        .candidate-card:hover {
+            border-color: #0EA5E9;
+            box-shadow: 0 4px 12px rgba(14, 165, 233, 0.15);
+        }
+        .rank-badge {
+            position: absolute;
+            top: -12px;
+            left: 20px;
+            background: #0EA5E9;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            z-index: 10;
+        }
+        .candidate-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .candidate-avatar {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: #2563EB;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 20px;
+            margin: 0 auto 12px;
+        }
+        .candidate-avatar.green {
+            background: #16A34A;
+        }
+        .candidate-avatar.purple {
+            background: #9333EA;
+        }
+        .candidate-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 4px;
+        }
+        .candidate-title {
+            font-size: 13px;
+            color: #6B7280;
+            margin-bottom: 8px;
+        }
+        .candidate-company {
+            font-size: 12px;
+            color: #9CA3AF;
+        }
+        .recruiter-summary {
+            background: #F0F9FF;
+            border: 1px solid #BAE6FD;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 20px;
+            font-size: 12px;
+            line-height: 1.5;
+            color: #0C4A6E;
+        }
+        .comparison-row {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #F3F4F6;
+        }
+        .comparison-row:last-child {
+            border-bottom: none;
+        }
+        .row-label {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: #6B7280;
+            letter-spacing: 0.5px;
+        }
+        .row-values {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+        .value-cell {
+            background: #F9FAFB;
+            border: 1px solid #E5E7EB;
+            border-radius: 6px;
+            padding: 10px 12px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #111827;
+            text-align: center;
+        }
+        .value-cell.best {
+            background: #D1FAE5;
+            border-color: #6EE7B7;
+            color: #065F46;
+        }
+        .value-cell.skills {
+            padding: 8px 12px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            justify-content: center;
+            align-items: center;
+        }
+        .skill-badge {
+            background: #EFF6FF;
+            color: #0C4A6E;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+        .rating-stars {
+            display: flex;
+            justify-content: center;
+            gap: 2px;
+            font-size: 16px;
+        }
+        .star {
+            color: #D97706;
+        }
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 8px;
+            margin-top: 20px;
+        }
+        .action-btn {
+            padding: 10px 12px;
+            border: 1px solid #E5E7EB;
+            border-radius: 6px;
+            background: white;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .action-btn:hover {
+            background: #F9FAFB;
+            border-color: #D1D5DB;
+        }
+        .action-btn.advance {
+            background: #D1FAE5;
+            border-color: #6EE7B7;
+            color: #065F46;
+        }
+        .action-btn.advance:hover {
+            background: #A7F3D0;
+        }
+        .action-btn.hold {
+            background: #FEF3C7;
+            border-color: #FCD34D;
+            color: #92400E;
+        }
+        .action-btn.hold:hover {
+            background: #FDE68A;
+        }
+        .action-btn.pass {
+            background: #FEE2E2;
+            border-color: #FECACA;
+            color: #7F1D1D;
+        }
+        .action-btn.pass:hover {
+            background: #FECACA;
+        }
+        .footer {
+            background: white;
+            border: 1px solid #E5E7EB;
+            border-radius: 8px;
+            padding: 20px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .footer-text {
+            font-size: 13px;
+            color: #6B7280;
+        }
+        .footer-actions {
+            display: flex;
+            gap: 12px;
+        }
+        .footer-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .footer-btn.primary {
+            background: #0EA5E9;
+            color: white;
+        }
+        .footer-btn.primary:hover {
+            background: #0284C7;
+        }
+        .footer-btn.secondary {
+            background: white;
+            border: 1px solid #D1D5DB;
+            color: #374151;
+        }
+        .footer-btn.secondary:hover {
+            background: #F9FAFB;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <div class="navbar">
+        <div class="navbar-logo">
+            <div style="width: 32px; height: 32px; background: #0EA5E9; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 14px;">IV</div>
+            <span>Ikhaya ATS</span>
+        </div>
+        <div class="navbar-actions">
+            <button>Help</button>
+        </div>
+    </div>
+
+    <div class="content-area">
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="header-content">
+                <div class="header-icon">
+                    <i data-lucide="users" style="width: 24px; height: 24px;"></i>
+                </div>
+                <div class="header-text">
+                    <h1>Comparing Candidates</h1>
+                    <p>VP of Engineering · Apex Ventures</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Comparison Grid -->
+        <div class="comparison-grid">
+            <!-- Candidate 1 -->
+            <div class="candidate-card">
+                <div class="rank-badge">Rank #1</div>
+                <div class="candidate-header">
+                    <div class="candidate-avatar">SK</div>
+                    <div class="candidate-name">Sarah Kim</div>
+                    <div class="candidate-title">Principal Engineer</div>
+                    <div class="candidate-company">Google</div>
+                </div>
+                <div class="recruiter-summary">
+                    "Exceptional systems architect with 12 years scaling distributed systems. Led team of 8 engineers. Strong alignment with role requirements."
+                </div>
+                <div class="comparison-row">
+                    <div class="row-label">Years Experience</div>
+                    <div class="row-values">
+                        <div class="value-cell best">12 yrs</div>
+                    </div>
+                </div>
+                <div class="comparison-row">
+                    <div class="row-label">Current Title</div>
+                    <div class="row-values">
+                        <div class="value-cell">Principal Engineer</div>
+                    </div>
+                </div>
+                <div class="comparison-row">
+                    <div class="row-label">Education</div>
+                    <div class="row-values">
+                        <div class="value-cell">MS Computer Science</div>
+                    </div>
+                </div>
+                <div class="comparison-row">
+                    <div class="row-label">Location / Remote</div>
+                    <div class="row-values">
+                        <div class="value-cell">San Francisco, CA</div>
+                    </div>
+                </div>
+                <div class="comparison-row">
+                    <div class="row-label">Salary Range</div>
+                    <div class="row-values">
+                        <div class="value-cell">$180K → $220K</div>
+                    </div>
+                </div>
+                <div class="comparison-row">
+                    <div class="row-label">Key Skills</div>
+                    <div class="value-cell skills" style="grid-column: 1;">
+                        <span class="skill-badge">Kubernetes</span>
+                        <span class="skill-badge">Go</span>
+                        <span class="skill-badge">AWS</span>
+                        <span class="skill-badge">Team Lead</span>
+                    </div>
+                </div>
+                <div class="comparison-row">
+                    <div class="row-label">Recruiter Score</div>
+                    <div class="row-values">
+                        <div class="value-cell">
+                            <div class="rating-stars">
+                                <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="action-buttons">
+                    <button class="action-btn advance">✓ Advance</button>
+                    <button class="action-btn hold">⏸ Hold</button>
+                    <button class="action-btn pass">✕ Pass</button>
+                </div>
+            </div>
+
+            <!-- Candidate 2 -->
+            <div class="candidate-card">
+                <div class="rank-badge" style="background: #D97706;">Rank #2</div>
+                <div class="candidate-header">
+                    <div class="candidate-avatar green">AR</div>
+                    <div class="candidate-name">Alex Rodriguez</div>
+                    <div class="candidate-title">Senior Engineering Lead</div>
+                    <div class="candidate-company">Stripe</div>
+                </div>
+                <div class="recruiter-summary">
+                    "Strong backend engineer with expertise in payment systems. Proven track record managing cross-functional projects. Great communication skills."
+                </div>
+                <div class="comparison-row">
+                    <div class="row-label">Years Experience</div>
+                    <div class="row-values">
+                        <div class="value-cell">10 yrs</div>
+                    </div>
+                </div>
+                <div class="comparison-row">
+                    <div class="row-label">Current Title</div>
+                    <div class="row-values">
+                        <div class="value-cell">Senior Engineering Lead</div>
+                    </div>
+                </div>
+                <div class="comparison-row">
+                    <div class="row-label">Education</div>
+                    <div class="row-values">
+                        <div class="value-cell">BS Engineering</div>
+                    </div>
+                </div>
+                <div class="comparison-row">
+                    <div class="row-label">Location / Remote</div>
+                    <div class="row-values">
+                        <div class="value-cell">Remote (US)</div>
+                    </div>
+                </div>
+                <div class="comparison-row">
+                    <div class="row-label">Salary Range</div>
+                    <div class="row-values">
+                        <div class="value-cell">$160K → $200K</div>
+                    </div>
+                </div>
+                <div class="comparison-row">
+                    <div class="row-label">Key Skills</div>
+                    <div class="value-cell skills" style="grid-column: 1;">
+                        <span class="skill-badge">Python</span>
+                        <span class="skill-badge">PostgreSQL</span>
+                        <span class="skill-badge">Payments</span>
+                        <span class="skill-badge">Mentoring</span>
+                    </div>
+                </div>
+                <div class="comparison-row">
+                    <div class="row-label">Recruiter Score</div>
+                    <div class="row-values">
+                        <div class="value-cell">
+                            <div class="rating-stars">
+                                <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="action-buttons">
+                    <button class="action-btn advance">✓ Advance</button>
+                    <button class="action-btn hold">⏸ Hold</button>
+                    <button class="action-btn pass">✕ Pass</button>
+                </div>
+            </div>
+
+            <!-- Candidate 3 -->
+            <div class="candidate-card">
+                <div class="rank-badge" style="background: #D97706;">Rank #3</div>
+                <div class="candidate-header">
+                    <div class="candidate-avatar purple">JT</div>
+                    <div class="candidate-name">Jamie Torres</div>
+                    <div class="candidate-title">Senior Staff Engineer</div>
+                    <div class="candidate-company">Meta</div>
+                </div>
+                <div class="recruiter-summary">
+                    "Infrastructure specialist with 11 years at scale. Built systems handling billions of requests. Slightly overqualified but open to growth."
+                </div>
+                <div class="comparison-row">
+                    <div class="row-label">Years Experience</div>
+                    <div class="row-values">
+                        <div class="value-cell">11 yrs</div>
+                    </div>
+                </div>
+                <div class="comparison-row">
+                    <div class="row-label">Current Title</div>
+                    <div class="row-values">
+                        <div class="value-cell">Senior Staff Engineer</div>
+                    </div>
+                </div>
+                <div class="comparison-row">
+                    <div class="row-label">Education</div>
+                    <div class="row-values">
+                        <div class="value-cell">PhD Computer Science</div>
+                    </div>
+                </div>
+                <div class="comparison-row">
+                    <div class="row-label">Location / Remote</div>
+                    <div class="row-values">
+                        <div class="value-cell">New York, NY</div>
+                    </div>
+                </div>
+                <div class="comparison-row">
+                    <div class="row-label">Salary Range</div>
+                    <div class="row-values">
+                        <div class="value-cell">$200K → $260K</div>
+                    </div>
+                </div>
+                <div class="comparison-row">
+                    <div class="row-label">Key Skills</div>
+                    <div class="value-cell skills" style="grid-column: 1;">
+                        <span class="skill-badge">C++</span>
+                        <span class="skill-badge">Infrastructure</span>
+                        <span class="skill-badge">Linux</span>
+                        <span class="skill-badge">Distributed Systems</span>
+                    </div>
+                </div>
+                <div class="comparison-row">
+                    <div class="row-label">Recruiter Score</div>
+                    <div class="row-values">
+                        <div class="value-cell">
+                            <div class="rating-stars">
+                                <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="action-buttons">
+                    <button class="action-btn advance">✓ Advance</button>
+                    <button class="action-btn hold">⏸ Hold</button>
+                    <button class="action-btn pass">✕ Pass</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <div class="footer-text">You can reorder candidates by dragging the rank badges at the top of each card.</div>
+            <div class="footer-actions">
+                <button class="footer-btn secondary">Back to All Candidates</button>
+                <button class="footer-btn primary">Submit Rankings</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

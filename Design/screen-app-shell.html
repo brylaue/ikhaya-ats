@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ATS Home Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        * {
+            font-family: Inter, system-ui, -apple-system, sans-serif;
+        }
+        body {
+            background-color: #F3F4F6;
+        }
+        .sidebar {
+            background-color: #1E3C78;
+            width: 220px;
+            position: fixed;
+            height: 100vh;
+            left: 0;
+            top: 0;
+            overflow-y: auto;
+            z-index: 40;
+        }
+        .main-content {
+            margin-left: 220px;
+        }
+        .topbar {
+            background-color: white;
+            border-bottom: 1px solid #E5E7EB;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 32px;
+            position: sticky;
+            top: 0;
+            z-index: 30;
+        }
+        .search-bar {
+            background-color: #F9FAFB;
+            border: 1px solid #D1D5DB;
+            border-radius: 6px;
+            padding: 8px 12px;
+            font-size: 14px;
+            color: #6B7280;
+            width: 280px;
+        }
+        .nav-item {
+            padding: 12px 16px;
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: background-color 0.2s;
+        }
+        .nav-item:hover {
+            background-color: rgba(255,255,255,0.1);
+        }
+        .nav-item.active {
+            background-color: #2563EB;
+        }
+        .content-area {
+            padding: 32px;
+            margin-top: 64px;
+        }
+        .card {
+            background: white;
+            border: 1px solid #E5E7EB;
+            border-radius: 8px;
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .stat-card {
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #2563EB;
+        }
+        .stat-label {
+            font-size: 14px;
+            color: #6B7280;
+            margin-top: 8px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar Navigation -->
+    <div class="sidebar">
+        <div style="padding: 24px; border-bottom: 1px solid rgba(255,255,255,0.1);">
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 32px;">
+                <div style="width: 32px; height: 32px; background-color: #2563EB; border-radius: 6px; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 16px;">A</div>
+                <div style="font-weight: 600; color: white; font-size: 14px;">ATS Pro</div>
+            </div>
+            <nav style="display: flex; flex-direction: column; gap: 4px;">
+                <div class="nav-item active">
+                    <i data-lucide="home" style="width: 18px; height: 18px;"></i>
+                    Dashboard
+                </div>
+                <div class="nav-item">
+                    <i data-lucide="users" style="width: 18px; height: 18px;"></i>
+                    Candidates
+                </div>
+                <div class="nav-item">
+                    <i data-lucide="briefcase" style="width: 18px; height: 18px;"></i>
+                    Jobs
+                </div>
+                <div class="nav-item">
+                    <i data-lucide="building" style="width: 18px; height: 18px;"></i>
+                    Clients
+                </div>
+                <div class="nav-item">
+                    <i data-lucide="kanban" style="width: 18px; height: 18px;"></i>
+                    Pipeline
+                </div>
+                <div class="nav-item">
+                    <i data-lucide="bar-chart-3" style="width: 18px; height: 18px;"></i>
+                    Analytics
+                </div>
+                <div class="nav-item">
+                    <i data-lucide="inbox" style="width: 18px; height: 18px;"></i>
+                    Inbox
+                </div>
+            </nav>
+        </div>
+        <div style="padding: 24px; margin-top: auto; border-top: 1px solid rgba(255,255,255,0.1);">
+            <div style="display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 6px; cursor: pointer;" onmouseover="this.style.backgroundColor='rgba(255,255,255,0.1)'" onmouseout="this.style.backgroundColor='transparent'">
+                <div style="width: 36px; height: 36px; background-color: #16A34A; border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px;">JD</div>
+                <div style="flex-grow: 1;">
+                    <div style="color: white; font-size: 14px; font-weight: 500;">Jane Doe</div>
+                    <div style="color: rgba(255,255,255,0.6); font-size: 12px;">Senior Recruiter</div>
+                </div>
+                <i data-lucide="chevron-down" style="width: 16px; height: 16px; color: rgba(255,255,255,0.6);"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="main-content">
+        <!-- Top Bar -->
+        <div class="topbar">
+            <div style="display: flex; align-items: center; gap: 16px; flex-grow: 1;">
+                <input type="text" placeholder="⌘K Search candidates, jobs..." class="search-bar">
+            </div>
+            <div style="display: flex; align-items: center; gap: 16px;">
+                <button style="background: none; border: none; cursor: pointer; color: #6B7280;">
+                    <i data-lucide="bell" style="width: 20px; height: 20px;"></i>
+                </button>
+                <button style="background: none; border: none; cursor: pointer; color: #6B7280;">
+                    <i data-lucide="help-circle" style="width: 20px; height: 20px;"></i>
+                </button>
+                <button style="display: flex; align-items: center; gap: 8px; background-color: #2563EB; color: white; border: none; border-radius: 6px; padding: 8px 12px; cursor: pointer; font-size: 14px; font-weight: 500;">
+                    <i data-lucide="plus" style="width: 16px; height: 16px;"></i>
+                    Quick Create
+                </button>
+            </div>
+        </div>
+
+        <!-- Content -->
+        <div class="content-area">
+            <div style="margin-bottom: 32px;">
+                <h1 style="font-size: 28px; font-weight: bold; color: #111827; margin-bottom: 8px;">Welcome back, Jane</h1>
+                <p style="font-size: 14px; color: #6B7280;">Here's your recruiting pipeline at a glance</p>
+            </div>
+
+            <!-- Quick Stats -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 32px;">
+                <div class="card stat-card">
+                    <div style="color: #6B7280; font-size: 12px; font-weight: 500; margin-bottom: 12px;">SUBMISSIONS TODAY</div>
+                    <div class="stat-value">12</div>
+                    <div class="stat-label">↑ 3 from yesterday</div>
+                </div>
+                <div class="card stat-card">
+                    <div style="color: #6B7280; font-size: 12px; font-weight: 500; margin-bottom: 12px;">INTERVIEWS THIS WEEK</div>
+                    <div class="stat-value">8</div>
+                    <div class="stat-label">3 scheduled</div>
+                </div>
+                <div class="card stat-card">
+                    <div style="color: #6B7280; font-size: 12px; font-weight: 500; margin-bottom: 12px;">ACTIVE SEARCHES</div>
+                    <div class="stat-value">14</div>
+                    <div class="stat-label">2 urgent</div>
+                </div>
+                <div class="card stat-card">
+                    <div style="color: #6B7280; font-size: 12px; font-weight: 500; margin-bottom: 12px;">PLACEMENTS (MTD)</div>
+                    <div class="stat-value">4</div>
+                    <div class="stat-label">On track for quota</div>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 24px;">
+                <!-- Left Column -->
+                <div>
+                    <!-- Today's Tasks -->
+                    <div class="card" style="margin-bottom: 24px;">
+                        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
+                            <i data-lucide="list-todo" style="width: 20px; height: 20px; color: #2563EB;"></i>
+                            <h2 style="font-size: 18px; font-weight: 600; color: #111827;">Today's Tasks</h2>
+                        </div>
+                        <div style="space-y: 12px;">
+                            <div style="display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid #F3F4F6;">
+                                <input type="checkbox" style="cursor: pointer; width: 16px; height: 16px;">
+                                <div style="flex-grow: 1;">
+                                    <p style="font-size: 14px; color: #111827; font-weight: 500;">Follow up with Alex Johnson on TechCorp req</p>
+                                    <p style="font-size: 12px; color: #D97706; margin-top: 4px;">Due: Today at 2 PM</p>
+                                </div>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid #F3F4F6;">
+                                <input type="checkbox" style="cursor: pointer; width: 16px; height: 16px;">
+                                <div style="flex-grow: 1;">
+                                    <p style="font-size: 14px; color: #111827; font-weight: 500;">Review 5 candidate submissions from Morgan Chen</p>
+                                    <p style="font-size: 12px; color: #16A34A; margin-top: 4px;">Due: Today at 5 PM</p>
+                                </div>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 12px; padding: 12px 0;">
+                                <input type="checkbox" checked style="cursor: pointer; width: 16px; height: 16px;">
+                                <div style="flex-grow: 1; opacity: 0.6;">
+                                    <p style="font-size: 14px; color: #111827; font-weight: 500; text-decoration: line-through;">Schedule interviews for Senior PM role</p>
+                                    <p style="font-size: 12px; color: #6B7280; margin-top: 4px;">Completed</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pipeline Summary -->
+                    <div class="card" style="margin-bottom: 24px;">
+                        <h2 style="font-size: 18px; font-weight: 600; color: #111827; margin-bottom: 20px;">Active Searches Summary</h2>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                            <div style="padding: 16px; background-color: #F3F4F6; border-radius: 6px;">
+                                <div style="font-size: 12px; color: #6B7280; font-weight: 500; margin-bottom: 8px;">Senior Software Engineer (TechCorp)</div>
+                                <div style="font-size: 24px; font-weight: bold; color: #2563EB; margin-bottom: 4px;">7</div>
+                                <div style="font-size: 12px; color: #6B7280;">Candidates in pipeline</div>
+                                <div style="display: flex; gap: 4px; margin-top: 12px; font-size: 11px; color: #6B7280;">
+                                    <span>Sourced: 2</span>
+                                    <span>•</span>
+                                    <span>Screened: 3</span>
+                                    <span>•</span>
+                                    <span>Interview: 2</span>
+                                </div>
+                            </div>
+                            <div style="padding: 16px; background-color: #F3F4F6; border-radius: 6px;">
+                                <div style="font-size: 12px; color: #6B7280; font-weight: 500; margin-bottom: 8px;">Product Manager (InsuranceX)</div>
+                                <div style="font-size: 24px; font-weight: bold; color: #2563EB; margin-bottom: 4px;">5</div>
+                                <div style="font-size: 12px; color: #6B7280;">Candidates in pipeline</div>
+                                <div style="display: flex; gap: 4px; margin-top: 12px; font-size: 11px; color: #6B7280;">
+                                    <span>Sourced: 1</span>
+                                    <span>•</span>
+                                    <span>Screened: 2</span>
+                                    <span>•</span>
+                                    <span>Interview: 2</span>
+                                </div>
+                            </div>
+                            <div style="padding: 16px; background-color: #F3F4F6; border-radius: 6px;">
+                                <div style="font-size: 12px; color: #6B7280; font-weight: 500; margin-bottom: 8px;">UX Designer (FinNext)</div>
+                                <div style="font-size: 24px; font-weight: bold; color: #2563EB; margin-bottom: 4px;">4</div>
+                                <div style="font-size: 12px; color: #6B7280;">Candidates in pipeline</div>
+                                <div style="display: flex; gap: 4px; margin-top: 12px; font-size: 11px; color: #6B7280;">
+                                    <span>Sourced: 3</span>
+                                    <span>•</span>
+                                    <span>Screened: 1</span>
+                                    <span>•</span>
+                                    <span>Interview: 0</span>
+                                </div>
+                            </div>
+                            <div style="padding: 16px; background-color: #F3F4F6; border-radius: 6px;">
+                                <div style="font-size: 12px; color: #6B7280; font-weight: 500; margin-bottom: 8px;">Data Analyst (CloudCorp)</div>
+                                <div style="font-size: 24px; font-weight: bold; color: #2563EB; margin-bottom: 4px;">3</div>
+                                <div style="font-size: 12px; color: #6B7280;">Candidates in pipeline</div>
+                                <div style="display: flex; gap: 4px; margin-top: 12px; font-size: 11px; color: #6B7280;">
+                                    <span>Sourced: 1</span>
+                                    <span>•</span>
+                                    <span>Screened: 1</span>
+                                    <span>•</span>
+                                    <span>Interview: 1</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column -->
+                <div>
+                    <!-- Recent Activity -->
+                    <div class="card">
+                        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
+                            <i data-lucide="activity" style="width: 20px; height: 20px; color: #2563EB;"></i>
+                            <h2 style="font-size: 18px; font-weight: 600; color: #111827;">Recent Activity</h2>
+                        </div>
+                        <div>
+                            <div style="display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid #F3F4F6;">
+                                <div style="width: 32px; height: 32px; background-color: #2563EB; border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; flex-shrink: 0;">📤</div>
+                                <div>
+                                    <p style="font-size: 13px; color: #111827; font-weight: 500;">Alex Johnson submitted to TechCorp</p>
+                                    <p style="font-size: 12px; color: #6B7280; margin-top: 2px;">2 minutes ago</p>
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid #F3F4F6;">
+                                <div style="width: 32px; height: 32px; background-color: #16A34A; border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; flex-shrink: 0;">✓</div>
+                                <div>
+                                    <p style="font-size: 13px; color: #111827; font-weight: 500;">Morgan Chen advanced to interviews</p>
+                                    <p style="font-size: 12px; color: #6B7280; margin-top: 2px;">24 minutes ago</p>
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid #F3F4F6;">
+                                <div style="width: 32px; height: 32px; background-color: #D97706; border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; flex-shrink: 0;">⏸</div>
+                                <div>
+                                    <p style="font-size: 13px; color: #111827; font-weight: 500;">Jamie Lee placed on hold</p>
+                                    <p style="font-size: 12px; color: #6B7280; margin-top: 2px;">1 hour ago</p>
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid #F3F4F6;">
+                                <div style="width: 32px; height: 32px; background-color: #2563EB; border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; flex-shrink: 0;">📧</div>
+                                <div>
+                                    <p style="font-size: 13px; color: #111827; font-weight: 500;">Sent outreach email to Chris Park</p>
+                                    <p style="font-size: 12px; color: #6B7280; margin-top: 2px;">2 hours ago</p>
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 12px; padding: 12px 0;">
+                                <div style="width: 32px; height: 32px; background-color: #DC2626; border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; flex-shrink: 0;">✕</div>
+                                <div>
+                                    <p style="font-size: 13px; color: #111827; font-weight: 500;">Taylor Smith rejected by InsuranceX</p>
+                                    <p style="font-size: 12px; color: #6B7280; margin-top: 2px;">3 hours ago</p>
+                                </div>
+                            </div>
+                        </div>
+                        <button style="width: 100%; margin-top: 16px; padding: 10px 16px; background-color: #F3F4F6; border: none; border-radius: 6px; font-size: 14px; color: #2563EB; font-weight: 500; cursor: pointer;">View all activity</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+    </script>
+
+</body>
+</html>
