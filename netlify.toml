@@ -1,0 +1,24 @@
+# Root-level Netlify configuration.
+#
+# The Next.js app lives at ats-platform/apps/web inside this monorepo.
+# Without this file at the repo root, Netlify scans the root (which has
+# no package.json), the @netlify/plugin-nextjs runtime never activates,
+# and the deployed site is a static dump of the .next/ build artifact
+# directory — i.e. blank / 404 on every route.
+
+[build]
+  base    = "ats-platform/apps/web"
+  command = "npm install --legacy-peer-deps && npm run build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION            = "20"
+  NPM_FLAGS               = "--legacy-peer-deps"
+  NEXT_TELEMETRY_DISABLED = "1"
+
+# Required: this plugin makes Netlify treat the build as a Next.js
+# runtime (SSR pages + API routes + image optimization + middleware).
+# Without it, .next/ is published as plain static files and every
+# server-rendered route returns 404.
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
