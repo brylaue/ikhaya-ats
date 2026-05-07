@@ -33,6 +33,7 @@ export async function POST(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   const csrfError = checkCsrf(req);
   if (csrfError) return csrfError;
 
@@ -49,7 +50,7 @@ export async function POST(
   const { data: agency, error } = await db
     .from("agencies")
     .select("id, name")
-    .eq("id", params.id)
+    .eq("id", id)
     .single();
 
   if (error || !agency) {
@@ -92,6 +93,7 @@ export async function DELETE(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   const csrfError = checkCsrf(req);
   if (csrfError) return csrfError;
 
@@ -107,11 +109,11 @@ export async function DELETE(
   // Audit the exit
   const db = createServiceClient();
   await db.from("audit_log").insert({
-    agency_id:     params.id,
+    agency_id:     id,
     user_id:       user.id,
     action:        "super_admin.impersonate_end",
     resource_type: "agency",
-    resource_id:   params.id,
+    resource_id:   id,
     detail:        { superAdminEmail: user.email },
     performed_at:  new Date().toISOString(),
   });

@@ -68,10 +68,10 @@ export async function subscribeFor(
   const clientStateHmac = isGoogle ? "" : buildClientStateHmac(connectionId);
 
   // 3. Subscribe
-  const subscription = await adapter.subscribeRealtime(connection, {
+  const subscription = (await adapter.subscribeRealtime(connection, {
     webhookUrl,
     clientStateHmac,
-  });
+  })) as import("@/types/email/provider").Subscription;
 
   // 4. Store the handle
   await supabase

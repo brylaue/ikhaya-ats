@@ -108,12 +108,16 @@ export async function resolveExperiment(
   // Skip persisting holdouts — they're cheap to recompute and we don't want
   // to fill the table with rows for users who aren't in the experiment.
   if (variant !== HOLDOUT_KEY) {
-    await db.from("experiment_assignments").insert({
-      experiment_id: exp.id,
-      agency_id:     input.agencyId,
-      user_id:       input.userId,
-      variant_key:   variant,
-    }).select().maybeSingle().catch(() => { /* unique-constraint races are fine */ });
+    try {
+      await db.from("experiment_assignments").insert({
+        experiment_id: exp.id,
+        agency_id:     input.agencyId,
+        user_id:       input.userId,
+        variant_key:   variant,
+      }).select().maybeSingle();
+    } catch {
+      // unique-constraint races are fine
+    }
   }
 
   return variant;

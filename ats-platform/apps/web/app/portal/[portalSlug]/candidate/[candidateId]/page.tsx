@@ -251,7 +251,7 @@ function PortalScorecardForm({
 const DECISION_CFG: Record<ClientDecision, { label: string; icon: React.ElementType; color: string; bg: string; border: string }> = {
   advance:  { label: "Advance to interview", icon: ThumbsUp,    color: "text-emerald-700", bg: "bg-emerald-600", border: "border-emerald-400" },
   hold:     { label: "Hold for now",          icon: HelpCircle,  color: "text-amber-700",   bg: "bg-amber-500",   border: "border-amber-400"   },
-  rejected: { label: "Not the right fit",    icon: ThumbsDown,  color: "text-red-700",     bg: "bg-red-600",     border: "border-red-400"     },
+  pass: { label: "Not the right fit",    icon: ThumbsDown,  color: "text-red-700",     bg: "bg-red-600",     border: "border-red-400"     },
 };
 
 const ADVANCE_REASONS = ["Strong background", "Culture fit", "Exceeds requirements", "Impressive trajectory", "Other"];
@@ -320,7 +320,7 @@ function DecisionPanel({
   const reasons =
     decision === "advance"  ? ADVANCE_REASONS :
     decision === "hold"     ? HOLD_REASONS :
-    decision === "rejected" ? REJECT_REASONS : [];
+    decision === "pass" ? REJECT_REASONS : [];
 
   if (submitted) {
     return (
@@ -350,7 +350,7 @@ function DecisionPanel({
 
       {/* Decision buttons */}
       <div className="grid grid-cols-3 gap-2">
-        {(["advance", "hold", "rejected"] as ClientDecision[]).map((d) => {
+        {(["advance", "hold", "pass"] as ClientDecision[]).map((d) => {
           const cfg = DECISION_CFG[d];
           const Icon = cfg.icon;
           return (
@@ -784,14 +784,14 @@ function QuestionBox({ candidateName }: { candidateName: string }) {
   const [sent, setSent]     = useState(false);
 
   // Auto-save draft while typing
-  const { status: saveStatus, clearDraft, loadDraft } = useAutoSave({
+  const { status: saveStatus, clearDraft, loadDraft } = useAutoSave<string>({
     key: `portal-question-draft-${candidateName}`,
     value: q,
   });
 
   // Restore draft on mount
   useEffect(() => {
-    const draft = loadDraft<string>();
+    const draft = loadDraft();
     if (draft) setQ(draft);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

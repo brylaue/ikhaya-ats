@@ -17,6 +17,7 @@ export async function DELETE(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   // US-326: key revocation must be same-origin
   const csrfError = checkCsrf(req);
   if (csrfError) return csrfError;
@@ -38,7 +39,7 @@ export async function DELETE(
   const { data: key } = await db
     .from("api_keys")
     .select("id, name")
-    .eq("id", params.id)
+    .eq("id", id)
     .eq("agency_id", ctx.agencyId)
     .is("revoked_at", null)
     .single();
@@ -50,14 +51,14 @@ export async function DELETE(
   await db.from("api_keys").update({
     revoked_at:   new Date().toISOString(),
     revoke_reason: reason,
-  }).eq("id", params.id);
+  }).eq("id", id);
 
   await db.from("audit_events").insert({
     actor_id:   user.id,
     action:     "api_key.revoked",
-    resource:   `api_key:${params.id}`,
+    resource:   `api_key:${id}`,
     metadata:   { key_name: key.name, reason },
-    api_key_id: params.id,
+    api_key_id: id,
   }).maybeSingle();
 
   return NextResponse.json({ ok: true });

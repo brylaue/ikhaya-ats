@@ -6,7 +6,7 @@ import type { SearchResponse, SearchResultItem } from "@/app/api/search/route";
 export interface UseSearchResult {
   results:    SearchResultItem[];
   isLoading:  boolean;
-  mode:       "vector" | "keyword" | null;
+  mode:       "vector" | "keyword" | "ilike" | null;
   latency_ms: number | null;
   error:      string | null;
 }
@@ -19,7 +19,7 @@ export interface UseSearchResult {
 export function useSearch(query: string, delay = 280): UseSearchResult {
   const [results,    setResults]    = useState<SearchResultItem[]>([]);
   const [isLoading,  setIsLoading]  = useState(false);
-  const [mode,       setMode]       = useState<"vector" | "keyword" | null>(null);
+  const [mode,       setMode]       = useState<"vector" | "keyword" | "ilike" | null>(null);
   const [latency_ms, setLatency]    = useState<number | null>(null);
   const [error,      setError]      = useState<string | null>(null);
 

@@ -25,6 +25,7 @@ export async function PATCH(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   const csrfError = checkCsrf(req);
   if (csrfError) return csrfError;
 
@@ -59,7 +60,7 @@ export async function PATCH(
   const { data: token } = await db
     .from("candidate_portal_tokens")
     .select("id, agency_id")
-    .eq("id", params.id)
+    .eq("id", id)
     .single();
 
   if (!token || token.agency_id !== ctx.agencyId) {
@@ -69,7 +70,7 @@ export async function PATCH(
   const { error } = await db
     .from("candidate_portal_tokens")
     .update(update)
-    .eq("id", params.id);
+    .eq("id", id);
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 

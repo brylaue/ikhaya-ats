@@ -38,8 +38,8 @@ export function RediscoveryPanel({ jobId, agencyId }: Props) {
       if (!currentJob) { setLoading(false); return; }
 
       // Find similar jobs (title keyword match) that are closed
-      const titleWords = currentJob.title.split(/\s+/).filter(w => w.length > 3);
-      const titleFilter = titleWords.slice(0, 2).map(w => `title.ilike.%${w}%`).join(",");
+      const titleWords = currentJob.title.split(/\s+/).filter((w: string) => w.length > 3);
+      const titleFilter = titleWords.slice(0, 2).map((w: string) => `title.ilike.%${w}%`).join(",");
 
       const { data: similarJobs } = await supabase
         .from("jobs")

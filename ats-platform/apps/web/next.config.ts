@@ -54,6 +54,18 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "*.s3.amazonaws.com" },
     ],
   },
+  // Keep packages that read files relative to their own location (jsdom reads
+  // its default-stylesheet.css via __dirname) as runtime CommonJS requires
+  // instead of bundling them into webpack chunks. Without this, Next 15's
+  // build-time "Collecting page data" phase fails with ENOENT on
+  // .next/browser/default-stylesheet.css when any server route transitively
+  // imports isomorphic-dompurify (which depends on jsdom).
+  serverExternalPackages: [
+    "isomorphic-dompurify",
+    "jsdom",
+    "dompurify",
+    "canvas",
+  ],
   async headers() {
     return [
       {

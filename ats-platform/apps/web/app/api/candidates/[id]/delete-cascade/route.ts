@@ -17,6 +17,7 @@ export async function DELETE(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   // US-326: cross-origin delete guard
   const csrfError = checkCsrf(req);
   if (csrfError) return csrfError;
@@ -30,7 +31,7 @@ export async function DELETE(
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const candidateId = params.id;
+  const candidateId = id;
 
   // Get user's agency
   const { data: userRow } = await supabase

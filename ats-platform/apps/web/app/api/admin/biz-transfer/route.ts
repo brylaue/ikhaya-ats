@@ -57,37 +57,38 @@ export async function POST(req: NextRequest) {
 
     if (createErr) throw createErr;
 
-    // Execute bulk reassignment — all parallel, all scoped to agency
+    // Execute bulk reassignment — all parallel, all scoped to agency.
+    // Count rows via .data?.length since count option isn't accepted after .update().
     const [candRes, jobRes, clientRes, taskRes] = await Promise.all([
       supabase.from("candidates")
         .update({ owner_id: toUserId })
         .eq("agency_id", ctx.agencyId).eq("owner_id", fromUserId)
-        .select("id", { count: "exact", head: true }),
+        .select("id"),
 
       supabase.from("jobs")
         .update({ owner_id: toUserId })
         .eq("agency_id", ctx.agencyId).eq("owner_id", fromUserId)
-        .select("id", { count: "exact", head: true }),
+        .select("id"),
 
       supabase.from("companies")
         .update({ owner_id: toUserId })
         .eq("agency_id", ctx.agencyId).eq("owner_id", fromUserId)
-        .select("id", { count: "exact", head: true }),
+        .select("id"),
 
       supabase.from("tasks")
         .update({ assignee_id: toUserId })
         .eq("org_id", ctx.agencyId).eq("assignee_id", fromUserId)
-        .select("id", { count: "exact", head: true }),
+        .select("id"),
     ]);
 
     // Mark completed with final counts
     await supabase.from("biz_transfers").update({
       status:                 "completed",
       completed_at:           new Date().toISOString(),
-      candidates_transferred: candRes.count ?? 0,
-      jobs_transferred:       jobRes.count ?? 0,
-      clients_transferred:    clientRes.count ?? 0,
-      tasks_transferred:      taskRes.count ?? 0,
+      candidates_transferred: candRes.data?.length ?? 0,
+      jobs_transferred:       jobRes.data?.length ?? 0,
+      clients_transferred:    clientRes.data?.length ?? 0,
+      tasks_transferred:      taskRes.data?.length ?? 0,
     }).eq("id", transfer.id);
 
     return NextResponse.json({

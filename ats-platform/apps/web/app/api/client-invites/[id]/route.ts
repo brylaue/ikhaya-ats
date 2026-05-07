@@ -14,6 +14,7 @@ export async function DELETE(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   const csrfError = checkCsrf(req);
   if (csrfError) return csrfError;
 
@@ -24,7 +25,7 @@ export async function DELETE(
   const { error } = await supabase
     .from("client_portal_invites")
     .update({ revoked_at: new Date().toISOString() })
-    .eq("id", params.id)
+    .eq("id", id)
     .eq("agency_id", ctx.agencyId); // RLS + extra check
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });

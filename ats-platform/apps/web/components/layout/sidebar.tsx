@@ -28,6 +28,7 @@ import {
   Telescope,
   Calendar,
   ChevronRight,
+  TrendingUp,
 } from "lucide-react";
 import { NotificationsPanel } from "@/components/layout/notifications-panel";
 

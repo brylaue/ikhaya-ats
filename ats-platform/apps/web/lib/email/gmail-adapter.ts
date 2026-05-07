@@ -129,7 +129,7 @@ class GmailAdapter implements EmailProvider {
     // concurrent refresh races. Only update if our revision is still current.
     const supabase = await createClient();
     const currentRevision: number = (conn as any).token_revision ?? 1;
-    const { count, error: updateError } = await supabase
+    const { data: updateData, error: updateError } = await supabase
       .from("provider_connections")
       .update({
         access_token_expires_at: expiresAt,
@@ -137,7 +137,8 @@ class GmailAdapter implements EmailProvider {
       })
       .eq("id", conn.id)
       .eq("token_revision", currentRevision) // US-340: optimistic lock
-      .select("id", { count: "exact" });
+      .select("id");
+    const count = updateData?.length ?? 0;
 
     // US-339: If the update failed (DB error or 0 rows — race condition),
     // disable the connection and surface the error.
@@ -434,11 +435,12 @@ class GmailAdapter implements EmailProvider {
       );
 
       for await (const messageRefs of this.listMessages(conn, {
-        from: new Date(startTime * 1000),
+        sinceIso: new Date(startTime * 1000).toISOString(),
+        folder: "inbox",
       })) {
         const fullMessages: FullMessage[] = [];
         for (const ref of messageRefs) {
-          fullMessages.push(await this.getMessage(conn, ref.id));
+          fullMessages.push(await this.getMessage(conn, ref.providerMessageId));
         }
         yield fullMessages;
       }

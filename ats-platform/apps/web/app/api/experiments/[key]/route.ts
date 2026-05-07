@@ -17,6 +17,7 @@ export async function GET(
   _req: NextRequest,
   { params }: { params: Promise<{ key: string }> },
 ) {
+  const { key } = await params;
   const supabase = await createClient();
   const ctx = await getAgencyContext(supabase);
   if (!ctx) return NextResponse.json({ variant: null }, { status: 200 });
@@ -25,7 +26,7 @@ export async function GET(
   const { data: agency } = await supabase.from("agencies").select("plan").eq("id", ctx.agencyId).single();
   if (!agency) return NextResponse.json({ variant: null });
 
-  const variant = await resolveExperiment(supabase, params.key, {
+  const variant = await resolveExperiment(supabase, key, {
     agencyId: ctx.agencyId,
     userId:   ctx.userId,
     plan:     agency.plan,

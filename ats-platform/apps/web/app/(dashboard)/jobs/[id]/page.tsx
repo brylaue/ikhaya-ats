@@ -435,6 +435,7 @@ export default function JobDetailPage() {
   const [checklistCandidateId, setChecklistCandidateId] = useState<string | null>(null);
   const [showAddModal, setShowAddModal]           = useState(false);
   const [tasks, setTasks]                         = useState<Task[]>([]);
+  const [shortlistOpen, setShortlistOpen]         = useState(false); // US-384 ShortlistModal — lifted to parent
 
   useEffect(() => {
     setTasks(rawTasks.map((r: TaskRecord): Task => ({
@@ -545,7 +546,7 @@ export default function JobDetailPage() {
     if (targetStage) {
       await moveEntry(appId, targetStage.id);
     }
-    const portalSlug = job.client?.portalSlug;
+    const portalSlug = job?.client?.portalSlug;
     if (portalSlug) {
       window.open(`/portal/${portalSlug}`, "_blank");
     }

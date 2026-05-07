@@ -122,7 +122,7 @@ export function CustomFieldsPanel({ entity, recordId, clientOnly = false, classN
                   onBlur={(e) => {
                     const num = parseFloat(e.target.value);
                     const prev = stored != null ? Number(stored) : null;
-                    if (!isNaN(num) && num !== prev) handleSave(def.id, def.fieldType, num);
+                    if (!isNaN(num) && num !== prev) handleSave(def.id, def.fieldType, String(num));
                     else if (e.target.value === "" && stored != null) handleSave(def.id, def.fieldType, null);
                   }}
                   placeholder="0"

@@ -21,6 +21,7 @@ export async function GET(
   _req: NextRequest,
   { params }: { params: Promise<{ token: string }> }
 ) {
+  const { token } = await params;
   const db = serviceDb();
 
   const { data, error } = await db
@@ -29,7 +30,7 @@ export async function GET(
       id, token, status, prefill, expires_at,
       company:companies(id, name)
     `)
-    .eq("token", params.token)
+    .eq("token", token)
     .single();
 
   if (error || !data) {
@@ -60,13 +61,14 @@ export async function POST(
   req: NextRequest,
   { params }: { params: Promise<{ token: string }> }
 ) {
+  const { token } = await params;
   const db = serviceDb();
 
   // Verify the request still exists and is submittable
   const { data: intake, error: fetchErr } = await db
     .from("intake_requests")
     .select("id, status, expires_at")
-    .eq("token", params.token)
+    .eq("token", token)
     .single();
 
   if (fetchErr || !intake) {

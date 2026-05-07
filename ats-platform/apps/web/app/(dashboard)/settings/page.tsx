@@ -1561,7 +1561,7 @@ function DataPrivacySettings() {
 
       const cols = row.columns.split(",");
       const header = cols.join(",");
-      const csvRows = data.map((r: Record<string, unknown>) =>
+      const csvRows = (data as unknown as Record<string, unknown>[]).map((r) =>
         cols.map((c) => {
           const val = r[c];
           if (val === null || val === undefined) return "";

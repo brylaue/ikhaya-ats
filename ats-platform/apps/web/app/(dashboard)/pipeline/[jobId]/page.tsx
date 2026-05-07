@@ -340,25 +340,29 @@ export default function PipelineJobPage() {
           onClose={() => setShowAdd(false)}
         />
       )}
-      {scheduleApp && (
+      {scheduleApp && scheduleApp.candidate && (
         <ScheduleInterviewModal
-          application={scheduleApp}
-          jobTitle={job.title}
-          clientName={job.client?.name}
+          candidate={scheduleApp.candidate}
+          defaultJobId={scheduleApp.jobId}
           onClose={() => setScheduleApp(null)}
           onScheduled={() => { setScheduleApp(null); toast.success("Interview scheduled"); }}
         />
       )}
-      {outreachApp && (
+      {outreachApp && outreachApp.candidate && (
         <CandidateOutreachModal
-          application={outreachApp}
+          candidate={outreachApp.candidate}
+          candidateId={outreachApp.candidate.id}
           jobTitle={job.title}
+          clientName={job.client?.name ?? ""}
+          stageName={stages.find((s: PipelineStage) => s.id === outreachApp.stageId)?.name ?? ""}
           onClose={() => setOutreachApp(null)}
         />
       )}
-      {scorecardApp && (
+      {scorecardApp && scorecardApp.candidate && (
         <ScorecardModal
-          application={scorecardApp}
+          candidate={scorecardApp.candidate}
+          applicationId={scorecardApp.id}
+          stageName={stages.find((s: PipelineStage) => s.id === scorecardApp.stageId)?.name ?? ""}
           jobTitle={job.title}
           onClose={() => setScorecardApp(null)}
           onSubmit={(sc) => {
@@ -368,17 +372,19 @@ export default function PipelineJobPage() {
           }}
         />
       )}
-      {offerApp && (
+      {offerApp && offerApp.candidate && (
         <OfferModal
-          application={offerApp}
+          candidate={offerApp.candidate}
+          applicationId={offerApp.id}
+          jobId={offerApp.jobId}
           jobTitle={job.title}
-          clientName={job.client?.name}
-          onClose={() => setOfferApp(null)}
-          onSubmit={(offer) => {
+          clientName={job.client?.name ?? ""}
+          existingOffer={offers[offerApp.id]}
+          onSave={(offer: Offer) => {
             setOffers((prev) => ({ ...prev, [offerApp.id]: offer }));
-            setOfferApp(null);
-            toast.success("Offer recorded");
+            toast.success("Offer saved");
           }}
+          onClose={() => setOfferApp(null)}
         />
       )}
 

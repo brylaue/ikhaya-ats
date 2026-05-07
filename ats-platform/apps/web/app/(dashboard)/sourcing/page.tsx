@@ -895,7 +895,8 @@ export default function SourcingPage() {
                   <button
                     onClick={() => {
                       setQuery(ss.query);
-                      if (ss.filters) updateFilters(ss.filters as Partial<SearchFilters>);
+                      const ssFilters = (ss as { filters?: unknown }).filters;
+                      if (ssFilters) updateFilters(ssFilters as Partial<SearchFilters>);
                       setShowSaved(false);
                     }}
                     className="w-full text-left rounded-lg border border-border p-3 hover:bg-accent/50 hover:border-brand-200 transition-colors"

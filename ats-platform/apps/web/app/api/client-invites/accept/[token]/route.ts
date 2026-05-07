@@ -23,6 +23,7 @@ export async function GET(
   _req: NextRequest,
   { params }: { params: Promise<{ token: string }> }
 ) {
+  const { token } = await params;
   const db = serviceDb();
 
   const { data: invite, error } = await db
@@ -31,7 +32,7 @@ export async function GET(
       id, accepted_at, revoked_at, expires_at,
       company:companies(portal_slug, id)
     `)
-    .eq("token", params.token)
+    .eq("token", token)
     .single();
 
   if (error || !invite) {
@@ -55,7 +56,8 @@ export async function GET(
   }
 
   // Redirect to the portal
-  const company = invite.company as { portal_slug?: string; id: string } | null;
+  const rawCompany = invite.company as { portal_slug?: string; id: string } | { portal_slug?: string; id: string }[] | null;
+  const company = Array.isArray(rawCompany) ? rawCompany[0] ?? null : rawCompany;
   const slug    = company?.portal_slug ?? company?.id ?? "";
 
   return NextResponse.redirect(`${APP_URL}/portal/${slug}`);

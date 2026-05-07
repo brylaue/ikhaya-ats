@@ -51,11 +51,11 @@ function AddNoteForm({ onAdd, onCancel, draftKey = "global" }: AddNoteFormProps)
   const [restoredDraft, setRestoredDraft] = useState(false);
 
   const key = NOTE_DRAFT_KEY(draftKey);
-  const { status, loadDraft, clearDraft } = useAutoSave({ key, value: text });
+  const { status, loadDraft, clearDraft } = useAutoSave<string>({ key, value: text });
 
   // Restore draft on mount
   useEffect(() => {
-    const draft = loadDraft<string>();
+    const draft = loadDraft();
     if (draft && draft.trim()) {
       setText(draft);
       setRestoredDraft(true);

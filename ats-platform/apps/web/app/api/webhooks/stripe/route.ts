@@ -102,7 +102,7 @@ export async function POST(req: NextRequest) {
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
 function extractAgencyId(event: Stripe.Event): string | null {
-  const obj = event.data.object as Record<string, unknown>;
+  const obj = event.data.object as unknown as Record<string, unknown>;
   // checkout.session and subscription both carry metadata.agency_id
   const meta = obj.metadata as Record<string, string> | null;
   return meta?.agency_id ?? null;

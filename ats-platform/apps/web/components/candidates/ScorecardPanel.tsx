@@ -23,6 +23,7 @@ import { toast } from "sonner";
 const RECOMMENDATION_CFG: Record<ScorecardRecommendation, { label: string; color: string; bg: string }> = {
   strong_yes: { label: "Strong Yes", color: "text-emerald-700", bg: "bg-emerald-50 border-emerald-200" },
   yes:        { label: "Yes",         color: "text-brand-700",    bg: "bg-brand-50   border-brand-200"    },
+  maybe:      { label: "Maybe",       color: "text-slate-700",   bg: "bg-slate-50  border-slate-200"   },
   no:         { label: "No",          color: "text-amber-700",   bg: "bg-amber-50  border-amber-200"   },
   strong_no:  { label: "Strong No",   color: "text-red-700",     bg: "bg-red-50    border-red-200"     },
 };

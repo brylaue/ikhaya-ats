@@ -46,9 +46,9 @@ function csvQuote(v: unknown): string {
  * We keep totals as integer cents internally and only format once for display.
  */
 function splitAmountCents(
-  feeAmount: number | string | null | undefined,
-  splitPct:  number | string | null | undefined,
-  explicitAmount: number | string | null | undefined,
+  feeAmount: unknown,
+  splitPct:  unknown,
+  explicitAmount: unknown,
 ): number {
   if (explicitAmount != null && explicitAmount !== "") {
     return Math.round(Number(explicitAmount) * 100);

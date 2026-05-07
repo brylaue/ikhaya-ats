@@ -16,15 +16,22 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import DOMPurify from "isomorphic-dompurify";
 
+type DOMPurifyConfig = {
+  FORBID_TAGS?: string[];
+  FORBID_ATTR?: string[];
+  ALLOW_DATA_ATTR?: boolean;
+  USE_PROFILES?: { html?: boolean; svg?: boolean; svgFilters?: boolean; mathMl?: boolean };
+};
+
 // Email-safe allowlist: strip <script>, <iframe>, <object>, inline event
 // handlers, javascript: URLs, and any CSS expressions. Keep images (we use
 // S3-hosted blob URLs) and common formatting tags.
-const EMAIL_PURIFY_CONFIG = {
+const EMAIL_PURIFY_CONFIG: DOMPurifyConfig = {
   FORBID_TAGS: ["script", "iframe", "object", "embed", "base", "form", "meta", "link"],
   FORBID_ATTR: ["onerror", "onload", "onclick", "onmouseover", "onfocus", "onblur", "srcdoc", "formaction"],
   ALLOW_DATA_ATTR: false,
   USE_PROFILES: { html: true },
-} as const;
+};
 
 function sanitiseEmailHtml(raw: string): string {
   return DOMPurify.sanitize(raw, EMAIL_PURIFY_CONFIG) as unknown as string;
@@ -34,7 +41,8 @@ export async function GET(
   _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const supabase = createClient();
+  const { id } = await params;
+  const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -57,7 +65,7 @@ export async function GET(
   const { data: message, error } = await supabase
     .from("email_messages")
     .select("id, body_html_s3_key, body_text_s3_key, snippet")
-    .eq("id", params.id)
+    .eq("id", id)
     .eq("agency_id", userRow.agency_id)  // US-321: explicit agency isolation
     .single();
 

@@ -129,7 +129,7 @@ export async function POST(
   // ── Call Claude for tailored summaries ────────────────────────────────────
   const jd = [
     `Job: ${job.title}`,
-    (job.companies as { name: string } | null)?.name ? `Company: ${(job.companies as { name: string }).name}` : null,
+    (Array.isArray(job.companies) ? job.companies[0]?.name : (job.companies as { name?: string } | null)?.name) ? `Company: ${(Array.isArray(job.companies) ? job.companies[0]?.name : (job.companies as { name?: string } | null)?.name)}` : null,
     job.location ? `Location: ${job.location}` : null,
     job.description ? `Description: ${job.description.slice(0, 1000)}` : null,
   ].filter(Boolean).join("\n");
@@ -189,7 +189,9 @@ export async function POST(
     }));
 
   // ── Generate markdown export ──────────────────────────────────────────────
-  const companyName = (job.companies as { name: string } | null)?.name;
+  const companyName = Array.isArray(job.companies)
+    ? job.companies[0]?.name
+    : (job.companies as { name?: string } | null)?.name;
   const dateStr = new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
   const markdown = [
     `# Candidate Shortlist — ${job.title}`,

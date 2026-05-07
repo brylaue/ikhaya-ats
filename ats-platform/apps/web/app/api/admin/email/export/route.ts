@@ -242,7 +242,7 @@ export async function GET(request: NextRequest) {
       'sync_events.csv': eventsCsv,
     });
 
-    return new NextResponse(zip, {
+    return new NextResponse(new Blob([new Uint8Array(zip)]), {
       status: 200,
       headers: {
         'Content-Type': 'application/zip',

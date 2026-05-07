@@ -18,7 +18,21 @@ const TOKEN_ENDPOINT = "https://login.microsoftonline.com";
 const GRAPH_API_BASE = "https://graph.microsoft.com/v1.0/me";
 
 class GraphAdapter implements EmailProvider {
-  readonly id = "microsoft";
+  readonly id = "microsoft" as const;
+
+  /**
+   * Stub: full OAuth callback flow lives in `lib/email/providers/microsoft.ts`.
+   * This adapter is the legacy path used by cron/webhook routes.
+   */
+  async handleCallback(_params: { code: string; state: string }): Promise<{
+    connection: ProviderConnection;
+    refreshToken: string;
+  }> {
+    throw new ProviderErrorClass(
+      "handleCallback not implemented in legacy graph-adapter — use providers/microsoft.ts",
+      "unknown"
+    );
+  }
 
   buildAuthUrl(params: { state: string; loginHint?: string }): string {
     const clientId = process.env.MS_OAUTH_CLIENT_ID;
@@ -53,24 +67,21 @@ class GraphAdapter implements EmailProvider {
   }
 
   async getAccessToken(conn: ProviderConnection): Promise<string> {
-    if (!conn.refresh_token) {
-      throw new ProviderErrorClass("invalid_grant", "No refresh token stored");
+    if (!conn.refreshTokenSecretRef) {
+      throw new ProviderErrorClass("No refresh token stored", "invalid_grant");
     }
 
-    const decrypted = decrypt(conn.refresh_token);
+    const decrypted = await decrypt(conn.refreshTokenSecretRef ?? "");
     const clientId = process.env.MS_OAUTH_CLIENT_ID;
     const clientSecret = process.env.MS_OAUTH_CLIENT_SECRET;
     const appUrl = process.env.NEXT_PUBLIC_APP_URL;
     const authority = process.env.MS_OAUTH_AUTHORITY;
 
     if (!clientId || !clientSecret || !appUrl || !authority) {
-      throw new ProviderErrorClass(
-        "invalid_config",
-        "Missing OAuth environment variables"
-      );
+      throw new ProviderErrorClass("Missing OAuth environment variables", "unknown");
     }
 
-    const tenant = conn.ms_tenant_id || "common";
+    const tenant = conn.msTenantId || "common";
 
     try {
       const response = await fetch(
@@ -91,7 +102,7 @@ class GraphAdapter implements EmailProvider {
       if (!response.ok) {
         const data = await response.json();
         throw new ProviderErrorClass(
-          response.status === 401 ? "invalid_grant" : "token_error",
+          response.status === 401 ? "invalid_grant" : "unknown",
           data.error || `Token refresh failed: ${response.statusText}`
         );
       }
@@ -101,16 +112,16 @@ class GraphAdapter implements EmailProvider {
 
       // Update token in database
       const { createClient } = await import("@/lib/supabase/server");
-      const supabase = createClient();
+      const supabase = await createClient();
 
-      const encrypted = encrypt(data.refresh_token);
+      const encrypted = await encrypt(data.refresh_token);
 
       // US-339 + US-340: Optimistic locking via token_revision.
       // If 0 rows updated, a concurrent refresh already succeeded — log and
       // continue (the winning refresh holds a valid token). If there's a DB
       // error, disable the connection and surface it.
       const currentRevision: number = (conn as any).token_revision ?? 1;
-      const { count: updateCount, error: updateError } = await supabase
+      const { data: updateData, error: updateError } = await supabase
         .from("provider_connections")
         .update({
           access_token: data.access_token,
@@ -120,7 +131,8 @@ class GraphAdapter implements EmailProvider {
         })
         .eq("id", conn.id)
         .eq("token_revision", currentRevision) // US-340: optimistic lock
-        .select("id", { count: "exact" });
+        .select("id");
+      const updateCount = updateData?.length ?? 0;
 
       if (updateError) {
         // US-339: Persist failure — disable connection and write audit event
@@ -130,13 +142,13 @@ class GraphAdapter implements EmailProvider {
           .update({ sync_enabled: false })
           .eq("id", conn.id);
         await supabase.from("sync_events").insert({
-          agency_id: conn.ms_tenant_id,
-          user_id: conn.user_id,
+          agency_id: conn.msTenantId,
+          user_id: conn.userId,
           provider: "microsoft",
-          event_type: "token_persist_failed",
+          event_type: "unknown",
           detail: { error: updateError.message },
         });
-        throw new ProviderErrorClass("token_persist_failed", "Token persist failed — connection disabled");
+        throw new ProviderErrorClass("Token persist failed — connection disabled", "unknown");
       }
 
       if ((updateCount ?? 0) === 0) {
@@ -148,22 +160,19 @@ class GraphAdapter implements EmailProvider {
       if (error instanceof ProviderErrorClass) {
         throw error;
       }
-      throw new ProviderErrorClass(
-        "token_error",
-        `Token refresh failed: ${error}`
-      );
+      throw new ProviderErrorClass(`Token refresh failed: ${error}`, "unknown");
     }
   }
 
   async *listMessages(
     conn: ProviderConnection,
-    opts: { from: Date; to?: Date } = { from: new Date(0) }
+    opts: { sinceIso: string; folder: "inbox" | "sent" } = { sinceIso: new Date(0).toISOString(), folder: "inbox" }
   ): AsyncGenerator<MessageRef[]> {
     const token = await this.getAccessToken(conn);
     let skip = 0;
     const pageSize = 50;
 
-    const filter = `receivedDateTime ge ${opts.from.toISOString()}`;
+    const filter = `receivedDateTime ge ${opts.sinceIso}`;
 
     while (true) {
       try {
@@ -192,14 +201,11 @@ class GraphAdapter implements EmailProvider {
         });
 
         if (response.status === 401) {
-          throw new ProviderErrorClass("invalid_grant", "Token expired");
+          throw new ProviderErrorClass("Token expired", "invalid_grant");
         }
 
         if (!response.ok) {
-          throw new ProviderErrorClass(
-            "api_error",
-            `Failed to list messages: ${response.statusText}`
-          );
+          throw new ProviderErrorClass(`Failed to list messages: ${response.statusText}`, "unknown");
         }
 
         const data = await response.json();
@@ -208,12 +214,15 @@ class GraphAdapter implements EmailProvider {
         if (messages.length === 0) break;
 
         const refs: MessageRef[] = messages.map((msg: any) => ({
-          id: msg.id,
-          externalId: msg.internetMessageId,
-          timestamp: new Date(
-            msg.receivedDateTime || msg.sentDateTime
-          ).getTime(),
-          hasAttachments: msg.hasAttachments,
+          providerMessageId: msg.id,
+          providerThreadId: msg.conversationId ?? msg.id,
+          internetMessageId: msg.internetMessageId ?? null,
+          receivedAt: msg.receivedDateTime || msg.sentDateTime || new Date().toISOString(),
+          from: msg.from?.emailAddress?.address?.toLowerCase() ?? "",
+          to: (msg.toRecipients ?? []).map((r: any) => r.emailAddress?.address?.toLowerCase()).filter(Boolean),
+          cc: (msg.ccRecipients ?? []).map((r: any) => r.emailAddress?.address?.toLowerCase()).filter(Boolean),
+          bcc: (msg.bccRecipients ?? []).map((r: any) => r.emailAddress?.address?.toLowerCase()).filter(Boolean),
+          subject: msg.subject ?? null,
         }));
 
         yield refs;
@@ -223,10 +232,7 @@ class GraphAdapter implements EmailProvider {
         if (error instanceof ProviderErrorClass) {
           throw error;
         }
-        throw new ProviderErrorClass(
-          "api_error",
-          `Error listing messages: ${error}`
-        );
+        throw new ProviderErrorClass(`Error listing messages: ${error}`, "unknown");
       }
     }
   }
@@ -243,18 +249,15 @@ class GraphAdapter implements EmailProvider {
       });
 
       if (response.status === 401) {
-        throw new ProviderErrorClass("invalid_grant", "Token expired");
+        throw new ProviderErrorClass("Token expired", "invalid_grant");
       }
 
       if (response.status === 404) {
-        throw new ProviderErrorClass("not_found", "Message not found");
+        throw new ProviderErrorClass("Message not found", "not_found");
       }
 
       if (!response.ok) {
-        throw new ProviderErrorClass(
-          "api_error",
-          `Failed to get message: ${response.statusText}`
-        );
+        throw new ProviderErrorClass(`Failed to get message: ${response.statusText}`, "unknown");
       }
 
       const msg = await response.json();
@@ -267,7 +270,7 @@ class GraphAdapter implements EmailProvider {
           : "");
 
       // Determine direction
-      const userEmail = conn.provider_email;
+      const userEmail = conn.email;
       const fromEmail = msg.from?.emailAddress?.address || "";
       const direction: EmailDirection =
         fromEmail.toLowerCase() === userEmail.toLowerCase()
@@ -285,34 +288,39 @@ class GraphAdapter implements EmailProvider {
         (r: any) => r.emailAddress?.address
       );
 
+      void direction; // computed for diagnostics; not part of FullMessage shape
       return {
-        id: msg.id,
-        externalId: msg.internetMessageId,
-        threadId: msg.conversationId,
-        from: fromEmail,
+        providerMessageId: msg.id,
+        providerThreadId: msg.conversationId ?? msg.id,
+        internetMessageId: msg.internetMessageId ?? null,
+        receivedAt: msg.receivedDateTime || msg.sentDateTime || new Date().toISOString(),
+        from: fromEmail.toLowerCase(),
+        fromDisplay: msg.from?.emailAddress?.name ?? null,
         to: toAddresses,
         cc: ccAddresses,
         bcc: bccAddresses,
+        toAddresses: toAddresses.map((a: string) => ({ address: a.toLowerCase(), rawAddress: a })),
+        ccAddresses: ccAddresses.map((a: string) => ({ address: a.toLowerCase(), rawAddress: a })),
+        bccAddresses: bccAddresses.map((a: string) => ({ address: a.toLowerCase(), rawAddress: a })),
         subject: msg.subject || "(no subject)",
-        body: bodyContent,
-        htmlBody: msg.body?.content || "",
-        timestamp: new Date(
-          msg.receivedDateTime || msg.sentDateTime
-        ).getTime(),
-        direction,
+        snippet: bodyContent,
+        bodyHtml: msg.body?.content ?? null,
+        bodyText: null,
+        labelsOrCategories: [],
+        rawHeaders: null,
         hasAttachments: msg.hasAttachments || false,
       };
     } catch (error) {
       if (error instanceof ProviderErrorClass) {
         throw error;
       }
-      throw new ProviderErrorClass("api_error", `Error getting message: ${error}`);
+      throw new ProviderErrorClass(`Error getting message: ${error}`, "unknown");
     }
   }
 
   async *fetchDelta(conn: ProviderConnection): AsyncGenerator<FullMessage[]> {
     const token = await this.getAccessToken(conn);
-    let deltaLink = conn.delta_cursor;
+    let deltaLink = conn.deltaCursor;
 
     if (!deltaLink) {
       // First sync: get initial delta link
@@ -322,10 +330,7 @@ class GraphAdapter implements EmailProvider {
         });
 
         if (!response.ok) {
-          throw new ProviderErrorClass(
-            "api_error",
-            `Failed to get delta: ${response.statusText}`
-          );
+          throw new ProviderErrorClass(`Failed to get delta: ${response.statusText}`, "unknown");
         }
 
         const data = await response.json();
@@ -344,7 +349,7 @@ class GraphAdapter implements EmailProvider {
 
         // Store deltaLink
         const { createClient } = await import("@/lib/supabase/server");
-        const supabase = createClient();
+        const supabase = await createClient();
         await supabase
           .from("provider_connections")
           .update({ delta_cursor: deltaLink })
@@ -353,10 +358,7 @@ class GraphAdapter implements EmailProvider {
         if (error instanceof ProviderErrorClass) {
           throw error;
         }
-        throw new ProviderErrorClass(
-          "api_error",
-          `Error fetching delta: ${error}`
-        );
+        throw new ProviderErrorClass(`Error fetching delta: ${error}`, "unknown");
       }
     } else {
       // Subsequent syncs: use stored delta link
@@ -371,7 +373,7 @@ class GraphAdapter implements EmailProvider {
             `fetchDelta: Graph delta link expired for connection ${conn.id}, clearing cursor for re-backfill`
           );
           const { createClient } = await import("@/lib/supabase/server");
-          const supabase = createClient();
+          const supabase = await createClient();
           await supabase
             .from("provider_connections")
             .update({ delta_cursor: null })
@@ -383,10 +385,7 @@ class GraphAdapter implements EmailProvider {
         }
 
         if (!response.ok) {
-          throw new ProviderErrorClass(
-            "api_error",
-            `Failed to fetch delta updates: ${response.statusText}`
-          );
+          throw new ProviderErrorClass(`Failed to fetch delta updates: ${response.statusText}`, "unknown");
         }
 
         const data = await response.json();
@@ -406,7 +405,7 @@ class GraphAdapter implements EmailProvider {
         // Update deltaLink if provided
         if (data["@odata.deltaLink"]) {
           const { createClient } = await import("@/lib/supabase/server");
-          const supabase = createClient();
+          const supabase = await createClient();
           await supabase
             .from("provider_connections")
             .update({ delta_cursor: data["@odata.deltaLink"] })
@@ -416,10 +415,7 @@ class GraphAdapter implements EmailProvider {
         if (error instanceof ProviderErrorClass) {
           throw error;
         }
-        throw new ProviderErrorClass(
-          "api_error",
-          `Error fetching delta updates: ${error}`
-        );
+        throw new ProviderErrorClass(`Error fetching delta updates: ${error}`, "unknown");
       }
     }
   }
@@ -436,10 +432,7 @@ class GraphAdapter implements EmailProvider {
     const webhookUrl = params.webhookUrl || process.env.MS_GRAPH_WEBHOOK_URL;
 
     if (!webhookUrl) {
-      throw new ProviderErrorClass(
-        "invalid_config",
-        "MS_GRAPH_WEBHOOK_URL not configured"
-      );
+      throw new ProviderErrorClass("MS_GRAPH_WEBHOOK_URL not configured", "unknown");
     }
 
     const clientState = params.clientStateHmac || conn.id;
@@ -474,10 +467,7 @@ class GraphAdapter implements EmailProvider {
 
       if (!response.ok) {
         const body = await response.text();
-        throw new ProviderErrorClass(
-          "api_error",
-          `Failed to create Graph subscription for ${resource}: ${response.status} — ${body}`
-        );
+        throw new ProviderErrorClass(`Failed to create Graph subscription for ${resource}: ${response.status} — ${body}`, "unknown");
       }
 
       const data = await response.json();
@@ -500,7 +490,7 @@ class GraphAdapter implements EmailProvider {
     sub?: { id: string; expiresAt: string }
   ): Promise<{ id: string; expiresAt: string }> {
     const token = await this.getAccessToken(conn);
-    const storedId = sub?.id ?? conn.realtime_subscription_id;
+    const storedId = sub?.id ?? conn.realtimeSubscriptionId;
 
     if (!storedId) {
       // No existing subscription — create fresh
@@ -573,16 +563,23 @@ class GraphAdapter implements EmailProvider {
     };
   }
 
+  async sendMessage(
+    _conn: ProviderConnection,
+    _input: import("@/types/email/provider").SendMessageInput
+  ): Promise<MessageRef> {
+    throw new ProviderErrorClass("sendMessage not yet implemented", "unknown");
+  }
+
   async revoke(conn: ProviderConnection): Promise<void> {
-    if (!conn.refresh_token) {
+    if (!conn.refreshTokenSecretRef) {
       return;
     }
 
-    const decrypted = decrypt(conn.refresh_token);
+    const decrypted = await decrypt(conn.refreshTokenSecretRef ?? "");
     const clientId = process.env.MS_OAUTH_CLIENT_ID;
     const clientSecret = process.env.MS_OAUTH_CLIENT_SECRET;
     const authority = process.env.MS_OAUTH_AUTHORITY;
-    const tenant = conn.ms_tenant_id || "common";
+    const tenant = conn.msTenantId || "common";
 
     if (!clientId || !clientSecret || !authority) {
       console.error("Missing OAuth environment variables for revoke");

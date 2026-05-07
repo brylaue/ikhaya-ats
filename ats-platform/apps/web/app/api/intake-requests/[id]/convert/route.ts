@@ -27,6 +27,7 @@ export async function POST(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   const csrfError = checkCsrf(req);
   if (csrfError) return csrfError;
 
@@ -38,7 +39,7 @@ export async function POST(
   const { data: intake, error: fetchErr } = await supabase
     .from("intake_requests")
     .select("id, status, submission, company_id, agency_id")
-    .eq("id", params.id)
+    .eq("id", id)
     .single();
 
   if (fetchErr || !intake) {

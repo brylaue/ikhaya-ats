@@ -10,7 +10,7 @@
  * Each active endpoint subscribed to the event type receives a signed delivery.
  */
 
-import { createClient as createSupabaseClient } from "@supabase/supabase-js";
+import { createClient as createSupabaseClient, type SupabaseClient } from "@supabase/supabase-js";
 import crypto from "crypto";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -104,7 +104,13 @@ export function verifyWebhookSignature(
 
 // ─── Dispatch ─────────────────────────────────────────────────────────────────
 
-type ServiceClient = ReturnType<typeof createSupabaseClient>;
+// ServiceClient deliberately untyped against Database — webhook_endpoints /
+// webhook_deliveries are not yet in the generated supabase types but exist
+// in the live schema. Once supabase types are regenerated we can switch this
+// back to SupabaseClient<Database>.
+type ServiceClient = SupabaseClient<any, "public", any>;
+// Keep the import alias even when unused as a value — the type system needs it.
+void createSupabaseClient;
 
 /**
  * Dispatch a webhook event to all active endpoints subscribed to eventType.

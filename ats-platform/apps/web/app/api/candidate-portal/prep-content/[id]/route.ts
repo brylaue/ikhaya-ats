@@ -13,6 +13,7 @@ export async function PATCH(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   const csrfError = checkCsrf(req);
   if (csrfError) return csrfError;
 
@@ -32,7 +33,7 @@ export async function PATCH(
   const { data, error } = await supabase
     .from("prep_content")
     .update(updates)
-    .eq("id", params.id)
+    .eq("id", id)
     .eq("agency_id", ctx.agencyId)
     .select()
     .single();
@@ -47,6 +48,7 @@ export async function DELETE(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   const csrfError = checkCsrf(req);
   if (csrfError) return csrfError;
 
@@ -57,7 +59,7 @@ export async function DELETE(
   const { error } = await supabase
     .from("prep_content")
     .delete()
-    .eq("id", params.id)
+    .eq("id", id)
     .eq("agency_id", ctx.agencyId);
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });

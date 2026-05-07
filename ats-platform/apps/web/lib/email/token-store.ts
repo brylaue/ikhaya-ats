@@ -11,26 +11,28 @@
 
 import { encryptToken, decryptToken } from "./encryption";
 
-const hasKey = !!process.env.EMAIL_TOKEN_ENCRYPTION_KEY;
-const isProduction = process.env.NODE_ENV === "production";
-
-// US-324: in production, a missing key is a hard error — no silent plaintext fallback.
-// Throw at module load time so the deployment fails loudly rather than silently
-// storing tokens unencrypted. In development/test the passthrough remains for convenience.
-if (!hasKey && isProduction) {
-  throw new Error(
-    "[token-store] EMAIL_TOKEN_ENCRYPTION_KEY must be set in production. " +
-      "Generate a 32-byte hex key: openssl rand -hex 32"
-  );
+function checkProductionKey(): boolean {
+  const hasKey = !!process.env.EMAIL_TOKEN_ENCRYPTION_KEY;
+  const isProduction = process.env.NODE_ENV === "production";
+  // US-324: in production, a missing key is a hard error — no silent plaintext fallback.
+  // Throw lazily at first use so build-time page-data collection doesn't fail.
+  if (!hasKey && isProduction) {
+    throw new Error(
+      "[token-store] EMAIL_TOKEN_ENCRYPTION_KEY must be set in production. " +
+        "Generate a 32-byte hex key: openssl rand -hex 32"
+    );
+  }
+  return hasKey;
 }
 
 /**
  * Encrypt a refresh token for storage in provider_connections.
  *
- * US-324: production without a key throws (see module initialisation above).
+ * US-324: production without a key throws (see checkProductionKey).
  * In non-production, falls back to passthrough for local dev ergonomics.
  */
 export async function encrypt(plaintext: string): Promise<string> {
+  const hasKey = checkProductionKey();
   if (!hasKey) {
     console.warn(
       "[token-store] EMAIL_TOKEN_ENCRYPTION_KEY not set — storing token as plaintext. " +
@@ -45,6 +47,7 @@ export async function encrypt(plaintext: string): Promise<string> {
  * Decrypt a stored token from provider_connections.
  */
 export async function decrypt(stored: string): Promise<string> {
+  const hasKey = checkProductionKey();
   if (!hasKey) {
     return stored;
   }

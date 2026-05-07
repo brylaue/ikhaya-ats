@@ -13,7 +13,7 @@ import { hasPermission, type Permission, type UserRole } from "@/lib/permissions
 import { hasFeature, type FeatureKey, type Plan } from "@/lib/feature-flags";
 import type {
   Candidate, CandidateStatus,
-  Job, JobStatus,
+  Job, JobStatus, JobType,
 } from "@/types";
 
 // ─── DB → Frontend mappers ────────────────────────────────────────────────────
@@ -49,14 +49,15 @@ function mapCandidate(row: any): Candidate {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function mapJob(row: any): Job & { companyName?: string } {
+function mapJob(row: any): Job & { companyName?: string; remotePolicy?: string; jobType?: string; feeType?: string; portalVisible?: boolean; type: JobType } {
   return {
     id: row.id,
     title: row.title,
     clientId: row.company_id ?? "",
-    client: row.companies ? { id: row.company_id, name: row.companies.name, portalSlug: row.companies.portal_slug ?? "" } : undefined,
+    client: row.companies ? { id: row.company_id, name: row.companies.name, portalSlug: row.companies.portal_slug ?? "", createdAt: row.companies.created_at ?? row.created_at } : undefined,
     location: row.location ?? undefined,
     remotePolicy: row.remote_policy ?? undefined,
+    type: row.employment_type === "contract" ? "contract" : "permanent",
     jobType: row.employment_type === "contract" ? "contract" : "permanent",
     salaryMin: row.salary_min ?? undefined,
     salaryMax: row.salary_max ?? undefined,
@@ -3569,26 +3570,31 @@ export interface ScorecardTemplate {
 
 export interface ScorecardRating {
   score: number;
-  note:  string;
+  note?: string;
 }
 
-export type ScorecardRecommendation = "strong_yes" | "yes" | "no" | "strong_no";
+export type ScorecardRecommendation = "strong_yes" | "yes" | "maybe" | "no" | "strong_no";
 
 export interface ScorecardSubmission {
-  id:             string;
-  agencyId:       string;
-  templateId:     string | null;
-  candidateId:    string;
-  jobId:          string | null;
-  interviewerId:  string;
-  interviewerName?: string;
-  stage:          string | null;
-  overallRating:  number | null;
-  recommendation: ScorecardRecommendation | null;
-  ratings:        Record<string, ScorecardRating>;
-  notes:          string | null;
-  submittedAt:    string | null;
-  createdAt:      string;
+  id:                string;
+  agencyId:          string;
+  templateId:        string | null;
+  candidateId:       string;
+  jobId:             string | null;
+  interviewerId:     string | null;
+  interviewerName:   string | null;
+  stage:             string | null;
+  overallRating:     number | null;
+  recommendation:    ScorecardRecommendation | null;
+  ratings:           Record<string, ScorecardRating>;
+  notes:             string | null;
+  pros:              string | null;
+  cons:              string | null;
+  submittedVia:      "internal" | "portal";
+  portalClientName:  string | null;
+  portalClientEmail: string | null;
+  submittedAt:       string | null;
+  createdAt:         string;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -3608,20 +3614,25 @@ function mapTemplate(r: any): ScorecardTemplate {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function mapSubmission(r: any): ScorecardSubmission {
   return {
-    id:             r.id,
-    agencyId:       r.agency_id,
-    templateId:     r.template_id ?? null,
-    candidateId:    r.candidate_id,
-    jobId:          r.job_id ?? null,
-    interviewerId:  r.interviewer_id,
-    interviewerName: r.users?.full_name ?? undefined,
-    stage:          r.stage ?? null,
-    overallRating:  r.overall_rating ?? null,
-    recommendation: r.recommendation ?? null,
-    ratings:        r.ratings ?? {},
-    notes:          r.notes ?? null,
-    submittedAt:    r.submitted_at ?? null,
-    createdAt:      r.created_at,
+    id:                r.id,
+    agencyId:          r.agency_id,
+    templateId:        r.template_id ?? null,
+    candidateId:       r.candidate_id,
+    jobId:             r.job_id ?? null,
+    interviewerId:     r.interviewer_id ?? null,
+    interviewerName:   r.users?.full_name ?? null,
+    stage:             r.stage ?? null,
+    overallRating:     r.overall_rating ?? null,
+    recommendation:    r.recommendation ?? null,
+    ratings:           r.ratings ?? {},
+    notes:             r.notes ?? null,
+    pros:              r.pros ?? null,
+    cons:              r.cons ?? null,
+    submittedVia:      (r.submitted_via ?? "internal") as "internal" | "portal",
+    portalClientName:  r.portal_client_name ?? null,
+    portalClientEmail: r.portal_client_email ?? null,
+    submittedAt:       r.submitted_at ?? null,
+    createdAt:         r.created_at,
   };
 }
 
@@ -4614,30 +4625,12 @@ export function useFeatureFlag(feature: FeatureKey) {
 // ─── useScorecard ─────────────────────────────────────────────────────────────
 // Fetches all scorecard submissions for a candidate (agency-side view).
 
-export interface ScorecardSubmission {
-  id:                  string;
-  candidateId:         string;
-  jobId:               string | null;
-  interviewerId:       string | null;
-  interviewerName:     string | null;
-  stage:               string | null;
-  overallRating:       number | null;
-  recommendation:      "strong_yes" | "yes" | "maybe" | "no" | "strong_no" | null;
-  ratings:             Record<string, { score: number; note?: string }>;
-  notes:               string | null;
-  pros:                string | null;
-  cons:                string | null;
-  submittedVia:        "internal" | "portal";
-  portalClientName:    string | null;
-  portalClientEmail:   string | null;
-  submittedAt:         string | null;
-  createdAt:           string;
-}
-
 function mapScorecard(row: Record<string, unknown>): ScorecardSubmission {
   const users = row.users as Record<string, unknown> | null;
   return {
     id:                (row.id as string),
+    agencyId:          (row.agency_id as string),
+    templateId:        (row.template_id as string | null) ?? null,
     candidateId:       (row.candidate_id as string),
     jobId:             (row.job_id as string | null) ?? null,
     interviewerId:     (row.interviewer_id as string | null) ?? null,
@@ -4645,7 +4638,7 @@ function mapScorecard(row: Record<string, unknown>): ScorecardSubmission {
     stage:             (row.stage as string | null) ?? null,
     overallRating:     row.overall_rating != null ? Number(row.overall_rating) : null,
     recommendation:    (row.recommendation as ScorecardSubmission["recommendation"]) ?? null,
-    ratings:           (row.ratings as Record<string, { score: number; note?: string }>) ?? {},
+    ratings:           (row.ratings as Record<string, ScorecardRating>) ?? {},
     notes:             (row.notes as string | null) ?? null,
     pros:              (row.pros as string | null) ?? null,
     cons:              (row.cons as string | null) ?? null,
@@ -4701,13 +4694,6 @@ export function useScorecard(candidateId: string) {
 }
 
 // ─── Scorecard types & full hooks ────────────────────────────────────────────
-
-export type ScorecardRecommendation = "strong_yes" | "yes" | "no" | "strong_no";
-
-export interface ScorecardRating {
-  score: number;
-  note?: string;
-}
 
 
 interface UpsertScorecardInput {
@@ -6343,7 +6329,8 @@ export function useTargetAccountMembers(listId: string | null) {
         .order("added_at", { ascending: false });
       if (data) {
         setMembers(data.map((r): TargetAccount => {
-          const c = r.companies as Record<string, string | null> | null;
+          const raw = r.companies as Record<string, string | null> | Record<string, string | null>[] | null;
+          const c = Array.isArray(raw) ? raw[0] ?? null : raw;
           return {
             companyId:   r.company_id,
             companyName: c?.name ?? "—",
@@ -7550,7 +7537,7 @@ export function useCandidateContactFlag(candidateId: string) {
   const supabase = createClient();
 
   async function setFlag(update: ContactFlagUpdate) {
-    const { agency } = await getAgencyContext();
+    const _ctx = await getAgencyContext(supabase); if (!_ctx) throw new Error("Unauthorized"); const agency = { id: _ctx.agencyId };
     const now = new Date().toISOString();
     const { error } = await supabase
       .from("candidates")
@@ -7703,7 +7690,7 @@ export function useActivityLog(entityType: string, entityId: string) {
   useEffect(() => { if (entityId) fetch(); }, [entityId, entityType]);
 
   async function logActivity(input: ActivityLogInput) {
-    const { agency } = await getAgencyContext();
+    const _ctx = await getAgencyContext(supabase); if (!_ctx) throw new Error("Unauthorized"); const agency = { id: _ctx.agencyId };
     const { error } = await supabase.from("activities").insert({
       org_id:      agency.id,
       entity_type: input.entityType,
@@ -7837,7 +7824,7 @@ export function useJobLonglist(jobId: string) {
   useEffect(() => { if (jobId) fetch(); }, [jobId]);
 
   async function addToList(candidateId: string, listType: LonglistType = "longlist", notes?: string) {
-    const { agency } = await getAgencyContext();
+    const _ctx = await getAgencyContext(supabase); if (!_ctx) throw new Error("Unauthorized"); const agency = { id: _ctx.agencyId };
     const { error } = await supabase.from("job_longlists").upsert(
       { agency_id: agency.id, job_id: jobId, candidate_id: candidateId, list_type: listType, notes: notes ?? null },
       { onConflict: "job_id,candidate_id,list_type" }
@@ -7932,7 +7919,7 @@ export function useCandidatePortalInvite(applicationId: string) {
   useEffect(() => { if (applicationId) fetch(); }, [applicationId]);
 
   async function sendInvite(candidateId: string, jobId: string) {
-    const { agency } = await getAgencyContext();
+    const _ctx = await getAgencyContext(supabase); if (!_ctx) throw new Error("Unauthorized"); const agency = { id: _ctx.agencyId };
     // Revoke any existing invite first (upsert handles uniqueness via application_id UNIQUE)
     const { data, error } = await supabase
       .from("candidate_portal_invites")
@@ -8004,7 +7991,7 @@ export function useBookOfBusinessTransfer() {
   const [transfers, setTransfers] = useState<BizTransfer[]>([]);
   const [loading, setLoading] = useState(true);
 
-  async function fetch() {
+  async function loadTransfers() {
     const { data } = await supabase
       .from("biz_transfers")
       .select("*")
@@ -8030,11 +8017,13 @@ export function useBookOfBusinessTransfer() {
     setLoading(false);
   }
 
-  useEffect(() => { fetch(); }, []);
+  useEffect(() => { loadTransfers(); }, []);
 
   /** Preview counts before executing — reads current state, no writes */
   async function previewTransfer(fromUserId: string): Promise<BizTransferPreview> {
-    const { agency } = await getAgencyContext();
+    const ctx = await getAgencyContext(supabase);
+    if (!ctx) throw new Error("Unauthorized");
+    const agency = { id: ctx.agencyId };
 
     const [cands, jobs, clients, tasks] = await Promise.all([
       supabase.from("candidates").select("id", { count: "exact", head: true }).eq("agency_id", agency.id).eq("owner_id", fromUserId),
@@ -8063,7 +8052,7 @@ export function useBookOfBusinessTransfer() {
       body: JSON.stringify({ fromUserId, toUserId, dualOwnerDays }),
     });
     if (!res.ok) throw new Error(await res.text());
-    await fetch();
+    await loadTransfers();
   }
 
   return { transfers, loading, previewTransfer, executeTransfer };
@@ -8116,7 +8105,7 @@ export function useCandidateEncryptedFields(candidateId: string) {
 
   async function readFields(fieldNames: string[]) {
     setLoading(true);
-    const { agency } = await getAgencyContext();
+    const _ctx = await getAgencyContext(supabase); if (!_ctx) throw new Error("Unauthorized"); const agency = { id: _ctx.agencyId };
     const { data } = await supabase.from("candidates").select("encrypted_fields").eq("id", candidateId).single();
     const enc = (data?.encrypted_fields ?? {}) as Record<string, { iv: string; ciphertext: string; tag: string }>;
     const result: Record<string, string> = {};
@@ -8131,7 +8120,7 @@ export function useCandidateEncryptedFields(candidateId: string) {
   }
 
   async function writeField(fieldName: string, value: string) {
-    const { agency } = await getAgencyContext();
+    const _ctx = await getAgencyContext(supabase); if (!_ctx) throw new Error("Unauthorized"); const agency = { id: _ctx.agencyId };
     const encrypted = await encryptField(value, agency.id);
     const { data: current } = await supabase.from("candidates").select("encrypted_fields").eq("id", candidateId).single();
     const updated = { ...(current?.encrypted_fields ?? {}), [fieldName]: encrypted };
@@ -8200,7 +8189,7 @@ export function useRopa() {
   }
 
   async function upsertRecord(input: Partial<DataProcessingRecord>) {
-    const { agency } = await getAgencyContext();
+    const _ctx = await getAgencyContext(supabase); if (!_ctx) throw new Error("Unauthorized"); const agency = { id: _ctx.agencyId };
     const payload: any = {
       agency_id:               agency.id,
       activity_name:           input.activityName,
@@ -8247,7 +8236,7 @@ export function useIpAllowlist() {
   useEffect(() => { fetch(); }, []);
 
   async function addRule(cidr: string, label?: string) {
-    const { agency } = await getAgencyContext();
+    const _ctx = await getAgencyContext(supabase); if (!_ctx) throw new Error("Unauthorized"); const agency = { id: _ctx.agencyId };
     const { error } = await supabase.from("ip_allowlist_rules").insert({ agency_id: agency.id, cidr, label: label ?? null });
     if (error) throw error;
     await fetch();
@@ -8323,7 +8312,7 @@ export function useAgencyConnectors() {
   }, []);
 
   async function toggleConnector(key: string, enabled: boolean) {
-    const { agency } = await getAgencyContext();
+    const _ctx = await getAgencyContext(supabase); if (!_ctx) throw new Error("Unauthorized"); const agency = { id: _ctx.agencyId };
     await supabase.from("agency_connectors").upsert(
       { agency_id: agency.id, connector_key: key, enabled, enabled_at: enabled ? new Date().toISOString() : null,
         disabled_at: enabled ? null : new Date().toISOString() },

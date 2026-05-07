@@ -303,7 +303,7 @@ export function EmailComposeModal({ to: initialTo = [], defaultSubject = "", onC
 
   // Auto-save draft
   const draft = { subject, body };
-  const { status: saveStatus, loadDraft, clearDraft } = useAutoSave({
+  const { status: saveStatus, loadDraft, clearDraft } = useAutoSave<typeof draft>({
     key: EMAIL_DRAFT_KEY,
     value: draft,
     debounceMs: 600,
@@ -312,7 +312,7 @@ export function EmailComposeModal({ to: initialTo = [], defaultSubject = "", onC
   // Restore draft on mount (only if no defaultSubject was provided)
   useEffect(() => {
     if (defaultSubject) return; // pre-seeded context → don't clobber
-    const saved = loadDraft<typeof draft>();
+    const saved = loadDraft();
     if (saved?.subject) setSubject(saved.subject);
     if (saved?.body)    setBody(saved.body);
   // eslint-disable-next-line react-hooks/exhaustive-deps

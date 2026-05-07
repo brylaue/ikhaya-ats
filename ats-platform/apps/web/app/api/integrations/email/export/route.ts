@@ -224,7 +224,8 @@ export async function POST(req: NextRequest) {
       matches_created: 0,
     });
 
-    return new NextResponse(zip, {
+    const zipBuf = new Uint8Array(zip);
+    return new NextResponse(new Blob([zipBuf.buffer.slice(zipBuf.byteOffset, zipBuf.byteOffset + zipBuf.byteLength) as ArrayBuffer]), {
       status: 200,
       headers: {
         "Content-Type": "application/zip",

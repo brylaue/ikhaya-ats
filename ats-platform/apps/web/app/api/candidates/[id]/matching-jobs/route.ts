@@ -77,7 +77,7 @@ export async function GET(
         return {
           id:        j.id,
           title:     j.title,
-          company:   (j.companies as { name: string } | null)?.name ?? null,
+          company:   (Array.isArray(j.companies) ? j.companies[0]?.name : (j.companies as { name?: string } | null)?.name) ?? null,
           companyId: j.company_id,
           location:  j.location ?? null,
           status:    j.status,

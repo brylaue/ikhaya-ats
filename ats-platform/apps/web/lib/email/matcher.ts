@@ -176,7 +176,8 @@ export async function matchThread(
 
   // Multiple candidates on this thread → conflict
   // Flag the thread
-  await supabase
+  // has_conflict column exists in DB but not yet in generated types (stale).
+  await (supabase as any)
     .from("email_threads")
     .update({ has_conflict: true })
     .eq("provider_thread_id", threadId);
@@ -212,7 +213,8 @@ export async function matchFuzzy(
   if (freeAddresses.length === 0) return results;
 
   // Check rejection table to avoid re-suggesting rejected pairs
-  const { data: rejections } = await supabase
+  // email_match_rejections exists in DB but not yet in generated types (stale).
+  const { data: rejections } = await (supabase as any)
     .from("email_match_rejections")
     .select("candidate_id, rejected_address")
     .in(

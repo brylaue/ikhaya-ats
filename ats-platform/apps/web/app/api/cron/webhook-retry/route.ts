@@ -64,9 +64,10 @@ export async function GET(req: NextRequest) {
       signature: string;
       event_type: string;
       payload: Record<string, unknown>;
-      webhook_endpoints: { url: string; secret: string } | null;
+      webhook_endpoints: { url: string; secret: string } | { url: string; secret: string }[] | null;
     }) => {
-      const endpoint = d.webhook_endpoints;
+      const rawEp = d.webhook_endpoints;
+      const endpoint = Array.isArray(rawEp) ? rawEp[0] ?? null : rawEp;
       if (!endpoint) return;
 
       const body = JSON.stringify(d.payload);

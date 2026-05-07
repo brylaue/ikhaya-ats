@@ -75,7 +75,7 @@ export async function upsertThread(
         provider:          input.provider,
         provider_thread_id: input.providerThreadId,
         subject:           input.subject,
-        snippet:           input.snippet,
+        // snippet is per-message, not stored on the thread row in current schema
         participant_count: input.participantAddresses.length,
         first_msg_at:      input.firstMsgAt,
         last_msg_at:       input.lastMsgAt,
@@ -145,16 +145,15 @@ export async function insertMessage(
       provider_message_id: input.providerMessageId,
       internet_message_id: input.internetMessageId ?? null,
       direction:           input.direction,
-      from_address:        normalizeEmail(input.fromAddress),
-      to_addresses:        input.toAddresses.map(normalizeEmail),
-      cc_addresses:        input.ccAddresses.map(normalizeEmail),
-      bcc_addresses:       input.bccAddresses.map(normalizeEmail),
+      from_addr:           normalizeEmail(input.fromAddress),
+      to_addrs:            input.toAddresses.map(normalizeEmail),
+      cc_addrs:            input.ccAddresses.map(normalizeEmail),
+      bcc_addrs:           input.bccAddresses.map(normalizeEmail),
       subject:             input.subject,
       snippet:             input.snippet,
-      body_text:           input.bodyText ?? null,
-      body_html:           input.bodyHtml ?? null,
       sent_at:             input.sentAt,
-      has_attachments:     input.hasAttachments,
+      // body_text/body_html/has_attachments not in schema — bodies are stored
+      // out-of-band in S3 via body_text_s3_key / body_html_s3_key (set elsewhere).
     })
     .select("id")
     .single();
@@ -198,13 +197,9 @@ export async function matchAndLink(
   // Query candidates by email / alt_email
   const { data: candidates } = await supabase
     .from("candidates")
-    .select("id, email, alt_email")
+    .select("id, email")
     .eq("agency_id", agencyId)
-    .or(
-      normalised.map((a) => `email.eq.${a}`).join(",") +
-        "," +
-        normalised.map((a) => `alt_email.eq.${a}`).join(",")
-    );
+    .or(normalised.map((a) => `email.eq.${a}`).join(","));
 
   if (!candidates?.length) return [];
 
@@ -212,13 +207,12 @@ export async function matchAndLink(
 
   for (const cand of candidates) {
     const candidateEmail = normalizeEmail(cand.email ?? "");
-    const altEmail = cand.alt_email ? normalizeEmail(cand.alt_email) : null;
 
     let matchedAddress: string | null = null;
     let strategy: MatchStrategy = "exact";
 
     for (const addr of normalised) {
-      if (addr === candidateEmail || addr === altEmail) {
+      if (addr === candidateEmail) {
         matchedAddress = addr;
         strategy = "exact";
         break;
@@ -249,7 +243,6 @@ export async function matchAndLink(
         match_strategy:   strategy,
         match_confidence: 1.0,
         matched_address:  matchedAddress,
-        agency_id:        agencyId,
         status:           "active",
       });
     }

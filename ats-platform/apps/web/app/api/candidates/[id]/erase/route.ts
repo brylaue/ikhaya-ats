@@ -24,6 +24,7 @@ export async function POST(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   // US-326: erasure is irreversible — never accept cross-origin calls
   const csrfError = checkCsrf(req);
   if (csrfError) return csrfError;
@@ -53,7 +54,7 @@ export async function POST(
 
   // Require explicit confirmation token in the request body
   const body = await req.json().catch(() => ({}));
-  const expectedToken = `ERASE:${params.id}`;
+  const expectedToken = `ERASE:${id}`;
   if (body?.confirmationToken !== expectedToken) {
     return NextResponse.json(
       { error: "Missing or invalid confirmationToken. Expected: " + expectedToken },
@@ -64,7 +65,7 @@ export async function POST(
   try {
     // Call the stored procedure — it handles all deletions and the audit log
     const { data: summary, error: eraseError } = await supabase.rpc("erase_candidate", {
-      p_candidate_id: params.id,
+      p_candidate_id: id,
       p_agency_id: userRow.agency_id,
       p_erased_by: user.id,
     });

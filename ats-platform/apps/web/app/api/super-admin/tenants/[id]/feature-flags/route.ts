@@ -33,6 +33,7 @@ export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   const { error } = await guard(req);
   if (error) return error;
 
@@ -40,7 +41,7 @@ export async function GET(
   const { data: agency, error: dbErr } = await db
     .from("agencies")
     .select("id, name, plan, feature_overrides")
-    .eq("id", params.id)
+    .eq("id", id)
     .single();
 
   if (dbErr || !agency) {
@@ -59,6 +60,7 @@ export async function PATCH(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   const csrfError = checkCsrf(req);
   if (csrfError) return csrfError;
 
@@ -78,7 +80,7 @@ export async function PATCH(
   const { data: agency } = await db
     .from("agencies")
     .select("id, name, feature_overrides")
-    .eq("id", params.id)
+    .eq("id", id)
     .single();
 
   if (!agency) {
@@ -97,7 +99,7 @@ export async function PATCH(
   const { error: updateErr } = await db
     .from("agencies")
     .update({ feature_overrides: current })
-    .eq("id", params.id);
+    .eq("id", id);
 
   if (updateErr) {
     return NextResponse.json({ error: updateErr.message }, { status: 500 });
@@ -105,11 +107,11 @@ export async function PATCH(
 
   // Audit
   await db.from("audit_log").insert({
-    agency_id:     params.id,
+    agency_id:     id,
     user_id:       user.id,
     action:        "super_admin.feature_flag_update",
     resource_type: "agency",
-    resource_id:   params.id,
+    resource_id:   id,
     detail:        { feature, enabled, agencyName: agency.name, updatedBy: user.email },
     performed_at:  new Date().toISOString(),
   });

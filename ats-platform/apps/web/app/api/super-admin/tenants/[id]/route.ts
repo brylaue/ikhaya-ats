@@ -17,6 +17,7 @@ export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user?.email || !SUPER_ADMIN_EMAILS.includes(user.email.toLowerCase())) {
@@ -24,7 +25,6 @@ export async function GET(
   }
 
   const db = createServiceClient();
-  const id = params.id;
 
   // Fetch agency + related data in parallel
   const [

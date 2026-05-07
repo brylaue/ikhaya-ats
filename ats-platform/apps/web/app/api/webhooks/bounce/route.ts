@@ -125,29 +125,37 @@ export async function POST(req: NextRequest) {
         normalised.eventType === "SpamComplaint" ? "complaint" :
         "unknown";
 
-      await supabase.from("email_bounces").insert({
-        agency_id:       agencyId,
-        recipient_email: normalised.email,
-        bounce_type:     bounceType,
-        message_id:      normalised.messageId ?? null,
-        dsn_raw:         event,
-      }).catch(err => console.error("[bounce-webhook] bounce insert failed", err));
+      try {
+        await supabase.from("email_bounces").insert({
+          agency_id:       agencyId,
+          recipient_email: normalised.email,
+          bounce_type:     bounceType,
+          message_id:      normalised.messageId ?? null,
+          dsn_raw:         event,
+        });
+      } catch (err) {
+        console.error("[bounce-webhook] bounce insert failed", err);
+      }
     }
 
     // Suppress if it's a hard type
     if (SUPPRESS_TYPES.has(normalised.eventType)) {
-      const reason =
-        normalised.eventType === "SpamComplaint" ? "spam_complaint" :
+      const reason: import("@/lib/email/suppression").SuppressionReason =
+        normalised.eventType === "SpamComplaint" ? "complaint" :
         normalised.eventType === "Unsubscribe"   ? "unsubscribe" :
-        "bounce_hard";
+        "hard_bounce";
 
-      await addSuppression({
-        agencyId,
-        email:    normalised.email,
-        reason,
-        messageId: normalised.messageId,
-        source:   "webhook:postmark",
-      }).catch(err => console.error("[bounce-webhook] suppression failed", err));
+      try {
+        await addSuppression({
+          agencyId,
+          email:    normalised.email,
+          reason,
+          messageId: normalised.messageId,
+          source:   "webhook:postmark",
+        });
+      } catch (err) {
+        console.error("[bounce-webhook] suppression failed", err);
+      }
     }
 
     processed++;

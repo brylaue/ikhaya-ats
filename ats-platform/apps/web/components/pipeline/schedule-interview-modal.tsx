@@ -120,7 +120,7 @@ function DetailsStep({
         >
           <option value="">Select a role…</option>
           {jobs.filter((j) => j.status === "active").map((j) => (
-            <option key={j.id} value={j.id}>{j.title} — {j.companyName ?? ""}</option>
+            <option key={j.id} value={j.id}>{j.title} — {j.client?.name ?? ""}</option>
           ))}
         </select>
       </div>
@@ -464,7 +464,7 @@ function ConfirmStep({
       <div className="rounded-xl border border-border bg-card overflow-hidden">
         <div className="bg-brand-600 px-5 py-4">
           <p className="text-sm font-bold text-white">{job?.title ?? "Interview"}</p>
-          <p className="text-xs text-brand-200">{job?.companyName}</p>
+          <p className="text-xs text-brand-200">{job?.client?.name}</p>
         </div>
         <div className="p-5 space-y-3">
           {/* Candidate */}
@@ -528,7 +528,7 @@ function ConfirmStep({
         <p className="text-xs font-medium text-foreground">Send calendar invites to</p>
         {[
           { key: "notifyCandidate", label: `${candidate.firstName} (candidate)`, email: candidate.email },
-          { key: "notifyClient",    label: "Client contacts",                    email: job?.companyName },
+          { key: "notifyClient",    label: "Client contacts",                    email: job?.client?.name },
         ].map(({ key, label, email }) => (
           <label key={key} className="flex items-center gap-3 cursor-pointer">
             <input
@@ -645,7 +645,7 @@ export function ScheduleInterviewModal({ candidate, defaultJobId, onClose, onSch
       candidateTitle:  candidate.currentTitle,
       jobId:           form.jobId,
       jobTitle:        job?.title ?? "",
-      clientName:      job?.companyName,
+      clientName:      job?.client?.name,
       date:            form.date,
       startTime:       form.startTime,
       endTime:         form.endTime || form.startTime,
@@ -662,7 +662,7 @@ export function ScheduleInterviewModal({ candidate, defaultJobId, onClose, onSch
     if (result) {
       toast.success(`Interview scheduled with ${candidate.firstName} for ${form.date}`);
       if (form.notifyCandidate) toast.success(`Calendar invite sent to ${candidate.firstName}`);
-      if (form.notifyClient && job?.companyName) toast.success(`Client notified: ${job.companyName}`);
+      if (form.notifyClient && job?.client?.name) toast.success(`Client notified: ${job.client?.name}`);
     } else {
       // Optimistic fallback — persist failed but UX continues
       toast.success(`Interview noted — saved locally`);
