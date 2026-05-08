@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import path from "path";
 
 // ─── Content-Security-Policy (US-364) ────────────────────────────────────────
 // Validated against Google CSP Evaluator before shipping.
@@ -48,6 +49,9 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  // Pin workspace root to the monorepo root so Next.js doesn't pick up
+  // the wrong lockfile and misreport the output tracing base.
+  outputFileTracingRoot: path.join(__dirname, "../../.."),
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "*.r2.cloudflarestorage.com" },
