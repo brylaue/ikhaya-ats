@@ -1,12 +1,27 @@
+# Root-level Netlify configuration.
+#
+# The Next.js app lives at ats-platform/apps/web inside this monorepo.
+# Without this file at the repo root, Netlify scans the root (which has
+# no package.json), the @netlify/plugin-nextjs runtime never activates,
+# and the deployed site is a static dump of the .next/ build artifact
+# directory — i.e. blank / 404 on every route.
+
 [build]
-base = "ats-platform/apps/web"
-command = "npm install --legacy-peer-deps && npm run build"
-publish = ".next"
+  base    = "ats-platform/apps/web"
+  command = "npm install --legacy-peer-deps && npm run build"
+  publish = ".next"
 
 [build.environment]
-NODE_VERSION = "20"
-NPM_FLAGS = "--legacy-peer-deps"
-NEXT_TELEMETRY_DISABLED = "1"
-NEXT_PUBLIC_SUPABASE_URL = "https://0ec90b57d6e95fcbda19832f.supabase.co"
-NEXT_PUBLIC_SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJib2x0IiwicmVmIjoiMGVjOTBiNTdkNmU5NWZjYmRhMTk4MzJmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg4ODE1NzQsImV4cCI6MTc1ODg4MTU3NH0.9I8-U0x86Ak8t2DGaIk0HfvTSLsAyzdnz-Nw00mMkKw"
-NEXT_PUBLIC_APP_URL = "https://ikhaya-ats.netlify.app"
+  NODE_VERSION                  = "20"
+  NPM_FLAGS                     = "--legacy-peer-deps"
+  NEXT_TELEMETRY_DISABLED       = "1"
+  NEXT_PUBLIC_SUPABASE_URL      = "https://rutjsbtzefjigyqkfcgu.supabase.co"
+  NEXT_PUBLIC_SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ1dGpzYnR6ZWZqaWd5cWtmY2d1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNDY0MTMsImV4cCI6MjA5MzgyMjQxM30.AegO21N8D6an8zFrEmKZE32_t9fOhySbX7nRS5npHI4"
+  NEXT_PUBLIC_APP_URL           = "https://ikhaya-ats.netlify.app"
+
+# Required: this plugin makes Netlify treat the build as a Next.js
+# runtime (SSR pages + API routes + image optimization + middleware).
+# Without it, .next/ is published as plain static files and every
+# server-rendered route returns 404.
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
